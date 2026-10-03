@@ -8,7 +8,7 @@ A ideia é desenvolver uma aplicação web voltada a auxiliar pequenas e médias
 
 | Data | Nome | O que foi feito | Próximos passos |
 |---|---|---|---|
-| 03/10 | Guilherme D. | Configuração inicial do front-end com Vue <br> Configuração back-end com FastAPI | |
+| 03/10 | Guilherme D. | Configuração inicial do front-end com Vue <br> Configuração back-end com FastAPI | Configuração Supabase |
 |  |  |  |  |
 
 ## Como rodar o projeto
