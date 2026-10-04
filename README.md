@@ -11,6 +11,17 @@ A ideia é desenvolver uma aplicação web voltada a auxiliar pequenas e médias
 | 03/10 | Guilherme D. | Configuração inicial do front-end com Vue <br> Configuração back-end com FastAPI | Configuração Supabase |
 |  |  |  |  |
 
+## Roadmap
+
+- [ ] Preparar o ambiente de trabalho: repositório clonado, front-end com Vue e Tailwind, back-end com FastAPI e rota de teste `/health`, projeto criado no Supabase e variáveis de ambiente configuradas. A etapa termina quando os dois integrantes conseguem rodar front e back localmente e trocar commits sem erro.
+- [ ] Construir o menor fluxo possível ponta a ponta: o usuário responde duas perguntas no front, a API recebe as respostas, calcula uma pontuação, salva no Supabase e devolve o resultado para a tela. O objetivo é provar que Vue, FastAPI e Supabase se comunicam, mesmo com visual simples.
+- [ ] Implementar cadastro, login e logout com o Supabase Auth, proteger as rotas do front e validar o token no back-end. Em seguida, criar o cadastro da empresa (nome, setor, porte e número de funcionários), vinculado ao usuário logado.
+- [ ] Cadastrar no banco as 10 perguntas do diagnóstico (duas por dimensão: Ambiental, Social, Econômica, Governança e Comunidade) com quatro opções de resposta. Criar a tela do questionário e o serviço de cálculo que transforma as respostas em uma nota por dimensão e um nível de maturidade, com testes automatizados.
+- [ ] Exibir o resultado do diagnóstico com gráfico radar e barras por dimensão. Criar as regras que associam dimensões com nota baixa a recomendações do catálogo, ordenadas por prioridade, e a tela com as ações sugeridas para a empresa.
+- [ ] Permitir que o usuário adicione uma recomendação ao plano de ação e a transforme em uma ação concreta, com responsável, prazo, indicador e status. Incluir o registro de progresso de cada ação, com histórico.
+- [ ] Montar o painel de acompanhamento com métricas (ações no plano, concluídas, progresso médio) e a tela inicial com o resumo e o fluxo da empresa. Ao final desta etapa, o MVP está completo e navegável do início ao fim.
+- [ ] Revisar a aplicação: corrigir bugs, tratar erros e estados vazios, ajustar o visual para celular, revisar as regras de segurança do banco (RLS) e testar o fluxo completo com um usuário novo. Publicar o front-end e o back-end e confirmar que funcionam online.
+
 ## Como rodar o projeto
 
 ### Back-end (FastAPI)
