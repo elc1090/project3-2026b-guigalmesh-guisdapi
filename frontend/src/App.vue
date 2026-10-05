@@ -1,5 +1,5 @@
 <script setup>
-import DiagnosticoTeste from './components/DiagnosticoTeste.vue'
+import DiagnosticoTeste from './views/DiagnosticoTeste.vue'
 </script>
 
 <template>

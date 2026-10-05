@@ -1,5 +1,27 @@
-# Vue 3 + Vite
+# Estrutura típica de um projeto Vue
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+```
+src/
+├── main.js          → ponto de entrada: cria o app e liga o router
+├── App.vue          → componente raiz; tem o <RouterView />
+├── router/
+│   └── index.js     → mapa URL → componente
+├── views/           → componentes que são telas inteiras
+│   └── DiagnosticoTeste.vue
+└── components/      → peças reutilizáveis (botões, cards, inputs)
+```
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## O que cada parte faz
+
+| Item | Função |
+|------|--------|
+| `main.js` | Cria a aplicação Vue e registra o router |
+| `App.vue` | Componente raiz; contém o `<RouterView />`, onde a tela da URL atual é exibida |
+| `router/index.js` | Associa cada URL a um componente (ex.: `/diagnostico` → `DiagnosticoTeste.vue`) |
+| `views/` | Componentes que representam **telas inteiras** |
+| `components/` | Componentes **reutilizáveis** usados dentro das telas |
+
+## Convenção do projeto
+
+- Se é uma **tela** (tem uma rota própria), vai em `views/`.
+- Se é uma **peça reutilizável** (botão, card, input), vai em `components/`.
