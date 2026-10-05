@@ -1,7 +1,7 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import DiagnosticoTeste from './components/DiagnosticoTeste.vue'
 </script>
 
 <template>
-  <HelloWorld />
+  <DiagnosticoTeste />
 </template>

@@ -1,25 +1,36 @@
-import os
-
-from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
-load_dotenv()
+app = FastAPI()
 
-app = FastAPI(title="SOSTENPYME API")
-
-# Origens autorizadas a chamar a API (o Vite roda na porta 5173)
-origins = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
-
+# CORS (Cross-Origin Resource Sharing) é uma política de segurança que impede que um site faça requisições para outro site em um domínio diferente.
+# Por padrão, os navegadores bloqueiam conversas entre portas diferentes por segurança.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["http://localhost:5173"],  # porta do frontend (Vue) que vai conversar com o backend (FastAPI)
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# o que o FastAPI espera receber do Vue (o mesmo nome das variáveis do Vue)
+class Respostas(BaseModel):
+    pergunta1: int
+    pergunta2: int
+
+# rota que faz o cálculo
+@app.post("/api/diagnostico")
+async def calcular_diagnostico(respostas: Respostas):
+    # O FastAPI pega as variáveis do Vue, nós somamos os valores
+    nota_final = respostas.pergunta1 + respostas.pergunta2
+    
+    # O FastAPI retorna um JSON com a nota final e uma mensagem de sucesso
+    return {
+        "pontuacao": nota_final, 
+        "mensagem": "Cálculo feito com sucesso no FastAPI!"
+    }
 
 @app.get("/health")
-def health():
+async def health_check():
     return {"status": "ok"}
