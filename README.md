@@ -9,7 +9,7 @@ A ideia é desenvolver uma aplicação web voltada a auxiliar pequenas e médias
 | Data | Nome | O que foi feito | Próximos passos |
 |---|---|---|---|
 | 03/10 | Guilherme D. | Configuração inicial do front-end com Vue <br> Configuração back-end com FastAPI | Configuração Supabase |
-| 05/10 | Guilherme D. | Configuração Supabase <br> Criação do DiagnosticoTeste.vue para testar o front, e ajuste nas rotas no main.py no back para conectar com o front. <br> Configuração do Vue Router | Conectar o back com o Supabase |
+| 05/10 | Guilherme D. | Configuração Supabase <br> Criação do DiagnosticoTeste.vue para testar o front, e ajuste nas rotas no main.py no back para conectar com o front. <br> Configuração do Vue Router em src/router/index.js | Conectar o back com o Supabase |
 |  |  |  |  |
 
 ## Roadmap
