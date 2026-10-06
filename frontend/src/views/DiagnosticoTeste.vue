@@ -27,8 +27,8 @@
     </div>
 
     <!-- Botão de Envio -->
-    <button 
-      @click="enviarRespostas" 
+    <button
+      @click="enviarRespostas"
       class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition-colors"
     >
       Enviar para a API
@@ -63,11 +63,11 @@ const enviarRespostas = async () => {
       },
       body: JSON.stringify(respostas.value)
     })
-    
+
     // Captura a resposta do back-end e atualiza a tela
     const data = await response.json()
     resultado.value = data
-    
+
   } catch (erro) {
     console.error("Erro de comunicação com o Back-end:", erro)
   }
