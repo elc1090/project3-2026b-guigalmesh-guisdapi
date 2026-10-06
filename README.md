@@ -1,7 +1,7 @@
 # project3-2026b-guigalmesh-guisdapi
 
 ## Sobre o projeto
-Para tecnologias, pensamos em utilizar Vue com Tailwind CSS e Chart.js no front-end, Python (FastAPI) no back-end para processar as regras de negócio, cálculos do diagnóstico e priorização das recomendações, e Supabase para gerenciar a autenticação segura de usuários e a persistência dos dados em banco PostgreSQL.  
+Para tecnologias, pensamos em utilizar Vue com Tailwind CSS e Chart.js no front-end, Python (FastAPI) no back-end para processar as regras de negócio, cálculos do diagnóstico e priorização das recomendações, e Supabase para gerenciar a autenticação segura de usuários e a persistência dos dados em banco PostgreSQL.
 A ideia é desenvolver uma aplicação web voltada a auxiliar pequenas e médias empresas na gestão de sustentabilidade. A plataforma permite o cadastro da organização, aplica um questionário diagnóstico, calcula automaticamente os níveis de maturidade e gera recomendações práticas, permitindo que a empresa estruture e acompanhe seu próprio plano de ação e evolução em um dashboard interativo.
 
 ## Diário de evolução
@@ -10,6 +10,7 @@ A ideia é desenvolver uma aplicação web voltada a auxiliar pequenas e médias
 |---|---|---|---|
 | 03/10 | Guilherme D. | Configuração inicial do front-end com Vue <br> Configuração back-end com FastAPI | Configuração Supabase |
 | 05/10 | Guilherme D. | Configuração Supabase <br> Criação do DiagnosticoTeste.vue para testar o front, e ajuste nas rotas no main.py no back para conectar com o front. <br> Configuração do Vue Router em src/router/index.js | Conectar o back com o Supabase |
+|05/10 | Guilherme M. | Criação de uma table users no Supabase <br> Rota de teste para criação de usuários | Deixar a rota mais robusta e com verificações |
 |  |  |  |  |
 
 ## Roadmap
