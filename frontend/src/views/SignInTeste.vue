@@ -1,24 +1,51 @@
 <script setup>
+import { ref } from 'vue'
+import { supabase } from '../lib/supabase'
+
+const nome = ref('')
+const email = ref('')
+const senha = ref('')
+const carregando = ref(false)
+const erro = ref('')
+const sucesso = ref('')
 
 const cadastrarUsuario = async () => {
+  erro.value = ''
+  sucesso.value = ''
+
+  if (!nome.value || !email.value || !senha.value) {
+    erro.value = 'Preencha nome, e-mail e senha.'
+    return
+  }
+  if (senha.value.length < 6) {
+    erro.value = 'A senha precisa ter pelo menos 6 caracteres.'
+    return
+  }
+
+  carregando.value = true
   try {
-    const response = await fetch('http://localhost:8000/api/diagnostico', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(respostas.value)
+    const { data, error } = await supabase.auth.signUp({
+      email: email.value,
+      password: senha.value,
+      options: { data: { nome: nome.value } } // guarda o nome nos metadados do usuário
     })
 
-    // Captura a resposta do back-end e atualiza a tela
-    const data = await response.json()
-    resultado.value = data
+    if (error) {
+      erro.value = error.message
+      return
+    }
 
-  } catch (erro) {
-    console.error("Erro de comunicação com o Back-end:", erro)
+    // Com "Confirm email" ligado no Supabase, não vem sessão até o usuário confirmar.
+    sucesso.value = data.session
+      ? 'Conta criada! Você já está logado.'
+      : 'Conta criada! Confira seu e-mail para confirmar o cadastro.'
+  } catch (e) {
+    console.error('Erro ao cadastrar:', e)
+    erro.value = 'Não foi possível criar a conta. Tente novamente.'
+  } finally {
+    carregando.value = false
   }
 }
-
 </script>
 
 <template>
@@ -30,10 +57,11 @@ const cadastrarUsuario = async () => {
         Criar Conta
       </h2>
 
-      <form class="space-y-4">
+      <form class="space-y-4" @submit.prevent="cadastrarUsuario">
         <div>
           <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Nome:</label>
           <input
+            v-model="nome"
             type="text"
             id="username"
             placeholder="Seu nome"
@@ -44,6 +72,7 @@ const cadastrarUsuario = async () => {
         <div>
           <label for="email" class="block text-sm font-medium text-gray-700 mb-1">E-mail:</label>
           <input
+            v-model="email"
             type="email"
             id="email"
             placeholder="seu@email.com"
@@ -54,6 +83,7 @@ const cadastrarUsuario = async () => {
         <div>
           <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Senha:</label>
           <input
+            v-model="senha"
             type="password"
             id="password"
             placeholder="••••••••"
@@ -61,11 +91,15 @@ const cadastrarUsuario = async () => {
           >
         </div>
 
+        <p v-if="erro" class="text-sm text-red-600">{{ erro }}</p>
+        <p v-if="sucesso" class="text-sm text-green-700">{{ sucesso }}</p>
+
         <button
-          type="button"
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition duration-200 mt-2"
+          type="submit"
+          :disabled="carregando"
+          class="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg transition duration-200 mt-2"
         >
-          Cadastrar
+          {{ carregando ? 'Criando conta...' : 'Cadastrar' }}
         </button>
       </form>
 
