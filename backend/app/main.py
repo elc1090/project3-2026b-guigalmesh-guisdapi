@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from database import UserRepository, get_supabase
+from app.database import UserRepository, get_supabase
 
 app = FastAPI()
 
