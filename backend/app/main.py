@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from app.database import UserRepository, get_supabase
+from app.database import get_supabase
 
 app = FastAPI()
 
@@ -15,29 +15,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # o que o FastAPI espera receber do Vue (o mesmo nome das variáveis do Vue)
 class Respostas(BaseModel):
     pergunta1: int
     pergunta2: int
 
-# ROTA DE TESTE
-class Usuario(BaseModel):
-    user_name: str
-    user_email: str
 
-@app.post("/api/criarUsuario")
-async def criar_usuario(usuario: Usuario):
-    supabase = get_supabase()
-    dados = usuario.model_dump()
-
-    try:
-        supabase.table("users").insert(dados).execute()
-        return {"mensagem": "Usuário criado com sucesso"}
-    except Exception as e:
-         raise HTTPException(status_code=400, detail=f"Erro ao criar o usuário: {str(e)}")
-
-
-# rota que faz o cálculo
+# rota que faz o cálculo e salva no Supabase
 @app.post("/api/diagnostico")
 async def calcular_diagnostico(respostas: Respostas):
     nota_final = respostas.pergunta1 + respostas.pergunta2
@@ -50,9 +35,9 @@ async def calcular_diagnostico(respostas: Respostas):
             "pontuacao": nota_final,
         }).execute()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro ao salvar: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error al guardar: {str(e)}")
 
-    return {"pontuacao": nota_final, "mensagem": "Calculado e salvo!"}
+    return {"pontuacao": nota_final, "mensagem": "¡Calculado y guardado!"}
 
 
 @app.get("/health")
