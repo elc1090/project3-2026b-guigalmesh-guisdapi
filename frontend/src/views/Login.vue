@@ -1,44 +1,36 @@
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { supabase } from '../lib/supabase'
 
+const route = useRoute()
 const router = useRouter()
 
-const nome = ref('')
 const email = ref('')
 const senha = ref('')
 const carregando = ref(false)
 const erro = ref('')
-const sucesso = ref('')
 
 const traduzirErro = (mensagem) => {
-  if (mensagem.includes('already registered')) return 'Este correo ya está registrado.'
-  if (mensagem.includes('at least')) return 'La contraseña debe tener al menos 6 caracteres.'
+  if (mensagem.includes('Invalid login credentials')) return 'Correo o contraseña incorrectos.'
+  if (mensagem.includes('Email not confirmed')) return 'Confirma tu correo antes de iniciar sesión.'
   if (mensagem.toLowerCase().includes('rate limit')) return 'Demasiados intentos. Espera unos minutos e inténtalo de nuevo.'
-  if (mensagem.toLowerCase().includes('invalid') && mensagem.toLowerCase().includes('email')) return 'El correo electrónico no es válido.'
-  return 'No fue posible crear la cuenta. Inténtalo de nuevo.'
+  return 'No fue posible iniciar sesión. Inténtalo de nuevo.'
 }
 
-const cadastrarUsuario = async () => {
+const entrar = async () => {
   erro.value = ''
-  sucesso.value = ''
 
-  if (!nome.value || !email.value || !senha.value) {
-    erro.value = 'Completa nombre, correo y contraseña.'
-    return
-  }
-  if (senha.value.length < 6) {
-    erro.value = 'La contraseña debe tener al menos 6 caracteres.'
+  if (!email.value || !senha.value) {
+    erro.value = 'Completa tu correo y tu contraseña.'
     return
   }
 
   carregando.value = true
   try {
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signInWithPassword({
       email: email.value,
-      password: senha.value,
-      options: { data: { nome: nome.value } } // guarda o nome nos metadados do usuário
+      password: senha.value
     })
 
     if (error) {
@@ -46,15 +38,10 @@ const cadastrarUsuario = async () => {
       return
     }
 
-    // Com "Confirm email" ligado no Supabase, não vem sessão até o usuário confirmar.
-    if (data.session) {
-      router.push('/diagnostico') // já veio logado: segue para o app
-    } else {
-      sucesso.value = '¡Cuenta creada! Revisa tu correo para confirmar el registro.'
-    }
+    router.push(route.query.redirect || '/diagnostico')
   } catch (e) {
-    console.error('Erro ao cadastrar:', e)
-    erro.value = 'No fue posible crear la cuenta. Inténtalo de nuevo.'
+    console.error('Erro ao entrar:', e)
+    erro.value = 'No fue posible iniciar sesión. Inténtalo de nuevo.'
   } finally {
     carregando.value = false
   }
@@ -67,21 +54,10 @@ const cadastrarUsuario = async () => {
     <div class="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
 
       <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">
-        Crear cuenta
+        Iniciar sesión
       </h2>
 
-      <form class="space-y-4" @submit.prevent="cadastrarUsuario">
-        <div>
-          <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Nombre:</label>
-          <input
-            v-model="nome"
-            type="text"
-            id="username"
-            placeholder="Tu nombre"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-          >
-        </div>
-
+      <form class="space-y-4" @submit.prevent="entrar">
         <div>
           <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico:</label>
           <input
@@ -105,20 +81,19 @@ const cadastrarUsuario = async () => {
         </div>
 
         <p v-if="erro" class="text-sm text-red-600">{{ erro }}</p>
-        <p v-if="sucesso" class="text-sm text-green-700">{{ sucesso }}</p>
 
         <button
           type="submit"
           :disabled="carregando"
           class="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg transition duration-200 mt-2"
         >
-          {{ carregando ? 'Creando cuenta...' : 'Registrarse' }}
+          {{ carregando ? 'Ingresando...' : 'Iniciar sesión' }}
         </button>
       </form>
 
       <p class="text-sm text-gray-600 text-center mt-6">
-        ¿Ya tienes una cuenta?
-        <router-link to="/login" class="text-blue-600 hover:underline font-medium">Inicia sesión</router-link>
+        ¿Aún no tienes cuenta?
+        <router-link to="/cadastro" class="text-blue-600 hover:underline font-medium">Regístrate</router-link>
       </p>
 
     </div>

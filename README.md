@@ -12,7 +12,7 @@ A ideia é desenvolver uma aplicação web voltada a auxiliar pequenas e médias
 | 05/10 | Guilherme D. | Configuração Supabase <br> Criação do DiagnosticoTeste.vue para testar o front, e ajuste nas rotas no main.py no back para conectar com o front. <br> Configuração do Vue Router em src/router/index.js | Conectar o back com o Supabase |
 | 05/10 | Guilherme M. | Criação database.py <br> Criação de TABLE users no supabase <br> Rota teste para criação de usuários | Implementar usando o Supabase Auth |
 | 06/10 | Guilherme M. | Criação de routes para teste | Integrar Supabase Auth |
-| 09/10 | Guilherme D. | Criação da tabela diagnosticos no Supabase, rota /api/diagnostico salvando no banco <br> Cadastro funcionando com Supabase Auth (adicionado /lib/supabase.js) | Login, logout e proteção de rotas |
+| 09/10 | Guilherme D. | Criação da tabela diagnosticos no Supabase, rota /api/diagnostico salvando no banco <br> Cadastro funcionando com Supabase Auth (adicionado /lib/supabase.js) <br> Login e logout implementado em Login.vue e auth.js | Proteção de rotas no back-end (validar o token) <br> Adicionar user_id na tabela diagnosticos e ligar o RLS (Supabase) <br> Criar o cadastro da empresa|
 |  |  |  |  |
 
 ## Roadmap
