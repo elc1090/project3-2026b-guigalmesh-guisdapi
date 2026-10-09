@@ -66,8 +66,14 @@ const enviarRespostas = async () => {
 
     // Captura a resposta do back-end e atualiza a tela
     const data = await response.json()
-    resultado.value = data
 
+    if (!response.ok) {
+      console.error("Erro do back-end:", data)
+      alert("Erro: " + (data.detail || "falha ao enviar"))
+      return
+    }
+
+    resultado.value = data
   } catch (erro) {
     console.error("Erro de comunicação com o Back-end:", erro)
   }

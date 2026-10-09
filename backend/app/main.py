@@ -40,14 +40,20 @@ async def criar_usuario(usuario: Usuario):
 # rota que faz o cálculo
 @app.post("/api/diagnostico")
 async def calcular_diagnostico(respostas: Respostas):
-    # O FastAPI pega as variáveis do Vue, nós somamos os valores
     nota_final = respostas.pergunta1 + respostas.pergunta2
+    supabase = get_supabase()
 
-    # O FastAPI retorna um JSON com a nota final e uma mensagem de sucesso
-    return {
-        "pontuacao": nota_final,
-        "mensagem": "Cálculo feito com sucesso no FastAPI!"
-    }
+    try:
+        supabase.table("diagnosticos").insert({
+            "pergunta1": respostas.pergunta1,
+            "pergunta2": respostas.pergunta2,
+            "pontuacao": nota_final,
+        }).execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao salvar: {str(e)}")
+
+    return {"pontuacao": nota_final, "mensagem": "Calculado e salvo!"}
+
 
 @app.get("/health")
 async def health_check():
