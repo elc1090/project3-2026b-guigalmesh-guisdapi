@@ -1,7 +1,8 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from app.database import get_supabase
+from app.database import get_supabase_for_user
+from app.auth import get_current_user
 
 app = FastAPI()
 
@@ -24,21 +25,21 @@ class Respostas(BaseModel):
 
 # rota que faz o cálculo e salva no Supabase
 @app.post("/api/diagnostico")
-async def calcular_diagnostico(respostas: Respostas):
+def calcular_diagnostico(respostas: Respostas, user=Depends(get_current_user)):
     nota_final = respostas.pergunta1 + respostas.pergunta2
-    supabase = get_supabase()
+    supabase = get_supabase_for_user(user["token"])
 
     try:
         supabase.table("diagnosticos").insert({
             "pergunta1": respostas.pergunta1,
             "pergunta2": respostas.pergunta2,
             "pontuacao": nota_final,
+            "user_id": user["id"],
         }).execute()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al guardar: {str(e)}")
 
     return {"pontuacao": nota_final, "mensagem": "¡Calculado y guardado!"}
-
 
 @app.get("/health")
 async def health_check():

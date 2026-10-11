@@ -46,8 +46,11 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { apiFetch } from '../lib/api'
 
-// O "ref" torna as variáveis reativas. Se elas mudarem, a tela atualiza na hora.
+const router = useRouter()
+
 const respostas = ref({
   pergunta1: '1',
   pergunta2: '1'
@@ -56,23 +59,24 @@ const respostas = ref({
 const resultado = ref(null)
 const erro = ref('')
 
-// Função que envia o JSON para o FastAPI
 const enviarRespostas = async () => {
   erro.value = ''
   resultado.value = null
 
   try {
-    const response = await fetch('http://localhost:8000/api/diagnostico', {
+    const response = await apiFetch('/api/diagnostico', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
       body: JSON.stringify(respostas.value)
     })
 
+    // Sessão ausente ou expirada: manda para o login
+    if (response.status === 401 || response.status === 403) {
+      router.push('/login')
+      return
+    }
+
     const data = await response.json()
 
-    // Só mostra "guardado" se o back-end respondeu com sucesso
     if (!response.ok) {
       console.error('Erro do back-end:', data)
       erro.value = 'No fue posible guardar el resultado. Inténtalo de nuevo.'
