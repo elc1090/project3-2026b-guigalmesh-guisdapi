@@ -1,14 +1,48 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { supabase } from '../lib/supabase'
-import DiagnosticoTeste from '../views/DiagnosticoTeste.vue'
-import SignInTeste from '../views/SignInTeste.vue'
+import Diagnostico from '../views/Diagnostico.vue'
+import SignIn from '../views/SignIn.vue'
 import Login from '../views/Login.vue'
+import Layout from '../views/Layout.vue'
+import Home from '../views/Home.vue'
+import Empresa from '../views/Empresa.vue'
+import Resultado from '../views/Resultado.vue'
 
 const routes = [
-  { path: '/', redirect: '/diagnostico' },
-  { path: '/login', component: Login, meta: { apenasVisitante: true } },
-  { path: '/cadastro', component: SignInTeste, meta: { apenasVisitante: true } },
-  { path: '/diagnostico', component: DiagnosticoTeste, meta: { requerLogin: true } }
+  { path: '/login',
+    component: Login,
+    meta: { apenasVisitante: true }
+  },
+  { path: '/cadastro',
+    component: SignIn,
+    meta: { apenasVisitante: true }
+  },
+  {
+    path: '/',
+    component: Layout,
+    children: [
+      {
+        path: '/diagnostico',
+        component: Diagnostico,
+        meta: { requerLogin: true }
+      },
+      {
+        path: '',
+        component: Home,
+        meta: { requerLogin: true }
+      },
+      {
+        path: '/empresa',
+        component: Empresa,
+        meta: { requerLogin: true }
+      },
+      {
+        path: '/resultado',
+        component: Resultado,
+        meta: { requerLogin: true }
+      }
+    ]
+  },
 ]
 
 const router = createRouter({ history: createWebHistory(), routes })

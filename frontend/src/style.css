@@ -1,1 +1,5 @@
 @import "tailwindcss";
+
+@theme {
+    --background-image-radial-centro: radial-gradient(circle at center, var(--tw-gradient-stops));
+}
