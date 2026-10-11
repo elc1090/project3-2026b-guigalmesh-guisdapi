@@ -10,7 +10,7 @@ app = FastAPI()
 # Por padrão, os navegadores bloqueiam conversas entre portas diferentes por segurança.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # porta do frontend (Vue) que vai conversar com o backend (FastAPI)
+    allow_origins=["*"],  # porta do frontend (Vue) que vai conversar com o backend (FastAPI)
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -28,7 +28,7 @@ class Respostas(BaseModel):
 def calcular_diagnostico(respostas: Respostas, user=Depends(get_current_user)):
     nota_final = respostas.pergunta1 + respostas.pergunta2
     supabase = get_supabase_for_user(user["token"])
-
+    print(respostas)
     try:
         supabase.table("diagnosticos").insert({
             "pergunta1": respostas.pergunta1,
