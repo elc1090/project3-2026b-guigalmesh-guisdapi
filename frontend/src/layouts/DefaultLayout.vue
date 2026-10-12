@@ -4,7 +4,7 @@ import BackgroundWaves from '../components/ui/BackgroundWaves.vue';
 </script>
 
 <template>
-    <div class="relative flex h-screen bg-emerald-900 p-4 gap-4 overflow-hidden">
+    <div class="relative flex h-screen bg-emerald-800 p-4 gap-4 overflow-hidden">
 
     <BackgroundWaves class="absolute inset-0 pointer-events-none select-none -z-10"/>
 
