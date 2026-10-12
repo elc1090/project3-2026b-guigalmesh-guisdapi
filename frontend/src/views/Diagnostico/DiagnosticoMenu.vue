@@ -2,19 +2,19 @@
   <div class="grid grid-cols-4 gap-8 h-full w-full">
 
     <CardCategory title="Gobernanza" route="/diagnostico/gobernanza">
-      <IconGobernanza class="w-36 h-36" />
+      <IconGobernanza class="w-36 h-36 stroke-emerald-800" />
     </CardCategory>
 
     <CardCategory title="Ambiental" route="/diagnostico/ambiental">
-      <IconAmbiental class="w-36 h-36" />
+      <IconAmbiental class="w-36 h-36 stroke-emerald-800" />
     </CardCategory>
 
     <CardCategory title="Social" route="/diagnostico/social">
-      <IconSocial class="w-36 h-36" />
+      <IconSocial class="w-36 h-36 stroke-emerald-800" />
     </CardCategory>
 
     <CardCategory title="Económica" route="/diagnostico/economica">
-      <IconEconomica class="w-36 h-36" />
+      <IconEconomica class="w-36 h-36 stroke-emerald-800" />
     </CardCategory>
 
   </div>

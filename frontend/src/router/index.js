@@ -7,6 +7,11 @@ import DefaultLayout from '../layouts/DefaultLayout.vue'
 import Home from '../views/Home.vue'
 import Empresa from '../views/Empresa.vue'
 import Resultado from '../views/Resultado.vue'
+import GobernanzaView from '../views/Diagnostico/GobernanzaView.vue'
+import SocialView from '../views/Diagnostico/SocialView.vue'
+import EconomicoView from '../views/Diagnostico/EconomicoView.vue'
+import AmbientalView from '../views/Diagnostico/AmbientalView.vue'
+import DiagnosticoLayout from '../layouts/DiagnosticoLayout.vue'
 
 const routes = [
   { path: '/login',
@@ -23,8 +28,30 @@ const routes = [
     children: [
       {
         path: '/diagnostico',
-        component: DiagnosticoMenu,
-        meta: { requerLogin: true }
+        component: DiagnosticoLayout,
+        meta: { requerLogin: true },
+        children: [
+          {
+            path: '',
+            component: DiagnosticoMenu
+          },
+          {
+            path: 'gobernanza',
+            component: GobernanzaView
+          },
+          {
+            path: 'social',
+            component: SocialView
+          },
+          {
+            path: 'economica',
+            component: EconomicoView
+          },
+          {
+            path: 'ambiental',
+            component: AmbientalView
+          }
+        ]
       },
       {
         path: '',
