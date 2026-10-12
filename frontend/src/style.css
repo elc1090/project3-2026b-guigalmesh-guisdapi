@@ -2,4 +2,6 @@
 
 @theme {
     --background-image-radial-centro: radial-gradient(circle at center, var(--tw-gradient-stops));
+    --color-deeppurple: #22002C;
+    --color-deepblue: #000A2C
 }
