@@ -1,6 +1,6 @@
 <script setup>
-import Sidebar from './Sidebar.vue';
-import BackgroundWaves from '../ui/BackgroundWaves.vue';
+import Sidebar from '@/components/Sidebar.vue';
+import BackgroundWaves from '../components/ui/BackgroundWaves.vue';
 </script>
 
 <template>

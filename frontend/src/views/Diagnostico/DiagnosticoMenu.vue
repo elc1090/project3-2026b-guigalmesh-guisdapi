@@ -47,7 +47,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { apiFetch } from '../lib/api'
+import { apiFetch } from '../../lib/api'
 
 const router = useRouter()
 

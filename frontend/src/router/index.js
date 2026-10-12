@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { supabase } from '../lib/supabase'
-import Diagnostico from '../views/Diagnostico.vue'
+import DiagnosticoMenu from '../views/Diagnostico/DiagnosticoMenu.vue'
 import SignIn from '../views/SignIn.vue'
 import Login from '../views/Login.vue'
-import Layout from '../views/Layout.vue'
+import DefaultLayout from '../layouts/DefaultLayout.vue'
 import Home from '../views/Home.vue'
 import Empresa from '../views/Empresa.vue'
 import Resultado from '../views/Resultado.vue'
@@ -19,11 +19,11 @@ const routes = [
   },
   {
     path: '/',
-    component: Layout,
+    component: DefaultLayout,
     children: [
       {
         path: '/diagnostico',
-        component: Diagnostico,
+        component: DiagnosticoMenu,
         meta: { requerLogin: true }
       },
       {
