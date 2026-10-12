@@ -6,8 +6,9 @@
     "pergunta": "¿La empresa considera el impacto ambiental antes de incorporar nuevos productos o servicios?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sí", "valor": 3 },
-      { "label": "Parcialmente", "valor": 2 },
+      { "label": "Sistemáticamente", "valor": 4 },
+      { "label": "Frecuentemente", "valor": 3 },
+      { "label": "Ocasionalmente", "valor": 2 },
       { "label": "No", "valor": 1 }
     ],
     "peso": 1,
@@ -20,8 +21,9 @@
     "pergunta": "¿La empresa cuenta con medidas para disminuir las emisiones generadas por sus actividades?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sí", "valor": 3 },
-      { "label": "Parcialmente", "valor": 2 },
+      { "label": "Sistemáticamente", "valor": 4 },
+      { "label": "Frecuentemente", "valor": 3 },
+      { "label": "Ocasionalmente", "valor": 2 },
       { "label": "No", "valor": 1 }
     ],
     "peso": 1,
@@ -34,8 +36,9 @@
     "pergunta": "¿La empresa promueve el uso de medios de transporte con menor impacto ambiental?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sí", "valor": 3 },
-      { "label": "Parcialmente", "valor": 2 },
+      { "label": "Sistemáticamente", "valor": 4 },
+      { "label": "Frecuentemente", "valor": 3 },
+      { "label": "Ocasionalmente", "valor": 2 },
       { "label": "No", "valor": 1 }
     ],
     "peso": 1,
@@ -48,8 +51,9 @@
     "pergunta": "¿La empresa considera criterios ambientales al diseñar o modificar sus productos o servicios?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sí", "valor": 3 },
-      { "label": "Parcialmente", "valor": 2 },
+      { "label": "Sistemáticamente", "valor": 4 },
+      { "label": "Frecuentemente", "valor": 3 },
+      { "label": "Ocasionalmente", "valor": 2 },
       { "label": "No", "valor": 1 }
     ],
     "peso": 1,
@@ -62,8 +66,9 @@
     "pergunta": "¿La empresa informa a sus clientes sobre los impactos ambientales asociados a sus productos o servicios?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sí", "valor": 3 },
-      { "label": "Parcialmente", "valor": 2 },
+      { "label": "Sistemáticamente", "valor": 4 },
+      { "label": "Frecuentemente", "valor": 3 },
+      { "label": "Ocasionalmente", "valor": 2 },
       { "label": "No", "valor": 1 }
     ],
     "peso": 1,
@@ -76,8 +81,9 @@
     "pergunta": "¿La empresa ofrece medidas que faciliten la conciliación entre la vida laboral y personal de sus trabajadores?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sí", "valor": 3 },
-      { "label": "Parcialmente", "valor": 2 },
+      { "label": "Sistemáticamente", "valor": 4 },
+      { "label": "Frecuentemente", "valor": 3 },
+      { "label": "Ocasionalmente", "valor": 2 },
       { "label": "No", "valor": 1 }
     ],
     "peso": 1,
@@ -90,8 +96,9 @@
     "pergunta": "¿La empresa cuenta con mecanismos para reconocer el desempeño y los aportes de sus trabajadores?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sí", "valor": 3 },
-      { "label": "Parcialmente", "valor": 2 },
+      { "label": "Sistemáticamente", "valor": 4 },
+      { "label": "Frecuentemente", "valor": 3 },
+      { "label": "Ocasionalmente", "valor": 2 },
       { "label": "No", "valor": 1 }
     ],
     "peso": 1,
@@ -104,8 +111,9 @@
     "pergunta": "¿La empresa dispone de procedimientos para prevenir y abordar situaciones de acoso laboral?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sí", "valor": 3 },
-      { "label": "Parcialmente", "valor": 2 },
+      { "label": "Sistemáticamente", "valor": 4 },
+      { "label": "Frecuentemente", "valor": 3 },
+      { "label": "Ocasionalmente", "valor": 2 },
       { "label": "No", "valor": 1 }
     ],
     "peso": 1,
@@ -118,8 +126,9 @@
     "pergunta": "¿La empresa promueve espacios de colaboración y participación entre sus trabajadores?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sí", "valor": 3 },
-      { "label": "Parcialmente", "valor": 2 },
+      { "label": "Sistemáticamente", "valor": 4 },
+      { "label": "Frecuentemente", "valor": 3 },
+      { "label": "Ocasionalmente", "valor": 2 },
       { "label": "No", "valor": 1 }
     ],
     "peso": 1,
@@ -132,8 +141,9 @@
     "pergunta": "¿La empresa considera el bienestar emocional de sus trabajadores dentro de sus prácticas laborales?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sí", "valor": 3 },
-      { "label": "Parcialmente", "valor": 2 },
+      { "label": "Sistemáticamente", "valor": 4 },
+      { "label": "Frecuentemente", "valor": 3 },
+      { "label": "Ocasionalmente", "valor": 2 },
       { "label": "No", "valor": 1 }
     ],
     "peso": 1,
@@ -146,8 +156,9 @@
     "pergunta": "¿La empresa establece objetivos económicos de mediano y largo plazo?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sí", "valor": 3 },
-      { "label": "Parcialmente", "valor": 2 },
+      { "label": "Sistemáticamente", "valor": 4 },
+      { "label": "Frecuentemente", "valor": 3 },
+      { "label": "Ocasionalmente", "valor": 2 },
       { "label": "No", "valor": 1 }
     ],
     "peso": 1,
@@ -160,8 +171,9 @@
     "pergunta": "¿La empresa identifica los principales riesgos que podrían afectar la continuidad de sus operaciones?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sí", "valor": 3 },
-      { "label": "Parcialmente", "valor": 2 },
+      { "label": "Sistemáticamente", "valor": 4 },
+      { "label": "Frecuentemente", "valor": 3 },
+      { "label": "Ocasionalmente", "valor": 2 },
       { "label": "No", "valor": 1 }
     ],
     "peso": 1,
@@ -174,8 +186,9 @@
     "pergunta": "¿La empresa busca desarrollar nuevos productos o servicios para responder a las necesidades futuras de sus clientes?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sí", "valor": 3 },
-      { "label": "Parcialmente", "valor": 2 },
+      { "label": "Sistemáticamente", "valor": 4 },
+      { "label": "Frecuentemente", "valor": 3 },
+      { "label": "Ocasionalmente", "valor": 2 },
       { "label": "No", "valor": 1 }
     ],
     "peso": 1,
@@ -188,8 +201,9 @@
     "pergunta": "¿La empresa revisa periódicamente el cumplimiento de sus objetivos económicos?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sí", "valor": 3 },
-      { "label": "Parcialmente", "valor": 2 },
+      { "label": "Sistemáticamente", "valor": 4 },
+      { "label": "Frecuentemente", "valor": 3 },
+      { "label": "Ocasionalmente", "valor": 2 },
       { "label": "No", "valor": 1 }
     ],
     "peso": 1,
@@ -202,8 +216,9 @@
     "pergunta": "¿La empresa cuenta con un plan para enfrentar períodos de disminución de ingresos?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sí", "valor": 3 },
-      { "label": "Parcialmente", "valor": 2 },
+      { "label": "Sistemáticamente", "valor": 4 },
+      { "label": "Frecuentemente", "valor": 3 },
+      { "label": "Ocasionalmente", "valor": 2 },
       { "label": "No", "valor": 1 }
     ],
     "peso": 1,
@@ -216,8 +231,9 @@
     "pergunta": "¿La empresa cuenta con mecanismos para prevenir conflictos de interés en la toma de decisiones?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sí", "valor": 3 },
-      { "label": "Parcialmente", "valor": 2 },
+      { "label": "Sistemáticamente", "valor": 4 },
+      { "label": "Frecuentemente", "valor": 3 },
+      { "label": "Ocasionalmente", "valor": 2 },
       { "label": "No", "valor": 1 }
     ],
     "peso": 1,
@@ -230,8 +246,9 @@
     "pergunta": "¿La empresa tiene un procedimiento para recibir y resolver reclamos o denuncias?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sí", "valor": 3 },
-      { "label": "Parcialmente", "valor": 2 },
+      { "label": "Sistemáticamente", "valor": 4 },
+      { "label": "Frecuentemente", "valor": 3 },
+      { "label": "Ocasionalmente", "valor": 2 },
       { "label": "No", "valor": 1 }
     ],
     "peso": 1,
@@ -244,8 +261,9 @@
     "pergunta": "¿La empresa mantiene registros de sus principales decisiones y operaciones?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sí", "valor": 3 },
-      { "label": "Parcialmente", "valor": 2 },
+      { "label": "Sistemáticamente", "valor": 4 },
+      { "label": "Frecuentemente", "valor": 3 },
+      { "label": "Ocasionalmente", "valor": 2 },
       { "label": "No", "valor": 1 }
     ],
     "peso": 1,
@@ -258,8 +276,9 @@
     "pergunta": "¿La empresa revisa periódicamente sus objetivos y estrategias?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sí", "valor": 3 },
-      { "label": "Parcialmente", "valor": 2 },
+      { "label": "Sistemáticamente", "valor": 4 },
+      { "label": "Frecuentemente", "valor": 3 },
+      { "label": "Ocasionalmente", "valor": 2 },
       { "label": "No", "valor": 1 }
     ],
     "peso": 1,
@@ -272,8 +291,9 @@
     "pergunta": "¿La empresa cuenta con mecanismos para evaluar el desempeño de quienes toman decisiones?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sí", "valor": 3 },
-      { "label": "Parcialmente", "valor": 2 },
+      { "label": "Sistemáticamente", "valor": 4 },
+      { "label": "Frecuentemente", "valor": 3 },
+      { "label": "Ocasionalmente", "valor": 2 },
       { "label": "No", "valor": 1 }
     ],
     "peso": 1,
