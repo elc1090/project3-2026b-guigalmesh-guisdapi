@@ -12,6 +12,7 @@ import SocialView from '../views/Diagnostico/SocialView.vue'
 import EconomicoView from '../views/Diagnostico/EconomicoView.vue'
 import AmbientalView from '../views/Diagnostico/AmbientalView.vue'
 import DiagnosticoLayout from '../layouts/DiagnosticoLayout.vue'
+import { apiFetch } from '../lib/api'
 
 const routes = [
   { path: '/login',
@@ -29,7 +30,7 @@ const routes = [
       {
         path: '/diagnostico',
         component: DiagnosticoLayout,
-        meta: { requerLogin: true },
+        meta: { requerLogin: true, requerEmpresa: true},
         children: [
           {
             path: '',
@@ -66,7 +67,7 @@ const routes = [
       {
         path: '/resultado',
         component: Resultado,
-        meta: { requerLogin: true }
+        meta: { requerLogin: true, requerEmpresa: true }
       }
     ]
   },
@@ -80,6 +81,13 @@ router.beforeEach(async (to) => {
 
   if (to.meta.requerLogin && !logado) {
     return { path: '/login', query: { redirect: to.fullPath } }
+  }
+
+  if (to.meta.requerEmpresa) {
+  const res = await apiFetch('/api/empresa')
+    if (res.ok && (await res.json()) === null) {
+      return '/empresa'
+    }
   }
 
   if (to.meta.apenasVisitante && logado) {

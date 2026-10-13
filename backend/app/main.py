@@ -1,10 +1,10 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from app.database import get_supabase_for_user
-from app.auth import get_current_user
+from app.routes import empresa, diagnostico
 
 app = FastAPI()
+app.include_router(empresa.router)
+app.include_router(diagnostico.router)
 
 # CORS (Cross-Origin Resource Sharing) é uma política de segurança que impede que um site faça requisições para outro site em um domínio diferente.
 # Por padrão, os navegadores bloqueiam conversas entre portas diferentes por segurança.
@@ -16,30 +16,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-# o que o FastAPI espera receber do Vue (o mesmo nome das variáveis do Vue)
-class Respostas(BaseModel):
-    pergunta1: int
-    pergunta2: int
-
-
-# rota que faz o cálculo e salva no Supabase
-@app.post("/api/diagnostico")
-def calcular_diagnostico(respostas: Respostas, user=Depends(get_current_user)):
-    nota_final = respostas.pergunta1 + respostas.pergunta2
-    supabase = get_supabase_for_user(user["token"])
-    print(respostas)
-    try:
-        supabase.table("diagnosticos").insert({
-            "pergunta1": respostas.pergunta1,
-            "pergunta2": respostas.pergunta2,
-            "pontuacao": nota_final,
-            "user_id": user["id"],
-        }).execute()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al guardar: {str(e)}")
-
-    return {"pontuacao": nota_final, "mensagem": "¡Calculado y guardado!"}
 
 @app.get("/health")
 async def health_check():
