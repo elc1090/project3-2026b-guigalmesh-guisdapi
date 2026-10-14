@@ -50,7 +50,10 @@ def _ultimo(sb, empresa_id, status):
 def obter_rascunho(user=Depends(get_current_user)):
     sb, empresa_id = _contexto(user)
     rascunho = _ultimo(sb, empresa_id, STATUS_RASCUNHO)
-    return {"respostas": rascunho["respostas"] if rascunho else {}}
+    if rascunho:
+        return {"respostas": rascunho["respostas"]}
+    concluido = _ultimo(sb, empresa_id, STATUS_COMPLETADO)
+    return {"respostas": concluido["respostas"] if concluido else {}}
 
 
 @router.put("/rascunho")

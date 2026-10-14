@@ -1,11 +1,10 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { apiFetch } from '../lib/api'
 
 const router = useRouter()
 
-// os valores de "porte" precisam bater com o Literal do back (EmpresaIn)
 const setores = [
   'Agricultura',
   'Comercio',
@@ -30,31 +29,69 @@ const form = reactive({
   num_funcionarios: null
 })
 
+const dadosSalvos = reactive({
+  nome: '',
+  setor: '',
+  porte: '',
+  num_funcionarios: null
+})
+
 const jaTemEmpresa = ref(false)
+const editando = ref(false)
 const carregando = ref(true)
 const salvando = ref(false)
 const erro = ref('')
+const mensagemSucesso = ref('')
+
+const rotuloPorte = computed(() => {
+  const encontrado = portes.find((p) => p.valor === dadosSalvos.porte)
+  return encontrado ? encontrado.rotulo : dadosSalvos.porte
+})
 
 const sessaoInvalida = (response) => response.status === 401 || response.status === 403
 
-// Se a empresa já existe, carrega os dados para edição
+const sincronizarDados = (empresa) => {
+  form.nome = empresa.nome
+  form.setor = empresa.setor
+  form.porte = empresa.porte
+  form.num_funcionarios = empresa.num_funcionarios
+
+  dadosSalvos.nome = empresa.nome
+  dadosSalvos.setor = empresa.setor
+  dadosSalvos.porte = empresa.porte
+  dadosSalvos.num_funcionarios = empresa.num_funcionarios
+}
+
+const iniciarEdicao = () => {
+  erro.value = ''
+  mensagemSucesso.value = ''
+  form.nome = dadosSalvos.nome
+  form.setor = dadosSalvos.setor
+  form.porte = dadosSalvos.porte
+  form.num_funcionarios = dadosSalvos.num_funcionarios
+  editando.value = true
+}
+
+const cancelarEdicao = () => {
+  erro.value = ''
+  editando.value = false
+}
+
 onMounted(async () => {
   try {
     const response = await apiFetch('/api/empresa')
-
     if (sessaoInvalida(response)) {
       router.push('/login')
       return
     }
-
     if (response.ok) {
       const empresa = await response.json()
       if (empresa) {
-        form.nome = empresa.nome
-        form.setor = empresa.setor
-        form.porte = empresa.porte
-        form.num_funcionarios = empresa.num_funcionarios
+        sincronizarDados(empresa)
         jaTemEmpresa.value = true
+        editando.value = false
+      } else {
+        editando.value = true
       }
     }
   } catch (e) {
@@ -67,6 +104,7 @@ onMounted(async () => {
 
 const guardar = async () => {
   erro.value = ''
+  mensagemSucesso.value = ''
 
   if (!form.nome.trim() || !form.setor || !form.porte || !form.num_funcionarios) {
     erro.value = 'Completa todos los campos.'
@@ -78,6 +116,8 @@ const guardar = async () => {
   }
 
   salvando.value = true
+  const eraPrimeiroCadastro = !jaTemEmpresa.value
+
   try {
     const response = await apiFetch('/api/empresa', {
       method: jaTemEmpresa.value ? 'PUT' : 'POST',
@@ -93,14 +133,23 @@ const guardar = async () => {
       router.push('/login')
       return
     }
-
     if (!response.ok) {
       console.error('Erro do back-end:', await response.json().catch(() => null))
       erro.value = 'No fue posible guardar los datos de la empresa. Inténtalo de nuevo.'
       return
     }
 
-    router.push('/diagnostico')
+    const empresaAtualizada = await response.json()
+    sincronizarDados(empresaAtualizada)
+    jaTemEmpresa.value = true
+    editando.value = false
+
+    if (eraPrimeiroCadastro) {
+      router.push('/diagnostico')
+    } else {
+      mensagemSucesso.value = 'Datos de la empresa actualizados correctamente.'
+      setTimeout(() => { mensagemSucesso.value = '' }, 3500)
+    }
   } catch (e) {
     console.error('Erro ao salvar empresa:', e)
     erro.value = 'No se pudo conectar con el servidor.'
@@ -111,13 +160,24 @@ const guardar = async () => {
 </script>
 
 <template>
-  <div class="max-w-xl mx-auto py-8 px-4">
+  <div class="max-w-3xl mx-auto py-8 px-4">
+    <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-slate-800">Mi empresa</h1>
+        <p class="text-slate-500 mt-1">
+          {{ jaTemEmpresa && !editando
+            ? 'Información general registrada para tu organización.'
+            : 'Necesitamos esta información para preparar el diagnóstico de sostenibilidad.' }}
+        </p>
+      </div>
 
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-slate-800">Datos de tu empresa</h1>
-      <p class="text-slate-500 mt-2">
-        Necesitamos esta información para preparar el diagnóstico de sostenibilidad.
-      </p>
+      <button
+        v-if="jaTemEmpresa && !editando"
+        @click="iniciarEdicao"
+        class="bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2.5 rounded-xl font-semibold text-sm transition shadow-xs cursor-pointer"
+      >
+        ✎ Editar datos
+      </button>
     </div>
 
     <div v-if="carregando" class="flex justify-center items-center py-12">
@@ -125,8 +185,48 @@ const guardar = async () => {
       <span class="ml-3 text-slate-500 font-medium">Cargando...</span>
     </div>
 
-    <form v-else class="bg-white rounded-xl shadow-lg p-8 space-y-5" @submit.prevent="guardar">
+    <div v-else-if="jaTemEmpresa && !editando" class="space-y-6">
+      <p
+        v-if="mensagemSucesso"
+        class="text-sm text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 font-medium"
+      >
+        ✓ {{ mensagemSucesso }}
+      </p>
 
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+        <div class="flex items-center gap-4 pb-6 border-b border-slate-100">
+          <div class="w-14 h-14 rounded-2xl bg-emerald-800 text-white flex items-center justify-center text-2xl font-extrabold shadow-sm">
+            {{ dadosSalvos.nome.charAt(0).toUpperCase() }}
+          </div>
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+              Perfil activo
+            </span>
+            <h2 class="text-2xl font-bold text-slate-800 mt-1">{{ dadosSalvos.nome }}</h2>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6">
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <p class="text-xs font-semibold uppercase text-slate-400">Sector</p>
+            <p class="text-lg font-bold text-slate-800 mt-1">{{ dadosSalvos.setor }}</p>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <p class="text-xs font-semibold uppercase text-slate-400">Tamaño</p>
+            <p class="text-lg font-bold text-slate-800 mt-1">{{ rotuloPorte }}</p>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <p class="text-xs font-semibold uppercase text-slate-400">Número de empleados</p>
+            <p class="text-lg font-bold text-slate-800 mt-1">{{ dadosSalvos.num_funcionarios }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODO EDIÇÃO / CRIAÇÃO -->
+    <form v-else class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 space-y-5" @submit.prevent="guardar">
       <div>
         <label for="nome" class="block text-sm font-medium text-slate-700 mb-1">Nombre de la empresa:</label>
         <input
@@ -134,7 +234,7 @@ const guardar = async () => {
           type="text"
           id="nome"
           placeholder="Nombre de tu empresa"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition"
+          class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition"
         >
       </div>
 
@@ -143,7 +243,7 @@ const guardar = async () => {
         <select
           v-model="form.setor"
           id="setor"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition"
+          class="w-full px-4 py-2.5 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition"
         >
           <option value="" disabled>Selecciona un sector</option>
           <option v-for="setor in setores" :key="setor" :value="setor">{{ setor }}</option>
@@ -155,7 +255,7 @@ const guardar = async () => {
         <select
           v-model="form.porte"
           id="porte"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition"
+          class="w-full px-4 py-2.5 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition"
         >
           <option value="" disabled>Selecciona el tamaño</option>
           <option v-for="porte in portes" :key="porte.valor" :value="porte.valor">{{ porte.rotulo }}</option>
@@ -170,22 +270,30 @@ const guardar = async () => {
           min="1"
           id="num_funcionarios"
           placeholder="Ej.: 12"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition"
+          class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition"
         >
       </div>
 
       <p v-if="erro" class="text-sm text-red-600">{{ erro }}</p>
 
-      <div class="flex justify-end pt-2">
+      <div class="flex justify-end gap-3 pt-2">
+        <button
+          v-if="jaTemEmpresa"
+          type="button"
+          @click="cancelarEdicao"
+          class="px-5 py-3 rounded-xl border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition cursor-pointer"
+        >
+          Cancelar
+        </button>
+
         <button
           type="submit"
           :disabled="salvando"
-          class="bg-emerald-800 text-slate-200 px-6 py-3 rounded-lg font-bold hover:bg-emerald-950 disabled:opacity-60 transition shadow-lg cursor-pointer"
+          class="bg-emerald-800 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-950 disabled:opacity-60 transition shadow-md cursor-pointer"
         >
-          {{ salvando ? 'Guardando...' : (jaTemEmpresa ? 'Guardar cambios' : 'Guardar empresa') }}
+          {{ salvando ? 'Guardando...' : (jaTemEmpresa ? 'Guardar cambios' : 'Registrar empresa') }}
         </button>
       </div>
-
     </form>
   </div>
 </template>
