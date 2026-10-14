@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '../lib/supabase'
+import BackgroundWaves from '../components/ui/BackgroundWaves.vue'
 
 const router = useRouter()
 
@@ -38,7 +39,7 @@ const cadastrarUsuario = async () => {
     const { data, error } = await supabase.auth.signUp({
       email: email.value,
       password: senha.value,
-      options: { data: { nome: nome.value } } // guarda o nome nos metadados do usuário
+      options: { data: { nome: nome.value } }
     })
 
     if (error) {
@@ -46,9 +47,8 @@ const cadastrarUsuario = async () => {
       return
     }
 
-    // Com "Confirm email" ligado no Supabase, não vem sessão até o usuário confirmar.
     if (data.session) {
-      router.push('/diagnostico') // já veio logado: segue para o app
+      router.push('/diagnostico')
     } else {
       sucesso.value = '¡Cuenta creada! Revisa tu correo para confirmar el registro.'
     }
@@ -62,65 +62,72 @@ const cadastrarUsuario = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+  <div class="relative min-h-screen bg-emerald-800 flex items-center justify-center p-4 overflow-hidden">
+    <BackgroundWaves class="absolute inset-0 pointer-events-none select-none opacity-80" />
 
-    <div class="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
+    <div class="relative z-10 max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 md:p-10">
+      <div class="text-center mb-8">
+        <span class="inline-block px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold tracking-widest uppercase mb-3">
+          SOSTENPYME
+        </span>
+        <h2 class="text-2xl font-bold text-slate-800">Crear cuenta</h2>
+        <p class="text-sm text-slate-500 mt-1">Comienza a medir la sostenibilidad de tu empresa</p>
+      </div>
 
-      <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">
-        Crear cuenta
-      </h2>
-
-      <form class="space-y-4" @submit.prevent="cadastrarUsuario">
+      <form class="space-y-5" @submit.prevent="cadastrarUsuario">
         <div>
-          <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Nombre:</label>
+          <label for="username" class="block text-sm font-medium text-slate-700 mb-1">Nombre completo</label>
           <input
             v-model="nome"
             type="text"
             id="username"
             placeholder="Tu nombre"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+            class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition"
           >
         </div>
 
         <div>
-          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico:</label>
+          <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Correo electrónico</label>
           <input
             v-model="email"
             type="email"
             id="email"
-            placeholder="tu@correo.com"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+            placeholder="tu@empresa.com"
+            class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition"
           >
         </div>
 
         <div>
-          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña:</label>
+          <label for="password" class="block text-sm font-medium text-slate-700 mb-1">Contraseña</label>
           <input
             v-model="senha"
             type="password"
             id="password"
-            placeholder="••••••••"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+            placeholder="Mínimo 6 caracteres"
+            class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition"
           >
         </div>
 
-        <p v-if="erro" class="text-sm text-red-600">{{ erro }}</p>
-        <p v-if="sucesso" class="text-sm text-green-700">{{ sucesso }}</p>
+        <p v-if="erro" class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+          {{ erro }}
+        </p>
+        <p v-if="sucesso" class="text-sm text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+          {{ sucesso }}
+        </p>
 
         <button
           type="submit"
           :disabled="carregando"
-          class="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg transition duration-200 mt-2"
+          class="w-full bg-emerald-800 hover:bg-emerald-950 disabled:opacity-60 text-white font-bold py-3 rounded-xl transition shadow-lg cursor-pointer"
         >
           {{ carregando ? 'Creando cuenta...' : 'Registrarse' }}
         </button>
       </form>
 
-      <p class="text-sm text-gray-600 text-center mt-6">
+      <p class="text-sm text-slate-600 text-center mt-6">
         ¿Ya tienes una cuenta?
-        <router-link to="/login" class="text-blue-600 hover:underline font-medium">Inicia sesión</router-link>
+        <router-link to="/login" class="text-emerald-800 hover:underline font-bold">Inicia sesión</router-link>
       </p>
-
     </div>
   </div>
 </template>

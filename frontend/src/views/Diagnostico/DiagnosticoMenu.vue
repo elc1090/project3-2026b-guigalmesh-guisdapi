@@ -1,35 +1,68 @@
 <template>
-  <div class="flex flex-col gap-8 h-full w-full">
-    <div class="grid grid-cols-4 gap-8 flex-1 w-full">
-      <CardCategory title="Gobernanza" route="/diagnostico/gobernanza">
-        <IconGobernanza class="w-36 h-36 stroke-emerald-800" />
+  <div class="flex flex-col justify-between gap-8 h-full w-full max-w-6xl mx-auto py-4">
+    <!-- Cabeçalho -->
+    <div>
+      <h1 class="text-3xl font-bold text-slate-800">Diagnóstico de Sostenibilidad</h1>
+      <p class="text-slate-500 mt-1">
+        Selecciona cada dimensión para responder las preguntas. Tu avance se guarda automáticamente.
+      </p>
+    </div>
+
+    <!-- Grid Responsivo das 4 Dimensões -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 flex-1 w-full">
+      <CardCategory
+        title="Gobernanza"
+        description="Ética, transparencia, toma de decisiones y gestión de reclamos."
+        route="/diagnostico/gobernanza"
+      >
+        <IconGobernanza class="w-24 h-24 stroke-emerald-800" />
       </CardCategory>
 
-      <CardCategory title="Ambiental" route="/diagnostico/ambiental">
-        <IconAmbiental class="w-36 h-36 stroke-emerald-800" />
+      <CardCategory
+        title="Ambiental"
+        description="Impacto ecológico, emisiones, recursos y diseño sostenible."
+        route="/diagnostico/ambiental"
+      >
+        <IconAmbiental class="w-24 h-24 stroke-emerald-800" />
       </CardCategory>
 
-      <CardCategory title="Social" route="/diagnostico/social">
-        <IconSocial class="w-36 h-36 stroke-emerald-800" />
+      <CardCategory
+        title="Social"
+        description="Bienestar laboral, conciliación, prevención de acoso y participación."
+        route="/diagnostico/social"
+      >
+        <IconSocial class="w-24 h-24 stroke-emerald-800" />
       </CardCategory>
 
-      <CardCategory title="Económica" route="/diagnostico/economica">
-        <IconEconomica class="w-36 h-36 stroke-emerald-800" />
+      <CardCategory
+        title="Económica"
+        description="Metas de mediano plazo, gestión de riesgos, innovación y continuidad."
+        route="/diagnostico/economica"
+      >
+        <IconEconomica class="w-24 h-24 stroke-emerald-800" />
       </CardCategory>
     </div>
 
-    <div class="flex items-center justify-between gap-6 pb-2">
-      <div>
-        <p v-if="totalPerguntas > 0" class="text-slate-600">
-          Has respondido {{ respondidas }} de {{ totalPerguntas }} preguntas.
-        </p>
-        <p v-if="erro" class="text-sm text-red-600 mt-1">{{ erro }}</p>
+    <!-- Barra de Progresso e Botão de Finalizar -->
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="w-full md:max-w-md">
+        <div class="flex justify-between text-sm font-semibold text-slate-700 mb-2">
+          <span>Progreso del cuestionario</span>
+          <span v-if="totalPerguntas > 0">{{ respondidas }} / {{ totalPerguntas }} ({{ porcentagemProgresso }}%)</span>
+        </div>
+        <div class="w-full h-3 bg-slate-200 rounded-full overflow-hidden">
+          <div
+            class="h-full bg-emerald-700 transition-all duration-300"
+            :style="{ width: `${porcentagemProgresso}%` }"
+          ></div>
+        </div>
+        <p v-if="erro" class="text-sm text-red-600 mt-2">{{ erro }}</p>
       </div>
 
       <button
         @click="finalizar"
         :disabled="!completo || finalizando"
-        class="bg-emerald-800 text-slate-200 px-6 py-3 rounded-lg font-bold hover:bg-emerald-950 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-lg cursor-pointer"
+        class="w-full md:w-auto bg-emerald-800 text-white px-7 py-3.5 rounded-xl font-bold hover:bg-emerald-950 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-lg cursor-pointer whitespace-nowrap"
       >
         {{ finalizando ? 'Calculando...' : 'Finalizar diagnóstico' }}
       </button>
@@ -58,6 +91,10 @@ const erro = ref('')
 
 const respondidas = computed(() => Object.keys(respostas.value).length)
 const completo = computed(() => totalPerguntas.value > 0 && respondidas.value >= totalPerguntas.value)
+const porcentagemProgresso = computed(() => {
+  if (totalPerguntas.value === 0) return 0
+  return Math.min(100, Math.round((respondidas.value / totalPerguntas.value) * 100))
+})
 
 onMounted(async () => {
   try {

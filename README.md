@@ -15,7 +15,7 @@ A ideia é desenvolver uma aplicação web voltada a auxiliar pequenas e médias
 | 09/10 | Guilherme D. | Criação da tabela diagnosticos no Supabase, rota /api/diagnostico salvando no banco <br> Cadastro funcionando com Supabase Auth (adicionado /lib/supabase.js) <br> Login e logout implementado em Login.vue e auth.js | Proteção de rotas no back-end (validar o token) <br> Adicionar user_id na tabela diagnosticos e ligar o RLS (Supabase) <br> Criar o cadastro da empresa|
 | 11/10 | Guilherme M. | Criação das perguntas no e modelagem delas no backend <br> Criação de várias telas da aplicação <br> Criação da tela de diagnostico e separação por assunto <br> Organização do código do frontend |
 | 13/10 | Guilherme D. | Cadastro da empresa: tabela empresas com user_id e RLS, rotas GET/POST/PUT /api/empresa, tela Empresa.vue e guard no router <br> Rotas do diagnóstico (rascunho, concluir, resultado) com validação do token e RLS na tabela diagnostico <br> Serviço de cálculo (nota por dimensão e nível de maturidade) com 21 testes pytest <br> Salvamento automático do rascunho, botão de finalizar e tela de resultado com gráficos radar e barras | Testar o fluxo completo no navegador <br> Regras de recomendação por dimensão (etapa 5) |
-| 14/10 | Guilherme D. | Implementadas regras de recomendação por dimensão | |
+| 14/10 | Guilherme D. | Implementadas regras de recomendação por dimensão <br> Melhorias no front-end e Home.vue | |
 |  |  |  |  |
 
 ## Roadmap
