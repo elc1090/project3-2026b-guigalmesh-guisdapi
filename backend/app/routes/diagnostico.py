@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-
 from app.auth import get_current_user
 from app.database import get_supabase_for_user
 from app.services.calculo import (
@@ -8,6 +7,7 @@ from app.services.calculo import (
     calcular_diagnostico,
     validar_respostas,
 )
+from app.services.recomendacoes import gerar_recomendacoes
 
 router = APIRouter(prefix="/api/diagnostico", tags=["diagnostico"])
 
@@ -16,7 +16,6 @@ STATUS_COMPLETADO = "completado"
 
 
 class RespostasIn(BaseModel):
-    # {"q_amb_01": 3, "q_soc_02": 4, ...}: id da pergunta -> valor da opção (1 a 4)
     respostas: dict[str, int]
 
 
@@ -85,7 +84,6 @@ def concluir(dados: RespostasIn, user=Depends(get_current_user)):
     except RespostasInvalidas as e:
         raise HTTPException(422, str(e))
 
-    # o rascunho vira o diagnóstico completado; sem rascunho, cria direto
     rascunho = _ultimo(sb, empresa_id, STATUS_RASCUNHO)
     registro = {"respostas": dados.respostas, "status": STATUS_COMPLETADO}
     try:
@@ -95,6 +93,8 @@ def concluir(dados: RespostasIn, user=Depends(get_current_user)):
             sb.table("diagnostico").insert({**registro, "empresa_id": empresa_id}).execute()
     except Exception as e:
         raise HTTPException(500, f"Error al guardar: {e}")
+
+    resultado["recomendacoes"] = gerar_recomendacoes(resultado)
     return resultado
 
 
@@ -105,6 +105,8 @@ def obter_resultado(user=Depends(get_current_user)):
     if not concluido:
         raise HTTPException(404, "Aún no hay un diagnóstico completado")
     try:
-        return calcular_diagnostico(_perguntas_ativas(sb), concluido["respostas"])
+        resultado = calcular_diagnostico(_perguntas_ativas(sb), concluido["respostas"])
+        resultado["recomendacoes"] = gerar_recomendacoes(resultado)
+        return resultado
     except RespostasInvalidas as e:
         raise HTTPException(409, str(e))

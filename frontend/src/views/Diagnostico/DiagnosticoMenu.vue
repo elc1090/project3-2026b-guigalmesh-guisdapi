@@ -1,8 +1,6 @@
 <template>
   <div class="flex flex-col gap-8 h-full w-full">
-
     <div class="grid grid-cols-4 gap-8 flex-1 w-full">
-
       <CardCategory title="Gobernanza" route="/diagnostico/gobernanza">
         <IconGobernanza class="w-36 h-36 stroke-emerald-800" />
       </CardCategory>
@@ -18,7 +16,6 @@
       <CardCategory title="Económica" route="/diagnostico/economica">
         <IconEconomica class="w-36 h-36 stroke-emerald-800" />
       </CardCategory>
-
     </div>
 
     <div class="flex items-center justify-between gap-6 pb-2">
@@ -37,7 +34,6 @@
         {{ finalizando ? 'Calculando...' : 'Finalizar diagnóstico' }}
       </button>
     </div>
-
   </div>
 </template>
 
@@ -70,7 +66,6 @@ onMounted(async () => {
     console.error('Erro ao carregar rascunho:', e)
   }
 
-  // conta as perguntas ativas no banco, sem fixar o número no código
   const { count, error } = await supabase
     .from('perguntas')
     .select('id', { count: 'exact', head: true })
@@ -89,7 +84,6 @@ const finalizar = async () => {
       body: JSON.stringify({ respostas: respostas.value })
     })
 
-    // Sessão ausente ou expirada: manda para o login
     if (response.status === 401 || response.status === 403) {
       router.push('/login')
       return

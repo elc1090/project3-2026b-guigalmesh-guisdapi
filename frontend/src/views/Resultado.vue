@@ -16,7 +16,6 @@ const barrasCanvas = ref(null)
 let radarChart = null
 let barrasChart = null
 
-// ordem de exibição; dimensões que não estiverem aqui vão para o final
 const ORDEM = ['Ambiental', 'Social', 'Económica', 'Gobernanza']
 const posicao = (categoria) => {
   const i = ORDEM.indexOf(categoria)
@@ -30,11 +29,19 @@ const dimensoes = computed(() => {
     .sort((a, b) => posicao(a.nome) - posicao(b.nome))
 })
 
+const recomendacoes = computed(() => resultado.value?.recomendacoes ?? [])
+
 const estiloNivel = {
   'Inicial': 'bg-red-100 text-red-800',
   'Básico': 'bg-amber-100 text-amber-800',
   'Intermedio': 'bg-sky-100 text-sky-800',
   'Avanzado': 'bg-emerald-100 text-emerald-800'
+}
+
+const estiloPrioridade = {
+  'Alta': 'bg-red-100 text-red-800 border-red-200',
+  'Media': 'bg-amber-100 text-amber-800 border-amber-200',
+  'Baja': 'bg-sky-100 text-sky-800 border-sky-200'
 }
 
 const desenharGraficos = () => {
@@ -84,28 +91,21 @@ const desenharGraficos = () => {
 onMounted(async () => {
   try {
     const response = await apiFetch('/api/diagnostico/resultado')
-
-    // Sessão ausente ou expirada: manda para o login
     if (response.status === 401 || response.status === 403) {
       router.push('/login')
       return
     }
-
     if (response.status === 404) {
       semDiagnostico.value = true
       return
     }
-
     if (!response.ok) {
       console.error('Erro do back-end:', await response.json().catch(() => null))
       erro.value = 'No fue posible cargar el resultado. Inténtalo de nuevo.'
       return
     }
-
     resultado.value = await response.json()
     carregando.value = false
-
-    // espera o Vue renderizar os <canvas> antes de desenhar
     await nextTick()
     desenharGraficos()
   } catch (e) {
@@ -124,7 +124,6 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="max-w-5xl mx-auto py-8 px-4">
-
     <div class="mb-8">
       <h1 class="text-3xl font-bold text-slate-800">Resultado del diagnóstico</h1>
       <p class="text-slate-500 mt-2">Nivel de madurez en sostenibilidad de tu empresa, por dimensión.</p>
@@ -148,11 +147,13 @@ onBeforeUnmount(() => {
     </div>
 
     <div v-else-if="resultado" class="space-y-8">
-
+      <!-- Pontuação Geral -->
       <div class="bg-slate-50 p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
         <div>
           <p class="text-slate-500">Puntuación general</p>
-          <p class="text-5xl font-bold text-slate-800">{{ resultado.geral.pontuacao }}<span class="text-2xl text-slate-500"> / 100</span></p>
+          <p class="text-5xl font-bold text-slate-800">
+            {{ resultado.geral.pontuacao }}<span class="text-2xl text-slate-500"> / 100</span>
+          </p>
         </div>
         <span
           class="px-4 py-2 rounded-full font-semibold"
@@ -162,6 +163,7 @@ onBeforeUnmount(() => {
         </span>
       </div>
 
+      <!-- Gráficos -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div class="bg-slate-50 p-6 rounded-2xl shadow-sm border border-slate-200">
           <h2 class="text-lg font-semibold text-slate-800 mb-4">Perfil por dimensión</h2>
@@ -178,6 +180,7 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
+      <!-- Detalhe por Dimensão -->
       <div class="bg-slate-50 p-6 rounded-2xl shadow-sm border border-slate-200">
         <h2 class="text-lg font-semibold text-slate-800 mb-4">Detalle</h2>
         <ul class="divide-y divide-slate-200">
@@ -200,6 +203,52 @@ onBeforeUnmount(() => {
         </ul>
       </div>
 
+      <!-- Recomendações Priorizadas (Etapa 5) -->
+      <div class="bg-slate-50 p-6 rounded-2xl shadow-sm border border-slate-200">
+        <div class="mb-4">
+          <h2 class="text-lg font-semibold text-slate-800">Acciones recomendadas</h2>
+          <p class="text-sm text-slate-500 mt-1">
+            Sugerencias ordenadas por prioridad según las dimensiones con menor puntuación.
+          </p>
+        </div>
+
+        <div
+          v-if="recomendacoes.length === 0"
+          class="p-6 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-900 text-center"
+        >
+          ¡Felicitaciones! Todas las dimensiones de tu empresa se encuentran en nivel <strong>Avanzado</strong>.
+        </div>
+
+        <div v-else class="space-y-4">
+          <div
+            v-for="rec in recomendacoes"
+            :key="rec.id"
+            class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs flex flex-col gap-2"
+          >
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-slate-100 text-slate-700">
+                  {{ rec.categoria }} ({{ rec.pontuacao_dimensao }} pts)
+                </span>
+                <span
+                  class="text-xs font-semibold px-2.5 py-1 rounded-full border"
+                  :class="estiloPrioridade[rec.prioridade]"
+                >
+                  Prioridad {{ rec.prioridade }}
+                </span>
+              </div>
+            </div>
+
+            <h3 class="text-base font-bold text-slate-800 mt-1">{{ rec.titulo }}</h3>
+            <p class="text-sm text-slate-600">{{ rec.descricao }}</p>
+
+            <p v-if="rec.indicador_sugerido" class="text-xs text-slate-500 mt-1">
+              <span class="font-semibold text-slate-700">Indicador sugerido:</span> {{ rec.indicador_sugerido }}
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div class="flex justify-end">
         <router-link
           to="/diagnostico"
@@ -208,7 +257,6 @@ onBeforeUnmount(() => {
           Nuevo diagnóstico
         </router-link>
       </div>
-
     </div>
   </div>
 </template>
