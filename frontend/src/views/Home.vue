@@ -29,19 +29,17 @@ onMounted(async () => {
 
 <template>
   <div class="max-w-5xl mx-auto py-6 px-4 space-y-8">
-    <!-- Banner de Boas-vindas -->
-    <div class="bg-emerald-800 text-white rounded-3xl p-8 shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+    <div class="bg-emerald-800 text-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
       <div>
         <span class="text-xs font-bold uppercase tracking-widest text-emerald-200">Panel principal</span>
-        <h1 class="text-3xl font-bold mt-1">Hola, {{ nomeUsuario }}</h1>
-        <p class="text-emerald-100 mt-2 max-w-xl">
+        <h1 class="text-2xl sm:text-3xl font-bold mt-1">Hola, {{ nomeUsuario }}</h1>
+        <p class="text-sm sm:text-base text-emerald-100 mt-2 max-w-xl">
           Evalúa el nivel de madurez en sostenibilidad de tu organización y descubre oportunidades concretas de mejora en las dimensiones Ambiental, Social, Económica y Gobernanza.
         </p>
       </div>
-
       <router-link
         :to="empresa ? '/diagnostico' : '/empresa'"
-        class="bg-white text-emerald-900 px-6 py-3 rounded-xl font-bold hover:bg-emerald-50 transition shadow-md shrink-0"
+        class="w-full sm:w-auto text-center bg-white text-emerald-900 px-6 py-3 rounded-xl font-bold hover:bg-emerald-50 transition shadow-md shrink-0"
       >
         {{ empresa ? 'Ir al diagnóstico →' : 'Registrar mi empresa →' }}
       </router-link>

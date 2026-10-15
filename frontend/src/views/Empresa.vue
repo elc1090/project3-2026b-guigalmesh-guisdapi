@@ -160,7 +160,7 @@ const guardar = async () => {
 </script>
 
 <template>
-  <div class="max-w-3xl mx-auto py-8 px-4">
+  <div class="max-w-3xl mx-auto py-4 sm:py-8 px-1 sm:px-4">
     <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
       <div>
         <h1 class="text-3xl font-bold text-slate-800">Mi empresa</h1>
@@ -193,7 +193,7 @@ const guardar = async () => {
         ✓ {{ mensagemSucesso }}
       </p>
 
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-8">
         <div class="flex items-center gap-4 pb-6 border-b border-slate-100">
           <div class="w-14 h-14 rounded-2xl bg-emerald-800 text-white flex items-center justify-center text-2xl font-extrabold shadow-sm">
             {{ dadosSalvos.nome.charAt(0).toUpperCase() }}
@@ -226,7 +226,7 @@ const guardar = async () => {
     </div>
 
     <!-- MODO EDIÇÃO / CRIAÇÃO -->
-    <form v-else class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 space-y-5" @submit.prevent="guardar">
+    <form v-else class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-8 space-y-5" @submit.prevent="guardar">
       <div>
         <label for="nome" class="block text-sm font-medium text-slate-700 mb-1">Nombre de la empresa:</label>
         <input
@@ -276,20 +276,19 @@ const guardar = async () => {
 
       <p v-if="erro" class="text-sm text-red-600">{{ erro }}</p>
 
-      <div class="flex justify-end gap-3 pt-2">
+      <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-2">
         <button
           v-if="jaTemEmpresa"
           type="button"
           @click="cancelarEdicao"
-          class="px-5 py-3 rounded-xl border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition cursor-pointer"
+          class="w-full sm:w-auto px-5 py-3 rounded-xl border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition cursor-pointer"
         >
           Cancelar
         </button>
-
         <button
           type="submit"
           :disabled="salvando"
-          class="bg-emerald-800 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-950 disabled:opacity-60 transition shadow-md cursor-pointer"
+          class="w-full sm:w-auto bg-emerald-800 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-950 disabled:opacity-60 transition shadow-md cursor-pointer"
         >
           {{ salvando ? 'Guardando...' : (jaTemEmpresa ? 'Guardar cambios' : 'Registrar empresa') }}
         </button>

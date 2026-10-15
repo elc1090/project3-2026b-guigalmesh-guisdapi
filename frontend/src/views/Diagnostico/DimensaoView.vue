@@ -28,7 +28,7 @@ watch(
 
 <template>
   <div class="max-w-3xl mx-auto py-8 relative">
-    <div class="mb-8 flex items-start justify-between gap-4">
+    <div class="mb-6 sm:mb-8 flex flex-wrap items-start justify-between gap-3">
       <div>
         <h1 class="text-3xl font-bold text-slate-800">{{ configAtual.titulo }}</h1>
         <p class="text-slate-500 mt-2">
@@ -57,11 +57,11 @@ watch(
         v-model="respostas[pergunta.id]"
       />
 
-      <div class="mt-8 flex items-center justify-between">
+      <div class="mt-8 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
         <span class="text-sm text-slate-500">{{ statusSalvamento }}</span>
         <router-link
           to="/diagnostico"
-          class="bg-emerald-800 text-slate-200 px-6 py-3 rounded-lg font-bold hover:bg-emerald-950 transition shadow-lg cursor-pointer"
+          class="w-full sm:w-auto text-center bg-emerald-800 text-slate-200 px-6 py-3 rounded-xl font-bold hover:bg-emerald-950 transition shadow-lg cursor-pointer"
         >
           Volver al diagnóstico
         </router-link>

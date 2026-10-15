@@ -24,7 +24,7 @@ const valorSelecionado = computed({
 </script>
 
 <template>
-  <div class="bg-slate-50 p-6 rounded-2xl shadow-sm border border-slate-200 w-full mb-6">
+  <div class="bg-slate-50 p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 w-full mb-6">
 
     <!-- Pergunta -->
     <h3 class="text-lg font-semibold text-slate-800 mb-4">

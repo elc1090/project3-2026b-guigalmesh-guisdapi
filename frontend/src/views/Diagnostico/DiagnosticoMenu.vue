@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col justify-between gap-8 h-full w-full max-w-6xl mx-auto py-4">
+  <div class="flex flex-col justify-between gap-6 sm:gap-8 min-h-full w-full max-w-6xl mx-auto py-2 sm:py-4">
     <!-- Cabeçalho -->
     <div>
       <h1 class="text-3xl font-bold text-slate-800">Diagnóstico de Sostenibilidad</h1>
@@ -15,7 +15,7 @@
         description="Ética, transparencia, toma de decisiones y gestión de reclamos."
         route="/diagnostico/gobernanza"
       >
-        <IconGobernanza class="w-24 h-24 stroke-emerald-800" />
+        <IconGobernanza class="w-14 h-14 sm:w-20 sm:h-20 stroke-emerald-800" />
       </CardCategory>
 
       <CardCategory
@@ -23,7 +23,7 @@
         description="Impacto ecológico, emisiones, recursos y diseño sostenible."
         route="/diagnostico/ambiental"
       >
-        <IconAmbiental class="w-24 h-24 stroke-emerald-800" />
+        <IconAmbiental class="w-14 h-14 sm:w-20 sm:h-20 stroke-emerald-800" />
       </CardCategory>
 
       <CardCategory
@@ -31,7 +31,7 @@
         description="Bienestar laboral, conciliación, prevención de acoso y participación."
         route="/diagnostico/social"
       >
-        <IconSocial class="w-24 h-24 stroke-emerald-800" />
+        <IconSocial class="w-14 h-14 sm:w-20 sm:h-20 stroke-emerald-800" />
       </CardCategory>
 
       <CardCategory
@@ -39,7 +39,7 @@
         description="Metas de mediano plazo, gestión de riesgos, innovación y continuidad."
         route="/diagnostico/economica"
       >
-        <IconEconomica class="w-24 h-24 stroke-emerald-800" />
+        <IconEconomica class="w-14 h-14 sm:w-20 sm:h-20 stroke-emerald-800" />
       </CardCategory>
     </div>
 
