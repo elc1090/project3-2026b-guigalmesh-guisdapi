@@ -53,7 +53,7 @@ const entrar = async () => {
     <div class="relative z-10 max-w-md w-full bg-white rounded-3xl shadow-2xl p-6 sm:p-8 md:p-10">
       <div class="text-center mb-8">
         <span class="inline-block px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold tracking-widest uppercase mb-3">
-          SOSTENPYME
+          VERDE IMPULSO
         </span>
         <h2 class="text-2xl font-bold text-slate-800">Iniciar sesión</h2>
         <p class="text-sm text-slate-500 mt-1">Accede al diagnóstico de sostenibilidad de tu empresa</p>

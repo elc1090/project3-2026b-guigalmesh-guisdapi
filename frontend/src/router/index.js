@@ -62,6 +62,16 @@ const routes = [
         path: 'resultado',
         component: Resultado,
         meta: { requerLogin: true, requerEmpresa: true }
+      },
+      {
+        path: 'guia',
+        component: () => import('../views/Guia.vue'),
+        meta: { requerLogin: true }
+      },
+      {
+        path: 'ods',
+        component: () => import('../views/Ods.vue'),
+        meta: { requerLogin: true }
       }
     ]
   }

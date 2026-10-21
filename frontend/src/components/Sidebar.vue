@@ -34,11 +34,16 @@ const fazerLogout = async () => {
     <div>
       <div class="flex items-center justify-between px-4 mb-10">
         <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center text-white font-extrabold text-lg shadow-inner">
-            S
+          <div class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center text-white shadow-inner">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 20h10" />
+              <path d="M10 20c5.5-2.5.8-6.4 3-10" />
+              <path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z" />
+              <path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z" />
+            </svg>
           </div>
           <div>
-            <span class="font-extrabold tracking-wider text-white text-lg block leading-none">SOSTENPYME</span>
+            <span class="font-extrabold tracking-wider text-white text-lg block leading-none">VERDE IMPULSO</span>
             <span class="text-[11px] text-emerald-200/80 tracking-wide">Gestión Sostenible</span>
           </div>
         </div>
@@ -55,6 +60,19 @@ const fazerLogout = async () => {
       </div>
 
       <nav class="flex flex-col gap-2">
+        <router-link
+          to="/guia"
+          @click="emit('fechar')"
+          class="flex items-center gap-3 px-4 py-3 text-emerald-100/80 rounded-xl font-medium hover:bg-white/10 hover:text-white transition"
+          active-class="bg-white/15 !text-white font-semibold shadow-xs"
+        >
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+          </svg>
+          Guía sostenible
+        </router-link>
+
         <router-link
           to="/"
           @click="emit('fechar')"
@@ -100,7 +118,21 @@ const fazerLogout = async () => {
           <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M7 16l4-4 4 4 5-6" />
           </svg>
-          Resultado
+          Resultados del diagnóstico
+        </router-link>
+
+        <router-link
+          to="/ods"
+          @click="emit('fechar')"
+          class="flex items-center gap-3 px-4 py-3 text-emerald-100/80 rounded-xl font-medium hover:bg-white/10 hover:text-white transition"
+          active-class="bg-white/15 !text-white font-semibold shadow-xs"
+        >
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2 12h20" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" />
+          </svg>
+          Objetivos de Desarrollo Sostenible
         </router-link>
       </nav>
     </div>

@@ -12,10 +12,15 @@ const menuAberto = ref(false)
 
     <header class="md:hidden relative z-20 flex items-center justify-between px-4 py-3 bg-emerald-900/60 backdrop-blur-md rounded-2xl text-white border border-white/10">
       <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center text-white font-extrabold text-base shadow-inner">
-          S
+        <div class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center text-white shadow-inner">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 20h10" />
+            <path d="M10 20c5.5-2.5.8-6.4 3-10" />
+            <path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z" />
+            <path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z" />
+          </svg>
         </div>
-        <span class="font-extrabold tracking-wider text-white text-base">SOSTENPYME</span>
+        <span class="font-extrabold tracking-wider text-white text-base">VERDE IMPULSO</span>
       </div>
       <button
         @click="menuAberto = true"
