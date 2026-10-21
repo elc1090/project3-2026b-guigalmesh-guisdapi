@@ -7,7 +7,6 @@ from collections import defaultdict
 VALOR_MIN = 1  # "No"
 VALOR_MAX = 4  # "Sistemáticamente"
 
-# (limite superior exclusivo, nível). Faixas sugeridas: alinhar com a turma do Chile.
 NIVELES = [
     (25, "Inicial"),
     (50, "Básico"),
@@ -53,6 +52,9 @@ def calcular_diagnostico(perguntas: list[dict], respostas: dict[str, int]) -> di
     Normaliza cada dimensão para 0-100 com (soma - min) / (max - min), porque o
     menor valor possível é 1 e não 0.
     """
+    if not perguntas:
+        raise RespostasInvalidas("No hay preguntas activas para calcular el diagnóstico")
+
     validar_respostas(perguntas, respostas, completo=True)
 
     acumulado = defaultdict(lambda: {"soma": 0.0, "min": 0.0, "max": 0.0})
@@ -65,14 +67,14 @@ def calcular_diagnostico(perguntas: list[dict], respostas: dict[str, int]) -> di
 
     dimensoes = {}
     for categoria, a in acumulado.items():
-        porcentagem = (a["soma"] - a["min"]) / (a["max"] - a["min"]) * 100
+        pontuacao = round((a["soma"] - a["min"]) / (a["max"] - a["min"]) * 100, 1)
         dimensoes[categoria] = {
-            "pontuacao": round(porcentagem, 1),
-            "nivel": nivel_de_madurez(porcentagem),
+            "pontuacao": pontuacao,
+            "nivel": nivel_de_madurez(pontuacao),
         }
 
-    media = sum(d["pontuacao"] for d in dimensoes.values()) / len(dimensoes)
+    media = round(sum(d["pontuacao"] for d in dimensoes.values()) / len(dimensoes), 1)
     return {
         "dimensoes": dimensoes,
-        "geral": {"pontuacao": round(media, 1), "nivel": nivel_de_madurez(media)},
+        "geral": {"pontuacao": media, "nivel": nivel_de_madurez(media)},
     }

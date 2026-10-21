@@ -1,5 +1,5 @@
-"""Motor de recomendações: associa dimensões com nota baixa (< 75)
-a ações práticas do catálogo, ordenadas por prioridade (menor nota primeiro).
+"""Motor de recomendações: associa dimensões que ainda não estão no nível
+"Avanzado" a ações práticas do catálogo, ordenadas por prioridade (menor nota primeiro).
 Função pura, sem acesso a banco, para ser testada com pytest.
 """
 
@@ -102,8 +102,7 @@ def gerar_recomendacoes(resultado: dict, catalogo: list[dict] | None = None) -> 
         pontuacao = dados["pontuacao"]
         nivel = dados["nivel"]
 
-        # Dimensões no nível "Avanzado" (>= 75) não precisam de recomendações corretivas
-        if nivel == "Avanzado" or pontuacao >= 75.0:
+        if nivel == "Avanzado":
             continue
 
         prioridade = PRIORIDADE_POR_NIVEL.get(nivel, "Baja")
@@ -111,8 +110,9 @@ def gerar_recomendacoes(resultado: dict, catalogo: list[dict] | None = None) -> 
         for item in itens_catalogo:
             if item["categoria"] != categoria:
                 continue
-            # Inclui a ação se a pontuação da dimensão estiver abaixo da nota_maxima da recomendação
-            if pontuacao < item.get("nota_maxima", 75.0):
+            # Inclui a ação se a pontuação da dimensão estiver abaixo da nota_maxima da
+            # recomendação (sem nota_maxima, vale para qualquer dimensão não-Avanzado)
+            if pontuacao < item.get("nota_maxima", float("inf")):
                 recomendacoes_geradas.append({
                     "id": item["id"],
                     "categoria": categoria,
@@ -125,9 +125,8 @@ def gerar_recomendacoes(resultado: dict, catalogo: list[dict] | None = None) -> 
                     "ordem": item.get("ordem", 1),
                 })
 
-    # Ordena: 1º menor pontuação da dimensão, 2º ordem do item no catálogo, 3º nome da categoria
     recomendacoes_geradas.sort(
-        key=lambda r: (r["pontuacao_dimensao"], r["ordem"], r["categoria"])
+        key=lambda r: (r["pontuacao_dimensao"], r["categoria"], r["ordem"])
     )
 
     return recomendacoes_geradas

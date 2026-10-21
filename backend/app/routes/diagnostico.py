@@ -21,39 +21,48 @@ class RespostasIn(BaseModel):
 
 def _contexto(user):
     """Cliente com o token do usuário (RLS vale) + id da empresa dele."""
-    sb = get_supabase_for_user(user["token"])
-    emp = sb.table("empresas").select("id").eq("user_id", user["id"]).execute()
+    try:
+        sb = get_supabase_for_user(user["token"])
+        emp = sb.table("empresas").select("id").eq("user_id", user["id"]).execute()
+    except Exception as e:
+        raise HTTPException(503, f"Error de conexión con la base de dados: {e}")
     if not emp.data:
         raise HTTPException(400, "Primero debes registrar tu empresa")
     return sb, emp.data[0]["id"]
 
 
 def _perguntas_ativas(sb):
-    res = sb.table("perguntas").select("id, categoria, peso").eq("ativo", True).execute()
-    return res.data
+    try:
+        res = sb.table("perguntas").select("id, categoria, peso").eq("ativo", True).execute()
+        return res.data or []
+    except Exception as e:
+        raise HTTPException(503, f"Error al consultar preguntas: {e}")
 
 
 def _ultimo(sb, empresa_id, status):
-    res = (
-        sb.table("diagnostico")
-        .select("*")
-        .eq("empresa_id", empresa_id)
-        .eq("status", status)
-        .order("created_at", desc=True)
-        .limit(1)
-        .execute()
-    )
-    return res.data[0] if res.data else None
+    try:
+        res = (
+            sb.table("diagnostico")
+            .select("*")
+            .eq("empresa_id", empresa_id)
+            .eq("status", status)
+            .order("created_at", desc=True)
+            .limit(1)
+            .execute()
+        )
+        return res.data[0] if res.data else None
+    except Exception as e:
+        raise HTTPException(503, f"Error al consultar diagnóstico: {e}")
 
 
 @router.get("/rascunho")
 def obter_rascunho(user=Depends(get_current_user)):
     sb, empresa_id = _contexto(user)
     rascunho = _ultimo(sb, empresa_id, STATUS_RASCUNHO)
-    if rascunho:
+    if rascunho and rascunho.get("respostas"):
         return {"respostas": rascunho["respostas"]}
     concluido = _ultimo(sb, empresa_id, STATUS_COMPLETADO)
-    return {"respostas": concluido["respostas"] if concluido else {}}
+    return {"respostas": (concluido.get("respostas") or {}) if concluido else {}}
 
 
 @router.put("/rascunho")
@@ -104,11 +113,28 @@ def concluir(dados: RespostasIn, user=Depends(get_current_user)):
 @router.get("/resultado")
 def obter_resultado(user=Depends(get_current_user)):
     sb, empresa_id = _contexto(user)
+    perguntas = _perguntas_ativas(sb)
+
+    rascunho = _ultimo(sb, empresa_id, STATUS_RASCUNHO)
+    respostas_rascunho = (rascunho.get("respostas") or {}) if rascunho else {}
+    if rascunho and perguntas and len(respostas_rascunho) >= len(perguntas):
+        try:
+            resultado = calcular_diagnostico(perguntas, respostas_rascunho)
+            try:
+                sb.table("diagnostico").update({"status": STATUS_COMPLETADO}).eq("id", rascunho["id"]).execute()
+            except Exception:
+                pass
+            resultado["recomendacoes"] = gerar_recomendacoes(resultado)
+            return resultado
+        except RespostasInvalidas:
+            pass
+
     concluido = _ultimo(sb, empresa_id, STATUS_COMPLETADO)
-    if not concluido:
+    if not concluido or not concluido.get("respostas"):
         raise HTTPException(404, "Aún no hay un diagnóstico completado")
+
     try:
-        resultado = calcular_diagnostico(_perguntas_ativas(sb), concluido["respostas"])
+        resultado = calcular_diagnostico(perguntas, concluido["respostas"])
         resultado["recomendacoes"] = gerar_recomendacoes(resultado)
         return resultado
     except RespostasInvalidas as e:

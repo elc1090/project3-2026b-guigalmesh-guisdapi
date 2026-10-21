@@ -137,6 +137,7 @@ const finalizar = async () => {
       return
     }
 
+    limparDiagnostico()
     router.push('/resultado')
   } catch (e) {
     console.error('Erro de comunicação com o Back-end:', e)
