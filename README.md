@@ -9,7 +9,7 @@
 https://project3-2026b-guigalmesh-guisdapi.vercel.app/
 
 ## Desenvolvedores
-Guilherme de Cezaro Martini - Sistemas de Informação
+Guilherme de Cezaro Martini - Sistemas de Informação  
 Guilherme Serafini Dapieve - Sistemas de Informação
 
 ## Proposta
@@ -32,7 +32,7 @@ A ideia é desenvolver uma aplicação web voltada a auxiliar pequenas e médias
 | 13/10 | Guilherme D. | Cadastro da empresa: tabela empresas com user_id e RLS, rotas GET/POST/PUT /api/empresa, tela Empresa.vue e guard no router <br> Rotas do diagnóstico (rascunho, concluir, resultado) com validação do token e RLS na tabela diagnostico <br> Serviço de cálculo (nota por dimensão e nível de maturidade) com 21 testes pytest <br> Salvamento automático do rascunho, botão de finalizar e tela de resultado com gráficos radar e barras | Testar o fluxo completo no navegador <br> Regras de recomendação por dimensão (etapa 5) |
 | 14/10 | Guilherme D. | Implementadas regras de recomendação por dimensão <br> Melhorias no front-end e Home.vue | |
 | 15/10 | Guilherme D. | Otimização do layout para mobile | |
-| 21/10 | Guilherme D. | Implementação de pedidos de última hora dos cliente | |
+| 21/10 | Guilherme D. | Implementação de pedidos de última hora dos clientes | |
 | 21/10 | Guilherme M. | Implementação de otimização de cache utilizando o Plinia para site ficar mais responsivo | |
 |  |  |  |  |
 
@@ -42,7 +42,9 @@ Guilherme M.:
 Começamos o projeto fazendo protótipos sobre como funcionaria a integração com o supabase, eu nunca havia utilizado. Acabou que usar o supabase acaba abstraindo bastante a parte de autenticação e autorização (com o supabase Auth). Utilizando o supabase, acaba que não tem muita necessidade de termos o backend em Python, poderíamos fazer tudo pelo frontend.
 Utilizar o Vue foi uma experiência bem legal, muito mais fácil que o React e achei a sintaxe dos Single File Componentes muito melhor
 
-Guilherme D.
+Guilherme D.:
+Gostei de utilizar o Vue, achei que foi uma experiência mais fácil e intuitiva do que foi trabalhar com o React. Com o Supabase, começamos com pequenos protótipos para testar a ferramenta e como funcionava a autenticação. Com ele percebi que muito dessa parte de autenticação funciona "debaixo dos panos", o que de um lado facilitou na hora da implementação.  
+No geral, gostei de trabalhar com essas tecnologias e de perceber como elas se complementaram na construção dessa aplicação. Começar com testes menores e depois integrar as funcionalidades ao projeto foi importante para entender melhor como cada parte funciona e se comunica com as demais.
 
 ### Trechos de código
 
@@ -104,6 +106,9 @@ Guilherme M.:
 - Antigravity
 
 Guilherme D.:
+- VSCode
+- Gemini
+- Claude
 
 ## Refêrencias e créditos
 https://vuejs.org/tutorial/
