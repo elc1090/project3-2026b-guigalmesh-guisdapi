@@ -1,8 +1,9 @@
-import { ref } from 'vue'
 import { supabase } from './supabase'
+import { sessao } from './sessao'
+import { limparTodoCache } from './cache'
 import { limparDiagnostico } from '../composables/useDiagnostico'
 
-export const sessao = ref(null)
+export { sessao }
 
 export async function iniciarAuth() {
   const { data } = await supabase.auth.getSession()
@@ -16,4 +17,5 @@ export async function iniciarAuth() {
 export async function sair() {
   await supabase.auth.signOut()
   limparDiagnostico()
+  limparTodoCache()
 }

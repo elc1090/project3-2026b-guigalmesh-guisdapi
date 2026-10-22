@@ -2,7 +2,6 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { sessao, sair } from '../lib/auth'
-import { limparCacheEmpresa } from '../router'
 
 defineProps({
   aberto: {
@@ -24,7 +23,6 @@ const inicialUsuario = computed(() => nomeUsuario.value.charAt(0).toUpperCase())
 const fazerLogout = async () => {
   emit('fechar')
   await sair()
-  limparCacheEmpresa()
   router.push('/login')
 }
 </script>

@@ -1,29 +1,24 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { sessao } from '../lib/auth'
-import { apiFetch } from '../lib/api'
+import { useEmpresaStore } from '../stores/empresa'
+import { useResultadoStore } from '../stores/resultado'
 
-const empresa = ref(null)
-const ultimoResultado = ref(null)
-const carregando = ref(true)
+const empresaStore = useEmpresaStore()
+const resultadoStore = useResultadoStore()
+
+const empresa = computed(() => empresaStore.dado ?? null)
+const ultimoResultado = computed(() => resultadoStore.dado ?? null)
+// spinner só quando ainda não há nada em cache
+const carregando = computed(() => empresaStore.carregando || resultadoStore.carregando)
 
 const nomeUsuario = computed(() => {
   return sessao.value?.user?.user_metadata?.nome || 'bienvenido(a)'
 })
 
-onMounted(async () => {
-  try {
-    const [resEmp, resDiag] = await Promise.all([
-      apiFetch('/api/empresa'),
-      apiFetch('/api/diagnostico/resultado')
-    ])
-    if (resEmp.ok) empresa.value = await resEmp.json()
-    if (resDiag.ok) ultimoResultado.value = await resDiag.json()
-  } catch (e) {
-    console.error('Erro ao carregar resumo inicial:', e)
-  } finally {
-    carregando.value = false
-  }
+onMounted(() => {
+  empresaStore.carregar().catch((e) => console.error('Erro ao carregar empresa:', e))
+  resultadoStore.carregar().catch((e) => console.error('Erro ao carregar resultado:', e))
 })
 </script>
 

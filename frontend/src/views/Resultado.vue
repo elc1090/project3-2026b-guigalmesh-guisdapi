@@ -1,14 +1,17 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import Chart from 'chart.js/auto'
-import { apiFetch } from '../lib/api'
+import { sessaoInvalida } from '../lib/cache'
+import { useResultadoStore } from '../stores/resultado'
 
 const router = useRouter()
+const resultadoStore = useResultadoStore()
 
-const resultado = ref(null)
-const carregando = ref(true)
-const semDiagnostico = ref(false)
+const resultado = computed(() => resultadoStore.dado ?? null)
+// spinner só se nunca carregou o resultado (sem cache)
+const carregando = computed(() => resultadoStore.carregando)
+const semDiagnostico = computed(() => resultadoStore.dado === null)
 const erro = ref('')
 
 const radarCanvas = ref(null)
@@ -167,44 +170,33 @@ const desenharGraficos = () => {
 }
 
 onMounted(async () => {
-  try {
-    const response = await apiFetch('/api/diagnostico/resultado')
+  // resultado já em cache: desenha na hora (o canvas já está no DOM)
+  if (resultado.value) desenharGraficos()
 
-    if (response.status === 401 || response.status === 403) {
+  try {
+    await resultadoStore.carregar()
+  } catch (e) {
+    if (sessaoInvalida(e)) {
       router.push('/login')
       return
     }
-
-    if (response.status === 404) {
-      semDiagnostico.value = true
-      return
-    }
-
-    if (!response.ok) {
-      console.error('Erro do back-end:', await response.json().catch(() => null))
-      erro.value = 'No fue posible cargar el resultado. Inténtalo de nuevo.'
-      return
-    }
-
-    const dados = await response.json()
-
-    if (!dados || !dados.geral || !dados.dimensoes) {
-      semDiagnostico.value = true
-      return
-    }
-
-    resultado.value = dados
-  } catch (e) {
     console.error('Erro ao buscar resultado:', e)
-    erro.value = 'No se pudo conectar con el servidor.'
-  } finally {
-    carregando.value = false
+    if (resultadoStore.dado === undefined) {
+      erro.value = e?.status
+        ? 'No fue posible cargar el resultado. Inténtalo de nuevo.'
+        : 'No se pudo conectar con el servidor.'
+    }
   }
+})
 
-  if (resultado.value) {
-    await nextTick()
-    desenharGraficos()
+// redesenha quando o resultado chega pela rede (primeira busca ou revalidação em segundo plano)
+watch(resultado, async (novo) => {
+  if (!novo) {
+    destruirGraficos()
+    return
   }
+  await nextTick()
+  desenharGraficos()
 })
 
 onBeforeUnmount(() => {

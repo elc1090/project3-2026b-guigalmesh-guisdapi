@@ -1,13 +1,7 @@
 import { ref, watch, nextTick } from 'vue'
-import { supabase } from '../lib/supabase'
 import { apiFetch } from '../lib/api'
-
-const cachePerguntas = ref({
-    Gobernanza: [],
-    Social: [],
-    Ambiental: [],
-    Económica: []
-})
+import { usePerguntasStore } from '../stores/perguntas'
+import { useResultadoStore } from '../stores/resultado'
 
 const respostas = ref({})
 const statusSalvamento = ref('')
@@ -31,6 +25,9 @@ watch(respostas, () => {
         body: JSON.stringify({ respostas: respostas.value })
       })
       if (!res.ok) throw new Error('Falha ao guardar o rascunho')
+
+      // um rascunho completo vira resultado no back-end: revalida na próxima visita
+      useResultadoStore().invalidar()
 
       statusSalvamento.value = '✓ Guardado automáticamente'
       setTimeout(() => { statusSalvamento.value = '' }, 2000)
@@ -75,33 +72,22 @@ export function useDiagnostico() {
     const carregando = ref(false)
 
     const buscarPerguntas = async (categoriaNome) => {
-        // sem isso, dar F5 numa dimensão começaria vazio e sobrescreveria o rascunho salvo
-        try {
-            await carregarRascunho()
-        } catch (e) {
-            console.error('Erro ao carregar rascunho:', e)
-        }
+        const recurso = usePerguntasStore().porCategoria[categoriaNome]
+        // spinner só se as perguntas nunca foram carregadas (sem cache)
+        carregando.value = recurso.dado === undefined
 
-        if (cachePerguntas.value[categoriaNome].length > 0) {
-            return cachePerguntas.value[categoriaNome]
-        }
-        carregando.value = true
-
-        const { data, error } = await supabase
-            .from('perguntas')
-            .select('*')
-            .eq('categoria', categoriaNome)
-            .order('ordem', { ascending: true })
-
-        if(!error && data) {
-            cachePerguntas.value[categoriaNome] = data
-        } else {
-            console.error('Erro ao buscar perguntas:', error)
-        }
+        const [, perguntas] = await Promise.all([
+            // sem isso, dar F5 numa dimensão começaria vazio e sobrescreveria o rascunho salvo
+            carregarRascunho().catch((e) => console.error('Erro ao carregar rascunho:', e)),
+            recurso.carregar().catch((e) => {
+                console.error('Erro ao buscar perguntas:', e)
+                return []
+            })
+        ])
 
         carregando.value = false
 
-        return cachePerguntas.value[categoriaNome]
+        return perguntas ?? []
     }
 
     return {

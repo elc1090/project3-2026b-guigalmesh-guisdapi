@@ -1,7 +1,9 @@
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { apiFetch } from '../lib/api'
+import { sessaoInvalida } from '../lib/cache'
+import { useEmpresaStore } from '../stores/empresa'
 
 const router = useRouter()
 
@@ -29,46 +31,41 @@ const form = reactive({
   num_funcionarios: null
 })
 
-const dadosSalvos = reactive({
-  nome: '',
-  setor: '',
-  porte: '',
-  num_funcionarios: null
-})
+const VAZIO = { nome: '', setor: '', porte: '', num_funcionarios: null }
 
-const jaTemEmpresa = ref(false)
+const empresaStore = useEmpresaStore()
+// dados salvos vêm direto do cache (atualizam sozinhos quando a store revalida)
+const dadosSalvos = computed(() => empresaStore.dado || VAZIO)
+const jaTemEmpresa = computed(() => !!empresaStore.dado)
+// spinner só se nunca carregou a empresa (sem cache)
+const carregando = computed(() => empresaStore.carregando)
+
 const editando = ref(false)
-const carregando = ref(true)
 const salvando = ref(false)
 const erro = ref('')
 const mensagemSucesso = ref('')
 
 const rotuloPorte = computed(() => {
-  const encontrado = portes.find((p) => p.valor === dadosSalvos.porte)
-  return encontrado ? encontrado.rotulo : dadosSalvos.porte
+  const encontrado = portes.find((p) => p.valor === dadosSalvos.value.porte)
+  return encontrado ? encontrado.rotulo : dadosSalvos.value.porte
 })
 
-const sessaoInvalida = (response) => response.status === 401 || response.status === 403
-
-const sincronizarDados = (empresa) => {
+const preencherFormulario = (empresa) => {
   form.nome = empresa.nome
   form.setor = empresa.setor
   form.porte = empresa.porte
   form.num_funcionarios = empresa.num_funcionarios
-
-  dadosSalvos.nome = empresa.nome
-  dadosSalvos.setor = empresa.setor
-  dadosSalvos.porte = empresa.porte
-  dadosSalvos.num_funcionarios = empresa.num_funcionarios
 }
+
+// sem empresa cadastrada: abre direto o formulário de criação
+watch(() => empresaStore.dado, (empresa) => {
+  if (empresa === null) editando.value = true
+}, { immediate: true })
 
 const iniciarEdicao = () => {
   erro.value = ''
   mensagemSucesso.value = ''
-  form.nome = dadosSalvos.nome
-  form.setor = dadosSalvos.setor
-  form.porte = dadosSalvos.porte
-  form.num_funcionarios = dadosSalvos.num_funcionarios
+  preencherFormulario(dadosSalvos.value)
   editando.value = true
 }
 
@@ -79,26 +76,14 @@ const cancelarEdicao = () => {
 
 onMounted(async () => {
   try {
-    const response = await apiFetch('/api/empresa')
-    if (sessaoInvalida(response)) {
+    await empresaStore.carregar()
+  } catch (e) {
+    if (sessaoInvalida(e)) {
       router.push('/login')
       return
     }
-    if (response.ok) {
-      const empresa = await response.json()
-      if (empresa) {
-        sincronizarDados(empresa)
-        jaTemEmpresa.value = true
-        editando.value = false
-      } else {
-        editando.value = true
-      }
-    }
-  } catch (e) {
     console.error('Erro ao buscar empresa:', e)
-    erro.value = 'No se pudo conectar con el servidor.'
-  } finally {
-    carregando.value = false
+    if (empresaStore.dado === undefined) erro.value = 'No se pudo conectar con el servidor.'
   }
 })
 
@@ -140,8 +125,7 @@ const guardar = async () => {
     }
 
     const empresaAtualizada = await response.json()
-    sincronizarDados(empresaAtualizada)
-    jaTemEmpresa.value = true
+    empresaStore.definir(empresaAtualizada)
     editando.value = false
 
     if (eraPrimeiroCadastro) {

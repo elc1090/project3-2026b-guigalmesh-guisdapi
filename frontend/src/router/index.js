@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { supabase } from '../lib/supabase'
-import { apiFetch } from '../lib/api'
+import { sessao } from '../lib/sessao'
+import { useEmpresaStore } from '../stores/empresa'
 
 import DefaultLayout from '../layouts/DefaultLayout.vue'
 import DiagnosticoLayout from '../layouts/DiagnosticoLayout.vue'
@@ -11,12 +12,6 @@ import Login from '../views/Login.vue'
 import Home from '../views/Home.vue'
 import Empresa from '../views/Empresa.vue'
 import Resultado from '../views/Resultado.vue'
-
-let usuarioComEmpresaId = null
-
-export function limparCacheEmpresa() {
-  usuarioComEmpresaId = null
-}
 
 const routes = [
   {
@@ -84,11 +79,12 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   const { data } = await supabase.auth.getSession()
-  const sessao = data.session
-  const logado = !!sessao
+  const logado = !!data.session
 
-  if (!logado) {
-    usuarioComEmpresaId = null
+  // na primeira navegação o iniciarAuth() pode ainda não ter terminado;
+  // assim as stores já sabem de qual usuário é o cache
+  if (sessao.value?.access_token !== data.session?.access_token) {
+    sessao.value = data.session
   }
 
   if (to.meta.requerLogin && !logado) {
@@ -96,19 +92,14 @@ router.beforeEach(async (to) => {
   }
 
   if (to.meta.requerEmpresa && logado) {
-    if (usuarioComEmpresaId !== sessao.user.id) {
-      try {
-        const res = await apiFetch('/api/empresa')
-        if (res.ok) {
-          const empresa = await res.json()
-          if (empresa === null) {
-            return '/empresa'
-          }
-          usuarioComEmpresaId = sessao.user.id
-        }
-      } catch (e) {
-        console.error('Erro ao verificar empresa no router:', e)
+    try {
+      // vem do cache quando possível (revalida em segundo plano se estiver velho)
+      const empresa = await useEmpresaStore().carregar()
+      if (empresa === null) {
+        return '/empresa'
       }
+    } catch (e) {
+      console.error('Erro ao verificar empresa no router:', e)
     }
   }
 

@@ -74,7 +74,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { apiFetch } from '../../lib/api'
-import { supabase } from '../../lib/supabase'
+import { usePerguntasStore } from '../../stores/perguntas'
+import { useResultadoStore } from '../../stores/resultado'
 import { useDiagnostico, carregarRascunho, limparDiagnostico } from '../../composables/useDiagnostico'
 import CardCategory from '../../components/CardCategory.vue'
 import IconGobernanza from '../../components/ui/IconGobernanza.vue'
@@ -84,8 +85,10 @@ import IconSocial from '../../components/ui/IconSocial.vue'
 
 const router = useRouter()
 const { respostas } = useDiagnostico()
+const perguntasStore = usePerguntasStore()
+const resultadoStore = useResultadoStore()
 
-const totalPerguntas = ref(0)
+const totalPerguntas = computed(() => perguntasStore.total.dado ?? 0)
 const finalizando = ref(false)
 const erro = ref('')
 
@@ -96,19 +99,10 @@ const porcentagemProgresso = computed(() => {
   return Math.min(100, Math.round((respondidas.value / totalPerguntas.value) * 100))
 })
 
-onMounted(async () => {
-  try {
-    await carregarRascunho()
-  } catch (e) {
-    console.error('Erro ao carregar rascunho:', e)
-  }
-
-  const { count, error } = await supabase
-    .from('perguntas')
-    .select('id', { count: 'exact', head: true })
-    .eq('ativo', true)
-
-  if (!error) totalPerguntas.value = count ?? 0
+onMounted(() => {
+  // os dois em paralelo; o total vem do cache se já foi carregado antes
+  carregarRascunho().catch((e) => console.error('Erro ao carregar rascunho:', e))
+  perguntasStore.total.carregar().catch((e) => console.error('Erro ao contar perguntas:', e))
 })
 
 const finalizar = async () => {
@@ -137,6 +131,8 @@ const finalizar = async () => {
       return
     }
 
+    // a resposta já é o resultado: a tela de resultados abre sem nova requisição
+    resultadoStore.definirResultado(await response.json().catch(() => null))
     limparDiagnostico()
     router.push('/resultado')
   } catch (e) {
