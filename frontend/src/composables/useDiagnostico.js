@@ -1,7 +1,6 @@
 import { ref, watch, nextTick } from 'vue'
 import { apiFetch } from '../lib/api'
 import { usePerguntasStore } from '../stores/perguntas'
-import { useResultadoStore } from '../stores/resultado'
 
 const respostas = ref({})
 const statusSalvamento = ref('')
@@ -25,9 +24,6 @@ watch(respostas, () => {
         body: JSON.stringify({ respostas: respostas.value })
       })
       if (!res.ok) throw new Error('Falha ao guardar o rascunho')
-
-      // um rascunho completo vira resultado no back-end: revalida na próxima visita
-      useResultadoStore().invalidar()
 
       statusSalvamento.value = '✓ Guardado automáticamente'
       setTimeout(() => { statusSalvamento.value = '' }, 2000)

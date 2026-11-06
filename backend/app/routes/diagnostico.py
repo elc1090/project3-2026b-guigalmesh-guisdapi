@@ -112,29 +112,15 @@ def concluir(dados: RespostasIn, user=Depends(get_current_user)):
 
 @router.get("/resultado")
 def obter_resultado(user=Depends(get_current_user)):
+    """Só leitura: devolve o último diagnóstico concluído (quem conclui é o POST /concluir)."""
     sb, empresa_id = _contexto(user)
-    perguntas = _perguntas_ativas(sb)
-
-    rascunho = _ultimo(sb, empresa_id, STATUS_RASCUNHO)
-    respostas_rascunho = (rascunho.get("respostas") or {}) if rascunho else {}
-    if rascunho and perguntas and len(respostas_rascunho) >= len(perguntas):
-        try:
-            resultado = calcular_diagnostico(perguntas, respostas_rascunho)
-            try:
-                sb.table("diagnostico").update({"status": STATUS_COMPLETADO}).eq("id", rascunho["id"]).execute()
-            except Exception:
-                pass
-            resultado["recomendacoes"] = gerar_recomendacoes(resultado)
-            return resultado
-        except RespostasInvalidas:
-            pass
 
     concluido = _ultimo(sb, empresa_id, STATUS_COMPLETADO)
     if not concluido or not concluido.get("respostas"):
         raise HTTPException(404, "Aún no hay un diagnóstico completado")
 
     try:
-        resultado = calcular_diagnostico(perguntas, concluido["respostas"])
+        resultado = calcular_diagnostico(_perguntas_ativas(sb), concluido["respostas"])
         resultado["recomendacoes"] = gerar_recomendacoes(resultado)
         return resultado
     except RespostasInvalidas as e:

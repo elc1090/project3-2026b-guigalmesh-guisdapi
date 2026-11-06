@@ -63,7 +63,7 @@ const valorSelecionado = computed({
         v-model="valorSelecionado"
         class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-deeppurple focus:border-deeppurple outline-none"
         rows="3"
-        placeholder="Escreva sua resposta..."
+        placeholder="Escribe tu respuesta..."
       ></textarea>
     </div>
 

@@ -3,9 +3,12 @@ import { computed, onMounted } from 'vue'
 import { sessao } from '../lib/auth'
 import { useEmpresaStore } from '../stores/empresa'
 import { useResultadoStore } from '../stores/resultado'
+import { usePerguntasStore } from '../stores/perguntas'
 
 const empresaStore = useEmpresaStore()
 const resultadoStore = useResultadoStore()
+const perguntasStore = usePerguntasStore()
+const totalPerguntas = computed(() => perguntasStore.total.dado ?? 0)
 
 const empresa = computed(() => empresaStore.dado ?? null)
 const ultimoResultado = computed(() => resultadoStore.dado ?? null)
@@ -19,6 +22,7 @@ const nomeUsuario = computed(() => {
 onMounted(() => {
   empresaStore.carregar().catch((e) => console.error('Erro ao carregar empresa:', e))
   resultadoStore.carregar().catch((e) => console.error('Erro ao carregar resultado:', e))
+  perguntasStore.total.carregar().catch((e) => console.error('Erro ao contar perguntas:', e))
 })
 </script>
 
@@ -84,7 +88,7 @@ onMounted(() => {
             </div>
             <h2 class="text-lg font-bold text-slate-800">Cuestionario diagnóstico</h2>
             <p class="text-sm text-slate-500 mt-2">
-              Responde las 20 preguntas distribuidas entre Gobernanza, Ambiental, Social y Económica.
+              Responde {{ totalPerguntas ? `las ${totalPerguntas}` : 'las' }} preguntas distribuidas entre Gobernanza, Ambiental, Social y Económica.
             </p>
           </div>
           <router-link to="/diagnostico" class="text-sm font-bold text-emerald-800 hover:underline mt-6 inline-block">

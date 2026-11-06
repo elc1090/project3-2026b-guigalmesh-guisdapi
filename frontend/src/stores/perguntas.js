@@ -16,6 +16,7 @@ export const usePerguntasStore = defineStore('perguntas', () => {
           .from('perguntas')
           .select('*')
           .eq('categoria', categoria)
+          .eq('ativo', true)
           .order('ordem', { ascending: true })
         if (error) throw error
         return data ?? []
