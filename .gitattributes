@@ -1,0 +1,5 @@
+# Normaliza fim de linha: LF no repositório, nativo (CRLF no Windows) na pasta de trabalho
+* text=auto
+
+*.png binary
+*.gif binary

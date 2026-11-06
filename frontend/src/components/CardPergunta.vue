@@ -41,7 +41,7 @@ const valorSelecionado = computed({
         class="flex items-center p-4 rounded-xl border cursor-pointer transition-all duration-200"
         :class="[
           valorSelecionado === opcao.valor
-            ? 'border-emerald-600 bg-emerald-50 text-deeppurple shadow-sm'
+            ? 'border-emerald-600 bg-emerald-50 text-emerald-900 shadow-sm'
             : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700'
         ]"
       >
@@ -50,7 +50,7 @@ const valorSelecionado = computed({
           :name="questao.id"
           :value="opcao.valor"
           v-model="valorSelecionado"
-          class="w-5 h-5 accent-emerald-700 text-deeppurple focus:ring-deeppurple border-slate-300"
+          class="w-5 h-5 accent-emerald-700 border-slate-300"
         />
         <span class="ml-3 font-medium">{{ opcao.label }}</span>
       </label>
@@ -61,7 +61,7 @@ const valorSelecionado = computed({
     <div v-else-if="questao.tipoResposta === 'text'">
       <textarea
         v-model="valorSelecionado"
-        class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-deeppurple focus:border-deeppurple outline-none"
+        class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none"
         rows="3"
         placeholder="Escribe tu respuesta..."
       ></textarea>

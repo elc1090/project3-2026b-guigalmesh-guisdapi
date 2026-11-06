@@ -4,7 +4,6 @@ import { sessao } from '../lib/sessao'
 import { useEmpresaStore } from '../stores/empresa'
 
 import DefaultLayout from '../layouts/DefaultLayout.vue'
-import DiagnosticoLayout from '../layouts/DiagnosticoLayout.vue'
 import DiagnosticoMenu from '../views/Diagnostico/DiagnosticoMenu.vue'
 import DimensaoView from '../views/Diagnostico/DimensaoView.vue'
 import SignIn from '../views/SignIn.vue'
@@ -30,7 +29,6 @@ const routes = [
     children: [
       {
         path: 'diagnostico',
-        component: DiagnosticoLayout,
         meta: { requerLogin: true, requerEmpresa: true },
         children: [
           {
