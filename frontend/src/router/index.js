@@ -5,13 +5,14 @@ import { useEmpresaStore } from '../stores/empresa'
 import { SLUGS_DIMENSOES } from '../constants/dimensoes'
 
 import DefaultLayout from '../layouts/DefaultLayout.vue'
-import DiagnosticoMenu from '../views/Diagnostico/DiagnosticoMenu.vue'
-import DimensaoView from '../views/Diagnostico/DimensaoView.vue'
-import SignIn from '../views/SignIn.vue'
-import Login from '../views/Login.vue'
-import Home from '../views/Home.vue'
-import Empresa from '../views/Empresa.vue'
-import Resultado from '../views/Resultado.vue'
+// Telas carregadas sob demanda: cada uma vira um arquivo JS separado no build
+const DiagnosticoMenu = () => import('../views/Diagnostico/DiagnosticoMenu.vue')
+const DimensaoView = () => import('../views/Diagnostico/DimensaoView.vue')
+const SignIn = () => import('../views/SignIn.vue')
+const Login = () => import('../views/Login.vue')
+const Home = () => import('../views/Home.vue')
+const Empresa = () => import('../views/Empresa.vue')
+const Resultado = () => import('../views/Resultado.vue')
 
 const routes = [
   {

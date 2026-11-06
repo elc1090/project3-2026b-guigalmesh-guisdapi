@@ -64,7 +64,7 @@ const { respostas } = useDiagnostico()
 const perguntasStore = usePerguntasStore()
 const resultadoStore = useResultadoStore()
 
-const totalPerguntas = computed(() => perguntasStore.total.dado ?? 0)
+const totalPerguntas = computed(() => perguntasStore.total)
 const finalizando = ref(false)
 const erro = ref('')
 
@@ -78,7 +78,7 @@ const porcentagemProgresso = computed(() => {
 onMounted(() => {
   // os dois em paralelo; o total vem do cache se já foi carregado antes
   carregarRascunho().catch((e) => console.error('Erro ao carregar rascunho:', e))
-  perguntasStore.total.carregar().catch((e) => console.error('Erro ao contar perguntas:', e))
+  perguntasStore.carregar().catch((e) => console.error('Erro ao contar perguntas:', e))
 })
 
 const finalizar = async () => {

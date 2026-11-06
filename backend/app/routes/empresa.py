@@ -1,3 +1,4 @@
+import logging
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -6,6 +7,7 @@ from pydantic import BaseModel, Field
 from app.auth import get_current_user
 from app.database import get_supabase_for_user
 
+log = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/empresa", tags=["empresa"])
 
 
@@ -33,8 +35,9 @@ def criar_empresa(dados: EmpresaIn, user=Depends(get_current_user)):
         res = sb.table("empresas").insert(
             {**dados.model_dump(), "user_id": user["id"]}
         ).execute()
-    except Exception as e:
-        raise HTTPException(500, f"Error al guardar: {e}")
+    except Exception:
+        log.exception("Erro ao salvar empresa")
+        raise HTTPException(500, "Error al guardar")
     return res.data[0]
 
 

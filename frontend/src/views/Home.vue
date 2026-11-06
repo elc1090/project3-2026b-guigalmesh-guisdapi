@@ -9,7 +9,7 @@ import LoadingSpinner from '../components/ui/LoadingSpinner.vue'
 const empresaStore = useEmpresaStore()
 const resultadoStore = useResultadoStore()
 const perguntasStore = usePerguntasStore()
-const totalPerguntas = computed(() => perguntasStore.total.dado ?? 0)
+const totalPerguntas = computed(() => perguntasStore.total)
 
 const empresa = computed(() => empresaStore.dado ?? null)
 const ultimoResultado = computed(() => resultadoStore.dado ?? null)
@@ -23,7 +23,7 @@ const nomeUsuario = computed(() => {
 onMounted(() => {
   empresaStore.carregar().catch((e) => console.error('Erro ao carregar empresa:', e))
   resultadoStore.carregar().catch((e) => console.error('Erro ao carregar resultado:', e))
-  perguntasStore.total.carregar().catch((e) => console.error('Erro ao contar perguntas:', e))
+  perguntasStore.carregar().catch((e) => console.error('Erro ao contar perguntas:', e))
 })
 </script>
 

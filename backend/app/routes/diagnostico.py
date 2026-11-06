@@ -1,3 +1,6 @@
+import logging
+import time
+
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from app.auth import get_current_user
@@ -9,10 +12,16 @@ from app.services.calculo import (
 )
 from app.services.recomendacoes import gerar_recomendacoes
 
+log = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/diagnostico", tags=["diagnostico"])
 
 STATUS_RASCUNHO = "rascunho"
 STATUS_COMPLETADO = "completado"
+
+# As perguntas quase nunca mudam: ficam em memória por alguns minutos.
+# Depois de rodar o seed_perguntas, reinicie o back-end (ou espere o tempo abaixo).
+CACHE_PERGUNTAS_SEGUNDOS = 300
+_cache_perguntas = {"dados": None, "em": 0.0}
 
 
 class RespostasIn(BaseModel):
@@ -24,19 +33,25 @@ def get_contexto(user=Depends(get_current_user)):
     try:
         sb = get_supabase_for_user(user["token"])
         emp = sb.table("empresas").select("id").eq("user_id", user["id"]).execute()
-    except Exception as e:
-        raise HTTPException(503, f"Error de conexión con la base de dados: {e}")
+    except Exception:
+        log.exception("Erro ao buscar a empresa do usuário")
+        raise HTTPException(503, "Error de conexión con la base de datos")
     if not emp.data:
         raise HTTPException(400, "Primero debes registrar tu empresa")
     return sb, emp.data[0]["id"]
 
 
 def _perguntas_ativas(sb):
+    agora = time.monotonic()
+    if _cache_perguntas["dados"] is not None and agora - _cache_perguntas["em"] < CACHE_PERGUNTAS_SEGUNDOS:
+        return _cache_perguntas["dados"]
     try:
         res = sb.table("perguntas").select("id, categoria, peso").eq("ativo", True).execute()
-        return res.data or []
-    except Exception as e:
-        raise HTTPException(503, f"Error al consultar preguntas: {e}")
+    except Exception:
+        log.exception("Erro ao consultar perguntas")
+        raise HTTPException(503, "Error al consultar preguntas")
+    _cache_perguntas.update(dados=res.data or [], em=agora)
+    return _cache_perguntas["dados"]
 
 
 def _ultimo(sb, empresa_id, status):
@@ -51,8 +66,9 @@ def _ultimo(sb, empresa_id, status):
             .execute()
         )
         return res.data[0] if res.data else None
-    except Exception as e:
-        raise HTTPException(503, f"Error al consultar diagnóstico: {e}")
+    except Exception:
+        log.exception("Erro ao consultar diagnóstico")
+        raise HTTPException(503, "Error al consultar diagnóstico")
 
 
 @router.get("/rascunho")
@@ -83,8 +99,9 @@ def guardar_rascunho(dados: RespostasIn, ctx=Depends(get_contexto)):
                 "respostas": dados.respostas,
                 "status": STATUS_RASCUNHO,
             }).execute()
-    except Exception as e:
-        raise HTTPException(500, f"Error al guardar: {e}")
+    except Exception:
+        log.exception("Erro ao salvar diagnóstico")
+        raise HTTPException(500, "Error al guardar")
     return {"mensagem": "Borrador guardado"}
 
 
@@ -103,8 +120,9 @@ def concluir(dados: RespostasIn, ctx=Depends(get_contexto)):
             sb.table("diagnostico").update(registro).eq("id", rascunho["id"]).execute()
         else:
             sb.table("diagnostico").insert({**registro, "empresa_id": empresa_id}).execute()
-    except Exception as e:
-        raise HTTPException(500, f"Error al guardar: {e}")
+    except Exception:
+        log.exception("Erro ao salvar diagnóstico")
+        raise HTTPException(500, "Error al guardar")
 
     resultado["recomendacoes"] = gerar_recomendacoes(resultado)
     return resultado

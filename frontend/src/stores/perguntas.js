@@ -1,40 +1,27 @@
+import { computed } from 'vue'
 import { defineStore } from 'pinia'
 import { supabase } from '../lib/supabase'
 import { criarRecurso, HORA } from '../lib/cache'
-import { NOMES_DIMENSOES } from '../constants/dimensoes'
 
-// As perguntas quase nunca mudam: TTL longo, mas ainda revalida em segundo plano
+// Uma consulta só traz todas as perguntas ativas; o agrupamento por dimensão
+// e a contagem saem daqui. As perguntas quase nunca mudam: TTL longo.
 export const usePerguntasStore = defineStore('perguntas', () => {
-  const porCategoria = Object.fromEntries(NOMES_DIMENSOES.map((categoria) => [
-    categoria,
-    criarRecurso({
-      chave: `perguntas:${categoria}`,
-      ttl: HORA,
-      buscar: async () => {
-        const { data, error } = await supabase
-          .from('perguntas')
-          .select('*')
-          .eq('categoria', categoria)
-          .eq('ativo', true)
-          .order('ordem', { ascending: true })
-        if (error) throw error
-        return data ?? []
-      }
-    })
-  ]))
-
-  const total = criarRecurso({
-    chave: 'perguntas:total',
+  const recurso = criarRecurso({
+    chave: 'perguntas',
     ttl: HORA,
     buscar: async () => {
-      const { count, error } = await supabase
+      const { data, error } = await supabase
         .from('perguntas')
-        .select('id', { count: 'exact', head: true })
+        .select('*')
         .eq('ativo', true)
+        .order('ordem', { ascending: true })
       if (error) throw error
-      return count ?? 0
+      return data ?? []
     }
   })
 
-  return { porCategoria, total }
+  const total = computed(() => recurso.dado.value?.length ?? 0)
+  const daCategoria = (categoria) => (recurso.dado.value ?? []).filter((p) => p.categoria === categoria)
+
+  return { ...recurso, total, daCategoria }
 })

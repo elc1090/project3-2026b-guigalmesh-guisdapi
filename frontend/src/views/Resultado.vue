@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import Chart from 'chart.js/auto'
+import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip } from 'chart.js'
 import { sessaoInvalida } from '../lib/cache'
 import { useResultadoStore } from '../stores/resultado'
 import Icone from '../components/ui/Icone.vue'
@@ -9,6 +9,9 @@ import LoadingSpinner from '../components/ui/LoadingSpinner.vue'
 import Alerta from '../components/ui/Alerta.vue'
 import { DIMENSOES, dimensaoPorNome } from '../constants/dimensoes'
 import { ICONE_GRAFICO, ICONE_LAMPADA, ICONE_SETA, ICONE_FOLHA } from '../constants/icones'
+
+// registra só o necessário para o radar ('chart.js/auto' trazia todos os tipos de gráfico)
+Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip)
 
 const router = useRouter()
 const resultadoStore = useResultadoStore()

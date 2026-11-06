@@ -5,6 +5,8 @@ import { usePerguntasStore } from '../stores/perguntas'
 const respostas = ref({})
 const statusSalvamento = ref('')
 let timeoutId = null
+// espera o usuário parar de clicar antes de salvar (cada salvamento é uma requisição)
+const ESPERA_SALVAMENTO_MS = 1000
 
 // evita que carregar o rascunho dispare um salvamento logo em seguida
 let restaurando = false
@@ -31,7 +33,7 @@ watch(respostas, () => {
       console.error(e)
       statusSalvamento.value = 'Error al guardar.'
     }
-  }, 500)
+  }, ESPERA_SALVAMENTO_MS)
 
 }, { deep: true })
 
@@ -68,22 +70,19 @@ export function useDiagnostico() {
     const carregando = ref(false)
 
     const buscarPerguntas = async (categoriaNome) => {
-        const recurso = usePerguntasStore().porCategoria[categoriaNome]
+        const perguntasStore = usePerguntasStore()
         // spinner só se as perguntas nunca foram carregadas (sem cache)
-        carregando.value = recurso.dado === undefined
+        carregando.value = perguntasStore.dado === undefined
 
-        const [, perguntas] = await Promise.all([
+        await Promise.all([
             // sem isso, dar F5 numa dimensão começaria vazio e sobrescreveria o rascunho salvo
             carregarRascunho().catch((e) => console.error('Erro ao carregar rascunho:', e)),
-            recurso.carregar().catch((e) => {
-                console.error('Erro ao buscar perguntas:', e)
-                return []
-            })
+            perguntasStore.carregar().catch((e) => console.error('Erro ao buscar perguntas:', e))
         ])
 
         carregando.value = false
 
-        return perguntas ?? []
+        return perguntasStore.daCategoria(categoriaNome)
     }
 
     return {
