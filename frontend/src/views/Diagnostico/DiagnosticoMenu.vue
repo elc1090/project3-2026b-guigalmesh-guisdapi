@@ -9,15 +9,16 @@
     </div>
 
     <!-- Grid Responsivo das 4 Dimensões -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 flex-1 w-full">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 flex-1 w-full">
       <CardCategory
         v-for="dim in DIMENSOES"
         :key="dim.slug"
         :title="dim.nome"
         :description="dim.resumo"
         :route="`/diagnostico/${dim.slug}`"
+        v-bind="progressoDe(dim.nome)"
       >
-        <Icone :d="dim.icone" :stroke-width="1.25" class="w-14 h-14 sm:w-20 sm:h-20 text-emerald-800" />
+        <Icone :d="dim.icone" :stroke-width="1.25" class="w-9 h-9 sm:w-20 sm:h-20 text-emerald-800" />
       </CardCategory>
     </div>
 
@@ -69,6 +70,15 @@ const finalizando = ref(false)
 const erro = ref('')
 
 const respondidas = computed(() => Object.keys(respostas.value).length)
+
+// { respondidas, total } de uma dimensão, para o card mostrar "3/5" e a barrinha
+const progressoDe = (categoria) => {
+  const perguntas = perguntasStore.daCategoria(categoria)
+  return {
+    total: perguntas.length,
+    respondidas: perguntas.filter((p) => respostas.value[p.id] != null).length
+  }
+}
 const completo = computed(() => totalPerguntas.value > 0 && respondidas.value >= totalPerguntas.value)
 const porcentagemProgresso = computed(() => {
   if (totalPerguntas.value === 0) return 0
