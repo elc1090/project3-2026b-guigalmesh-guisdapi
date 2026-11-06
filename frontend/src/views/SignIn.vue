@@ -2,7 +2,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '../lib/supabase'
-import BackgroundWaves from '../components/ui/BackgroundWaves.vue'
+import AuthLayout from '../layouts/AuthLayout.vue'
+import Alerta from '../components/ui/Alerta.vue'
 
 const router = useRouter()
 
@@ -62,72 +63,38 @@ const cadastrarUsuario = async () => {
 </script>
 
 <template>
-  <div class="relative min-h-dvh bg-emerald-800 flex items-center justify-center p-4 overflow-hidden">
-    <BackgroundWaves class="absolute inset-0 pointer-events-none select-none opacity-80" />
-
-    <div class="relative z-10 max-w-md w-full bg-white rounded-3xl shadow-2xl p-6 sm:p-8 md:p-10">
-      <div class="text-center mb-8">
-        <span class="inline-block px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold tracking-widest uppercase mb-3">
-          VERDE IMPULSO
-        </span>
-        <h2 class="text-2xl font-bold text-slate-800">Crear cuenta</h2>
-        <p class="text-sm text-slate-500 mt-1">Comienza a medir la sostenibilidad de tu empresa</p>
+  <AuthLayout titulo="Crear cuenta" subtitulo="Comienza a medir la sostenibilidad de tu empresa">
+    <form class="space-y-5" @submit.prevent="cadastrarUsuario">
+      <div>
+        <label for="username" class="rotulo">Nombre completo</label>
+        <input v-model="nome" type="text" id="username" autocomplete="name" placeholder="Tu nombre" class="campo">
       </div>
 
-      <form class="space-y-5" @submit.prevent="cadastrarUsuario">
-        <div>
-          <label for="username" class="block text-sm font-medium text-slate-700 mb-1">Nombre completo</label>
-          <input
-            v-model="nome"
-            type="text"
-            id="username"
-            placeholder="Tu nombre"
-            class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition"
-          >
-        </div>
+      <div>
+        <label for="email" class="rotulo">Correo electrónico</label>
+        <input v-model="email" type="email" id="email" autocomplete="email" placeholder="tu@empresa.com" class="campo">
+      </div>
 
-        <div>
-          <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Correo electrónico</label>
-          <input
-            v-model="email"
-            type="email"
-            id="email"
-            placeholder="tu@empresa.com"
-            class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition"
-          >
-        </div>
+      <div>
+        <label for="password" class="rotulo">Contraseña</label>
+        <input v-model="senha" type="password" id="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres" class="campo">
+      </div>
 
-        <div>
-          <label for="password" class="block text-sm font-medium text-slate-700 mb-1">Contraseña</label>
-          <input
-            v-model="senha"
-            type="password"
-            id="password"
-            placeholder="Mínimo 6 caracteres"
-            class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition"
-          >
-        </div>
+      <Alerta v-if="erro">{{ erro }}</Alerta>
+      <Alerta v-if="sucesso" tipo="sucesso">{{ sucesso }}</Alerta>
 
-        <p v-if="erro" class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-          {{ erro }}
-        </p>
-        <p v-if="sucesso" class="text-sm text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
-          {{ sucesso }}
-        </p>
+      <button
+        type="submit"
+        :disabled="carregando"
+        class="w-full bg-emerald-800 hover:bg-emerald-950 disabled:opacity-60 text-white font-bold py-3 rounded-xl transition shadow-lg cursor-pointer"
+      >
+        {{ carregando ? 'Creando cuenta...' : 'Registrarse' }}
+      </button>
+    </form>
 
-        <button
-          type="submit"
-          :disabled="carregando"
-          class="w-full bg-emerald-800 hover:bg-emerald-950 disabled:opacity-60 text-white font-bold py-3 rounded-xl transition shadow-lg cursor-pointer"
-        >
-          {{ carregando ? 'Creando cuenta...' : 'Registrarse' }}
-        </button>
-      </form>
-
-      <p class="text-sm text-slate-600 text-center mt-6">
-        ¿Ya tienes una cuenta?
-        <router-link to="/login" class="text-emerald-800 hover:underline font-bold">Inicia sesión</router-link>
-      </p>
-    </div>
-  </div>
+    <template #rodape>
+      ¿Ya tienes una cuenta?
+      <router-link to="/login" class="text-emerald-800 hover:underline font-bold">Inicia sesión</router-link>
+    </template>
+  </AuthLayout>
 </template>

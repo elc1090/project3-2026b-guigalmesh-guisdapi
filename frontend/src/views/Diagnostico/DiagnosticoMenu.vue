@@ -11,35 +11,13 @@
     <!-- Grid Responsivo das 4 Dimensões -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 flex-1 w-full">
       <CardCategory
-        title="Gobernanza"
-        description="Ética, transparencia, toma de decisiones y gestión de reclamos."
-        route="/diagnostico/gobernanza"
+        v-for="dim in DIMENSOES"
+        :key="dim.slug"
+        :title="dim.nome"
+        :description="dim.resumo"
+        :route="`/diagnostico/${dim.slug}`"
       >
-        <IconGobernanza class="w-14 h-14 sm:w-20 sm:h-20 stroke-emerald-800" />
-      </CardCategory>
-
-      <CardCategory
-        title="Ambiental"
-        description="Impacto ecológico, emisiones, recursos y diseño sostenible."
-        route="/diagnostico/ambiental"
-      >
-        <IconAmbiental class="w-14 h-14 sm:w-20 sm:h-20 stroke-emerald-800" />
-      </CardCategory>
-
-      <CardCategory
-        title="Social"
-        description="Bienestar laboral, conciliación, prevención de acoso y participación."
-        route="/diagnostico/social"
-      >
-        <IconSocial class="w-14 h-14 sm:w-20 sm:h-20 stroke-emerald-800" />
-      </CardCategory>
-
-      <CardCategory
-        title="Económica"
-        description="Metas de mediano plazo, gestión de riesgos, innovación y continuidad."
-        route="/diagnostico/economica"
-      >
-        <IconEconomica class="w-14 h-14 sm:w-20 sm:h-20 stroke-emerald-800" />
+        <Icone :d="dim.icone" :stroke-width="1.25" class="w-14 h-14 sm:w-20 sm:h-20 text-emerald-800" />
       </CardCategory>
     </div>
 
@@ -78,10 +56,8 @@ import { usePerguntasStore } from '../../stores/perguntas'
 import { useResultadoStore } from '../../stores/resultado'
 import { useDiagnostico, carregarRascunho, limparDiagnostico } from '../../composables/useDiagnostico'
 import CardCategory from '../../components/CardCategory.vue'
-import IconGobernanza from '../../components/ui/IconGobernanza.vue'
-import IconEconomica from '../../components/ui/IconEconomica.vue'
-import IconAmbiental from '../../components/ui/IconAmbiental.vue'
-import IconSocial from '../../components/ui/IconSocial.vue'
+import Icone from '../../components/ui/Icone.vue'
+import { DIMENSOES } from '../../constants/dimensoes'
 
 const router = useRouter()
 const { respostas } = useDiagnostico()

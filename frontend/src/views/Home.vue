@@ -4,6 +4,7 @@ import { sessao } from '../lib/auth'
 import { useEmpresaStore } from '../stores/empresa'
 import { useResultadoStore } from '../stores/resultado'
 import { usePerguntasStore } from '../stores/perguntas'
+import LoadingSpinner from '../components/ui/LoadingSpinner.vue'
 
 const empresaStore = useEmpresaStore()
 const resultadoStore = useResultadoStore()
@@ -44,10 +45,7 @@ onMounted(() => {
       </router-link>
     </div>
 
-    <div v-if="carregando" class="flex justify-center items-center py-12">
-      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-800"></div>
-      <span class="ml-3 text-slate-500 font-medium">Cargando información...</span>
-    </div>
+    <LoadingSpinner v-if="carregando" texto="Cargando información..." />
 
     <template v-else>
       <!-- Jornada em 3 Passos -->

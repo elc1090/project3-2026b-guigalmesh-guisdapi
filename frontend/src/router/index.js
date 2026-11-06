@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { supabase } from '../lib/supabase'
 import { sessao } from '../lib/sessao'
 import { useEmpresaStore } from '../stores/empresa'
+import { SLUGS_DIMENSOES } from '../constants/dimensoes'
 
 import DefaultLayout from '../layouts/DefaultLayout.vue'
 import DiagnosticoMenu from '../views/Diagnostico/DiagnosticoMenu.vue'
@@ -36,7 +37,7 @@ const routes = [
             component: DiagnosticoMenu
           },
           {
-            path: ':dimensao(gobernanza|social|economica|ambiental)',
+            path: `:dimensao(${SLUGS_DIMENSOES})`,
             component: DimensaoView
           }
         ]

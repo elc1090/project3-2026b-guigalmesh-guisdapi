@@ -61,7 +61,7 @@ const valorSelecionado = computed({
     <div v-else-if="questao.tipoResposta === 'text'">
       <textarea
         v-model="valorSelecionado"
-        class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none"
+        class="campo"
         rows="3"
         placeholder="Escribe tu respuesta..."
       ></textarea>

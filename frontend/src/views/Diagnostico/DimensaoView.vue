@@ -2,23 +2,19 @@
 import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import CardPergunta from '../../components/CardPergunta.vue'
+import LoadingSpinner from '../../components/ui/LoadingSpinner.vue'
+import { DIMENSOES, dimensaoPorSlug } from '../../constants/dimensoes'
 import { useDiagnostico } from '../../composables/useDiagnostico.js'
 
 const route = useRoute()
 const { respostas, statusSalvamento, carregando, buscarPerguntas } = useDiagnostico()
 
-const MAPA_CATEGORIAS = {
-  ambiental: { categoria: 'Ambiental', titulo: 'Ambiental' },
-  social: { categoria: 'Social', titulo: 'Social' },
-  economica: { categoria: 'Económica', titulo: 'Económica' },
-  gobernanza: { categoria: 'Gobernanza', titulo: 'Gobernanza' }
-}
-
-const configAtual = computed(() => MAPA_CATEGORIAS[route.params.dimensao] || MAPA_CATEGORIAS.ambiental)
+// o router só aceita slugs válidos, então o fallback é só por segurança
+const dimensao = computed(() => dimensaoPorSlug(route.params.dimensao) ?? DIMENSOES[0])
 const perguntasView = ref([])
 
 watch(
-  () => configAtual.value.categoria,
+  () => dimensao.value.nome,
   async (novaCategoria) => {
     perguntasView.value = await buscarPerguntas(novaCategoria)
   },
@@ -30,7 +26,7 @@ watch(
   <div class="max-w-3xl mx-auto py-8 relative">
     <div class="mb-6 sm:mb-8 flex flex-wrap items-start justify-between gap-3">
       <div>
-        <h1 class="text-3xl font-bold text-slate-800">{{ configAtual.titulo }}</h1>
+        <h1 class="text-3xl font-bold text-slate-800">{{ dimensao.nome }}</h1>
         <p class="text-slate-500 mt-2">
           Responde a las siguientes preguntas de acuerdo con la realidad actual de la empresa.
         </p>
@@ -44,10 +40,7 @@ watch(
       </span>
     </div>
 
-    <div v-if="carregando" class="flex justify-center items-center py-12">
-      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-800"></div>
-      <span class="ml-3 text-slate-500 font-medium">Cargando preguntas...</span>
-    </div>
+    <LoadingSpinner v-if="carregando" texto="Cargando preguntas..." />
 
     <template v-else>
       <CardPergunta

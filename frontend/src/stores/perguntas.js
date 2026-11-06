@@ -1,12 +1,11 @@
 import { defineStore } from 'pinia'
 import { supabase } from '../lib/supabase'
 import { criarRecurso, HORA } from '../lib/cache'
-
-export const CATEGORIAS = ['Gobernanza', 'Social', 'Ambiental', 'Económica']
+import { NOMES_DIMENSOES } from '../constants/dimensoes'
 
 // As perguntas quase nunca mudam: TTL longo, mas ainda revalida em segundo plano
 export const usePerguntasStore = defineStore('perguntas', () => {
-  const porCategoria = Object.fromEntries(CATEGORIAS.map((categoria) => [
+  const porCategoria = Object.fromEntries(NOMES_DIMENSOES.map((categoria) => [
     categoria,
     criarRecurso({
       chave: `perguntas:${categoria}`,

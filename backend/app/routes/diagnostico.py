@@ -19,8 +19,8 @@ class RespostasIn(BaseModel):
     respostas: dict[str, int]
 
 
-def _contexto(user):
-    """Cliente com o token do usuário (RLS vale) + id da empresa dele."""
+def get_contexto(user=Depends(get_current_user)):
+    """Dependência das rotas: cliente com o token do usuário (RLS vale) + id da empresa dele."""
     try:
         sb = get_supabase_for_user(user["token"])
         emp = sb.table("empresas").select("id").eq("user_id", user["id"]).execute()
@@ -56,8 +56,8 @@ def _ultimo(sb, empresa_id, status):
 
 
 @router.get("/rascunho")
-def obter_rascunho(user=Depends(get_current_user)):
-    sb, empresa_id = _contexto(user)
+def obter_rascunho(ctx=Depends(get_contexto)):
+    sb, empresa_id = ctx
     rascunho = _ultimo(sb, empresa_id, STATUS_RASCUNHO)
     if rascunho and rascunho.get("respostas"):
         return {"respostas": rascunho["respostas"]}
@@ -66,8 +66,8 @@ def obter_rascunho(user=Depends(get_current_user)):
 
 
 @router.put("/rascunho")
-def guardar_rascunho(dados: RespostasIn, user=Depends(get_current_user)):
-    sb, empresa_id = _contexto(user)
+def guardar_rascunho(dados: RespostasIn, ctx=Depends(get_contexto)):
+    sb, empresa_id = ctx
     try:
         validar_respostas(_perguntas_ativas(sb), dados.respostas, completo=False)
     except RespostasInvalidas as e:
@@ -89,8 +89,8 @@ def guardar_rascunho(dados: RespostasIn, user=Depends(get_current_user)):
 
 
 @router.post("/concluir")
-def concluir(dados: RespostasIn, user=Depends(get_current_user)):
-    sb, empresa_id = _contexto(user)
+def concluir(dados: RespostasIn, ctx=Depends(get_contexto)):
+    sb, empresa_id = ctx
     try:
         resultado = calcular_diagnostico(_perguntas_ativas(sb), dados.respostas)
     except RespostasInvalidas as e:
@@ -111,9 +111,9 @@ def concluir(dados: RespostasIn, user=Depends(get_current_user)):
 
 
 @router.get("/resultado")
-def obter_resultado(user=Depends(get_current_user)):
+def obter_resultado(ctx=Depends(get_contexto)):
     """Só leitura: devolve o último diagnóstico concluído (quem conclui é o POST /concluir)."""
-    sb, empresa_id = _contexto(user)
+    sb, empresa_id = ctx
 
     concluido = _ultimo(sb, empresa_id, STATUS_COMPLETADO)
     if not concluido or not concluido.get("respostas"):

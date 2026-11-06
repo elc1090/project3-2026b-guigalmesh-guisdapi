@@ -4,6 +4,8 @@ import { useRouter } from 'vue-router'
 import { apiFetch } from '../lib/api'
 import { sessaoInvalida } from '../lib/cache'
 import { useEmpresaStore } from '../stores/empresa'
+import LoadingSpinner from '../components/ui/LoadingSpinner.vue'
+import Alerta from '../components/ui/Alerta.vue'
 
 const router = useRouter()
 
@@ -164,18 +166,10 @@ const guardar = async () => {
       </button>
     </div>
 
-    <div v-if="carregando" class="flex justify-center items-center py-12">
-      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-800"></div>
-      <span class="ml-3 text-slate-500 font-medium">Cargando...</span>
-    </div>
+    <LoadingSpinner v-if="carregando" texto="Cargando..." />
 
     <div v-else-if="jaTemEmpresa && !editando" class="space-y-6">
-      <p
-        v-if="mensagemSucesso"
-        class="text-sm text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 font-medium"
-      >
-        ✓ {{ mensagemSucesso }}
-      </p>
+      <Alerta v-if="mensagemSucesso" tipo="sucesso" class="font-medium">✓ {{ mensagemSucesso }}</Alerta>
 
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-8">
         <div class="flex items-center gap-4 pb-6 border-b border-slate-100">
@@ -212,22 +206,22 @@ const guardar = async () => {
     <!-- MODO EDIÇÃO / CRIAÇÃO -->
     <form v-else class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-8 space-y-5" @submit.prevent="guardar">
       <div>
-        <label for="nome" class="block text-sm font-medium text-slate-700 mb-1">Nombre de la empresa:</label>
+        <label for="nome" class="rotulo">Nombre de la empresa:</label>
         <input
           v-model="form.nome"
           type="text"
           id="nome"
           placeholder="Nombre de tu empresa"
-          class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition"
+          class="campo"
         >
       </div>
 
       <div>
-        <label for="setor" class="block text-sm font-medium text-slate-700 mb-1">Sector:</label>
+        <label for="setor" class="rotulo">Sector:</label>
         <select
           v-model="form.setor"
           id="setor"
-          class="w-full px-4 py-2.5 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition"
+          class="campo"
         >
           <option value="" disabled>Selecciona un sector</option>
           <option v-for="setor in setores" :key="setor" :value="setor">{{ setor }}</option>
@@ -235,11 +229,11 @@ const guardar = async () => {
       </div>
 
       <div>
-        <label for="porte" class="block text-sm font-medium text-slate-700 mb-1">Tamaño:</label>
+        <label for="porte" class="rotulo">Tamaño:</label>
         <select
           v-model="form.porte"
           id="porte"
-          class="w-full px-4 py-2.5 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition"
+          class="campo"
         >
           <option value="" disabled>Selecciona el tamaño</option>
           <option v-for="porte in portes" :key="porte.valor" :value="porte.valor">{{ porte.rotulo }}</option>
@@ -247,18 +241,18 @@ const guardar = async () => {
       </div>
 
       <div>
-        <label for="num_funcionarios" class="block text-sm font-medium text-slate-700 mb-1">Número de empleados:</label>
+        <label for="num_funcionarios" class="rotulo">Número de empleados:</label>
         <input
           v-model.number="form.num_funcionarios"
           type="number"
           min="1"
           id="num_funcionarios"
           placeholder="Ej.: 12"
-          class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition"
+          class="campo"
         >
       </div>
 
-      <p v-if="erro" class="text-sm text-red-600">{{ erro }}</p>
+      <Alerta v-if="erro">{{ erro }}</Alerta>
 
       <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-2">
         <button

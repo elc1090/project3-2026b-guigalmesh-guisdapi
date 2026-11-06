@@ -1,25 +1,14 @@
 <script setup>
 import { ref, computed } from 'vue'
 
-// ---------- Ícones (traçado estilo Lucide, viewBox 24x24) ----------
-const ICONE_GLOBO = [
-  'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z',
-  'M2 12h20',
-  'M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'
-]
-const ICONE_FOLHA = [
-  'M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z',
-  'M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12'
-]
-const ICONE_SETA = ['M5 12h14', 'm12 5 7 7-7 7']
+import Icone from '../components/ui/Icone.vue'
+import { NOMES_DIMENSOES } from '../constants/dimensoes'
+import { ICONE_GLOBO, ICONE_FOLHA, ICONE_SETA } from '../constants/icones'
 
 // ---------- Filtro por dimensão da guia ----------
 const FILTROS = [
   { id: 'todos', etiqueta: 'Todos los ODS' },
-  { id: 'Gobernanza', etiqueta: 'Gobernanza' },
-  { id: 'Ambiental', etiqueta: 'Ambiental' },
-  { id: 'Social', etiqueta: 'Social' },
-  { id: 'Económica', etiqueta: 'Económica' }
+  ...NOMES_DIMENSOES.map((nome) => ({ id: nome, etiqueta: nome }))
 ]
 const filtro = ref('todos')
 
@@ -218,9 +207,7 @@ const visibles = computed(() =>
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
       <div class="flex items-center gap-4">
         <span class="w-14 h-14 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-          <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-            <path v-for="(d, i) in ICONE_GLOBO" :key="i" :d="d" />
-          </svg>
+          <Icone :d="ICONE_GLOBO" class="w-7 h-7" />
         </span>
         <div>
           <h1 class="text-2xl sm:text-3xl font-bold text-emerald-950">Objetivos de Desarrollo Sostenible</h1>
@@ -230,9 +217,7 @@ const visibles = computed(() =>
 
       <div class="flex items-center gap-3 bg-emerald-50 border border-emerald-100 rounded-2xl px-4 py-3 lg:max-w-md">
         <span class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-            <path v-for="(d, i) in ICONE_FOLHA" :key="i" :d="d" />
-          </svg>
+          <Icone :d="ICONE_FOLHA" class="w-5 h-5" />
         </span>
         <p class="text-sm text-slate-600">
           Las empresas pueden contribuir a estos objetivos con acciones concretas en su gestión diaria.
@@ -276,9 +261,7 @@ const visibles = computed(() =>
             class="w-14 h-14 rounded-xl flex items-center justify-center shrink-0 text-white"
             :style="{ backgroundColor: o.color }"
           >
-            <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-              <path v-for="(d, i) in o.icono" :key="i" :d="d" />
-            </svg>
+            <Icone :d="o.icono" class="w-7 h-7" />
           </span>
           <div class="min-w-0">
             <p class="text-xs font-bold uppercase tracking-wider text-slate-500">ODS {{ o.numero }}</p>
@@ -313,9 +296,7 @@ const visibles = computed(() =>
         class="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 bg-emerald-800 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-950 transition shadow-lg"
       >
         Ver la guía
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-          <path v-for="(d, i) in ICONE_SETA" :key="i" :d="d" />
-        </svg>
+        <Icone :d="ICONE_SETA" class="w-5 h-5" />
       </router-link>
     </section>
   </div>

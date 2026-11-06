@@ -1,6 +1,9 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { sessao } from '../lib/auth'
+import Icone from '../components/ui/Icone.vue'
+import { dimensaoPorSlug } from '../constants/dimensoes'
+import { ICONE_LIVRO, ICONE_LAMPADA, ICONE_GRAFICO, ICONE_CHECK, ICONE_SETA } from '../constants/icones'
 
 // ---------- Navegação interna ----------
 const SECCIONES = [
@@ -17,38 +20,7 @@ const irA = (id) => {
   document.getElementById(`guia-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
-// ---------- Ícones (traçado estilo Lucide, viewBox 24x24) ----------
-const ICONES = {
-  Gobernanza: ['M3 22h18', 'M6 18v-7', 'M10 18v-7', 'M14 18v-7', 'M18 18v-7', 'M12 2l8 5H4z'],
-  Ambiental: [
-    'M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z',
-    'M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12'
-  ],
-  Social: [
-    'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2',
-    'M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0z',
-    'M22 21v-2a4 4 0 0 0-3-3.87',
-    'M16 3.13a4 4 0 0 1 0 7.75'
-  ],
-  'Económica': [
-    'M14 8a6 6 0 1 1-12 0 6 6 0 0 1 12 0z',
-    'M18.09 10.37A6 6 0 1 1 10.34 18',
-    'M7 6h1v4',
-    'm16.71 13.88.7.71-2.82 2.82'
-  ]
-}
-const ICONE_LIVRO = [
-  'M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z',
-  'M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'
-]
-const ICONE_LAMPADA = [
-  'M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5',
-  'M9 18h6',
-  'M10 22h4'
-]
-const ICONE_GRAFICO = ['M3 3v18h18', 'M18 17V9', 'M13 17V5', 'M8 17v-3']
-const ICONE_CHECK = ['M20 6 9 17l-5-5']
-const ICONE_SETA = ['M5 12h14', 'm12 5 7 7-7 7']
+const iconeDimensao = (slug) => dimensaoPorSlug(slug)?.icone ?? []
 
 // ---------- Conteúdo da guia ----------
 const DIMENSIONES = [
@@ -162,9 +134,6 @@ const DIMENSIONES = [
   }
 ]
 
-// Nome com acento usado nos mapas de ícones
-const nombreIcono = (id) => DIMENSIONES.find((d) => d.id === id)?.nombre
-
 const PLAN_ACCION = [
   { accion: 'Revisar el consumo de electricidad', responsable: 'Administración', plazo: '30 días', indicador: 'kWh mensuales' },
   { accion: 'Implementar separación de residuos', responsable: 'Encargado de operaciones', plazo: '30 días', indicador: 'Residuos separados' },
@@ -256,9 +225,7 @@ const porcentaje = (grupo) => Math.round((totalMarcados(grupo) / grupo.items.len
     <!-- Cabeçalho -->
     <div class="flex items-center gap-4">
       <span class="w-14 h-14 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-          <path v-for="(d, i) in ICONE_LIVRO" :key="i" :d="d" />
-        </svg>
+        <Icone :d="ICONE_LIVRO" class="w-7 h-7" />
       </span>
       <div>
         <p class="text-xs font-bold uppercase tracking-wider text-emerald-700">Verde Impulso</p>
@@ -304,9 +271,7 @@ const porcentaje = (grupo) => Math.round((totalMarcados(grupo) / grupo.items.len
     >
       <div class="flex items-start gap-4 mb-4">
         <span class="w-14 h-14 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-          <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-            <path v-for="(d, i) in ICONES[dim.nombre]" :key="i" :d="d" />
-          </svg>
+          <Icone :d="iconeDimensao(dim.id)" class="w-7 h-7" />
         </span>
         <div>
           <p class="text-xs font-bold uppercase tracking-wider text-emerald-700">
@@ -324,9 +289,7 @@ const porcentaje = (grupo) => Math.round((totalMarcados(grupo) / grupo.items.len
           <ul class="space-y-3">
             <li v-for="accion in dim.acciones" :key="accion.titulo" class="flex gap-3">
               <span class="mt-0.5 w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                  <path v-for="(d, i) in ICONE_CHECK" :key="i" :d="d" />
-                </svg>
+                <Icone :d="ICONE_CHECK" :stroke-width="3" class="w-3 h-3" />
               </span>
               <p class="text-sm text-slate-600">
                 <strong class="text-slate-800">{{ accion.titulo }}:</strong> {{ accion.texto }}
@@ -338,9 +301,7 @@ const porcentaje = (grupo) => Math.round((totalMarcados(grupo) / grupo.items.len
         <div class="lg:col-span-2 space-y-4">
           <div class="bg-amber-50 border border-amber-100 rounded-xl p-4">
             <div class="flex items-center gap-2 mb-2 text-amber-800">
-              <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                <path v-for="(d, i) in ICONE_LAMPADA" :key="i" :d="d" />
-              </svg>
+              <Icone :d="ICONE_LAMPADA" class="w-5 h-5 shrink-0" />
               <h3 class="font-semibold">Ejemplo práctico</h3>
             </div>
             <p class="text-sm text-slate-600">{{ dim.ejemplo }}</p>
@@ -348,9 +309,7 @@ const porcentaje = (grupo) => Math.round((totalMarcados(grupo) / grupo.items.len
 
           <div class="bg-emerald-50/60 border border-emerald-100 rounded-xl p-4">
             <div class="flex items-center gap-2 mb-2 text-emerald-800">
-              <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                <path v-for="(d, i) in ICONE_GRAFICO" :key="i" :d="d" />
-              </svg>
+              <Icone :d="ICONE_GRAFICO" class="w-5 h-5 shrink-0" />
               <h3 class="font-semibold">Indicadores que puedes utilizar</h3>
             </div>
             <ul class="space-y-1.5">
@@ -427,11 +386,9 @@ const porcentaje = (grupo) => Math.round((totalMarcados(grupo) / grupo.items.len
         >
           <div class="flex items-center gap-3 mb-3">
             <span class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                <path v-for="(d, i) in ICONES[nombreIcono(grupo.id)]" :key="i" :d="d" />
-              </svg>
+              <Icone :d="iconeDimensao(grupo.id)" class="w-5 h-5" />
             </span>
-            <h3 class="font-semibold text-slate-800">{{ nombreIcono(grupo.id) }}</h3>
+            <h3 class="font-semibold text-slate-800">{{ dimensaoPorSlug(grupo.id)?.nome }}</h3>
             <span class="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800">
               {{ totalMarcados(grupo) }} / {{ grupo.items.length }}
             </span>
@@ -492,9 +449,7 @@ const porcentaje = (grupo) => Math.round((totalMarcados(grupo) / grupo.items.len
           class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-emerald-800 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-950 transition shadow-lg"
         >
           Ir al diagnóstico
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-            <path v-for="(d, i) in ICONE_SETA" :key="i" :d="d" />
-          </svg>
+          <Icone :d="ICONE_SETA" class="w-5 h-5" />
         </router-link>
       </div>
     </section>
