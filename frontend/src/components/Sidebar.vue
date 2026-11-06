@@ -27,7 +27,8 @@ const MENU = [
   { para: '/resultado', rotulo: 'Resultados del diagnóstico', icone: ICONE_TENDENCIA },
   { para: '/ods', rotulo: 'Objetivos de Desarrollo Sostenible', icone: ICONE_GLOBO }
 ]
-const CLASSE_ATIVA = 'bg-white/15 !text-white font-semibold shadow-xs'
+// item ativo com efeito de vidro fosco: fundo translúcido + blur do que está atrás + borda clara
+const CLASSE_ATIVA = 'bg-white/15 backdrop-blur-md !border-white/25 !text-white font-semibold shadow-lg shadow-emerald-950/30'
 
 const nomeUsuario = computed(() => {
   return sessao.value?.user?.user_metadata?.nome || sessao.value?.user?.email?.split('@')[0] || 'Usuario'
@@ -64,7 +65,7 @@ const fazerLogout = async () => {
           :key="item.para"
           :to="item.para"
           @click="emit('fechar')"
-          class="flex items-center gap-3 px-4 py-3 text-emerald-100/80 rounded-xl font-medium hover:bg-white/10 hover:text-white transition"
+          class="flex items-center gap-3 px-4 py-3 text-emerald-100/80 rounded-xl font-medium border border-transparent hover:bg-white/10 hover:text-white transition"
           :active-class="item.exato ? '' : CLASSE_ATIVA"
           :exact-active-class="CLASSE_ATIVA"
         >

@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+/* Fontes do app: "font-sans" é o padrão de todo o site; "font-display" é a de destaque */
+@theme {
+  --font-sans: 'Plus Jakarta Sans Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Títulos principais das telas usam a fonte de destaque (uma classe font-* no elemento sobrescreve) */
+@layer base {
+  h1 {
+    font-family: var(--font-display);
+  }
+}
+
 /* Classes reutilizáveis dos formulários */
 @utility campo {
   @apply w-full px-4 py-2.5 border border-slate-300 rounded-xl bg-white outline-none transition focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700;

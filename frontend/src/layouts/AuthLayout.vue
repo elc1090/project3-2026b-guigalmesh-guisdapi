@@ -19,7 +19,7 @@ defineProps({
         <span class="inline-block px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold tracking-widest uppercase mb-3">
           {{ NOME_APP }}
         </span>
-        <h2 class="text-2xl font-bold text-slate-800">{{ titulo }}</h2>
+        <h2 class="font-display text-2xl font-bold text-slate-800">{{ titulo }}</h2>
         <p v-if="subtitulo" class="text-sm text-slate-500 mt-1">{{ subtitulo }}</p>
       </div>
 
