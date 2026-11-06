@@ -42,11 +42,7 @@ const BENEFICIOS = [
         <span class="font-display font-extrabold tracking-wider text-2xl lg:text-4xl">{{ NOME_APP }}</span>
       </div>
 
-      <p class="mt-3 lg:mt-8 text-center lg:text-left text-sm text-emerald-100/90 lg:font-display lg:text-4xl lg:font-semibold lg:text-white lg:leading-tight lg:max-w-lg">
-        Mide, mejora y comunica la sostenibilidad de tu pyme.
-      </p>
-
-      <ul class="hidden lg:flex flex-col gap-6 mt-12 max-w-md">
+      <ul class="hidden lg:flex flex-col gap-6 mt-10 max-w-md">
         <li v-for="beneficio in BENEFICIOS" :key="beneficio.titulo" class="flex gap-4">
           <span class="w-11 h-11 rounded-xl bg-white/10 border border-white/15 backdrop-blur-md flex items-center justify-center shrink-0">
             <Icone :d="beneficio.icone" class="w-5 h-5" />
