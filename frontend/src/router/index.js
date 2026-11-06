@@ -5,6 +5,7 @@ import { useEmpresaStore } from '../stores/empresa'
 import { SLUGS_DIMENSOES } from '../constants/dimensoes'
 
 import DefaultLayout from '../layouts/DefaultLayout.vue'
+import AuthLayout from '../layouts/AuthLayout.vue'
 // Telas carregadas sob demanda: cada uma vira um arquivo JS separado no build
 const DiagnosticoMenu = () => import('../views/Diagnostico/DiagnosticoMenu.vue')
 const DimensaoView = () => import('../views/Diagnostico/DimensaoView.vue')
@@ -15,15 +16,17 @@ const Empresa = () => import('../views/Empresa.vue')
 const Resultado = () => import('../views/Resultado.vue')
 
 const routes = [
+  // login e cadastro usam o mesmo AuthLayout: ao trocar entre eles o layout é reaproveitado
+  // (só o formulário troca, com transição, e o seletor desliza)
   {
     path: '/login',
-    component: Login,
-    meta: { apenasVisitante: true }
+    component: AuthLayout,
+    children: [{ path: '', component: Login, meta: { apenasVisitante: true } }]
   },
   {
     path: '/cadastro',
-    component: SignIn,
-    meta: { apenasVisitante: true }
+    component: AuthLayout,
+    children: [{ path: '', component: SignIn, meta: { apenasVisitante: true } }]
   },
   {
     path: '/',

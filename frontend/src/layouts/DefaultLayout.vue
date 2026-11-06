@@ -3,7 +3,8 @@ import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import Sidebar from '@/components/Sidebar.vue'
 import BottomNav from '@/components/BottomNav.vue'
-import BackgroundWaves from '@/components/ui/BackgroundWaves.vue'
+// fundo: BackgroundAurora (novo) ou BackgroundWaves (antigo) — é só trocar o import e a tag
+import BackgroundAurora from '@/components/ui/BackgroundAurora.vue'
 import Logo from '@/components/ui/Logo.vue'
 
 const route = useRoute()
@@ -17,7 +18,7 @@ watch(() => route.path, () => conteudo.value?.scrollTo({ top: 0 }))
 
 <template>
   <div class="relative flex flex-col md:flex-row h-dvh bg-emerald-800 md:p-4 md:gap-4 overflow-hidden">
-    <BackgroundWaves class="absolute inset-0 pointer-events-none select-none -z-10" />
+    <BackgroundAurora />
 
     <!-- celular: só a marca no topo; a navegação fica na barra inferior -->
     <header class="md:hidden relative z-20 flex items-center justify-center px-4 pt-[calc(0.75rem+env(safe-area-inset-top))] pb-3">

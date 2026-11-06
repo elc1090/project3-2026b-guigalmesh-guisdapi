@@ -31,6 +31,20 @@ export const ICONE_CASA = ['m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z']
 export const ICONE_EMPRESA = ['M3 21h18M5 21V7l8-4v18m6 0V11l-6-4']
 export const ICONE_CHECKLIST = ['M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11']
 export const ICONE_SAIR = ['M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4m7 14 5-5-5-5m5 5H9']
+export const ICONE_OLHO = [
+  'M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0',
+  'M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z'
+]
+export const ICONE_OLHO_FECHADO = [
+  'M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49',
+  'M14.084 14.158a3 3 0 0 1-4.242-4.242',
+  'M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143',
+  'm2 2 20 20'
+]
+export const ICONE_EMAIL = [
+  'm22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7',
+  'M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z'
+]
 export const ICONE_FECHAR = ['M6 18L18 6M6 6l12 12']
 // três pontos: usar com :stroke-width="3"
 export const ICONE_MAIS = ['M5 12h.01', 'M12 12h.01', 'M19 12h.01']

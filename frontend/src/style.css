@@ -65,7 +65,7 @@
 
 /* Classes reutilizáveis dos formulários */
 @utility campo {
-  @apply w-full px-4 py-2.5 border border-slate-300 rounded-xl bg-white outline-none transition focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700;
+  @apply w-full px-4 py-2.5 border border-slate-300 rounded-xl bg-white outline-none transition focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 aria-invalid:border-red-400 aria-invalid:focus:ring-red-500 aria-invalid:focus:border-red-500;
 }
 
 @utility rotulo {
