@@ -61,7 +61,7 @@ const entrar = async () => {
     }
     // await: o botão continua em "Ingresando..." até a próxima tela abrir (o guard da rota
     // pode esperar o back-end acordar para conferir a empresa)
-    await router.push(route.query.redirect || '/diagnostico')
+    await router.push(route.query.redirect || '/')
   } catch (e) {
     console.error('Erro ao entrar:', e)
     erro.value = 'No fue posible iniciar sesión. Inténtalo de nuevo.'

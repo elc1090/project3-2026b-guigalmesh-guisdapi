@@ -30,7 +30,7 @@ watch(() => route.path, () => conteudo.value?.scrollTo({ top: 0 }))
     <main
       ref="conteudo"
       @scroll.passive="rolou = $event.target.scrollTop > 4"
-      class="relative z-10 flex-1 min-h-0 overflow-y-auto bg-slate-100 rounded-t-3xl md:rounded-3xl shadow-2xl px-4 pt-5 pb-28 sm:px-6 md:p-8"
+      class="relative z-10 flex-1 min-h-0 overflow-y-auto bg-slate-100 rounded-t-3xl md:rounded-3xl shadow-2xl px-4 pt-5 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:px-6 md:p-8"
     >
       <!-- fade no topo: o conteúdo some suavemente ao rolar em vez de ser cortado na borda.
            Os negativos compensam o padding do <main> (pt-5 / px-4 / sm:px-6 / md:p-8) para a faixa

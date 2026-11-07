@@ -74,7 +74,7 @@ const cadastrarUsuario = async () => {
 
     if (data.session) {
       // await: mantém o botão carregando até a próxima tela abrir
-      await router.push('/diagnostico')
+      await router.push('/')
     } else {
       aguardandoConfirmacao.value = true
       iniciarEspera()

@@ -122,8 +122,10 @@ router.beforeEach(async (to) => {
     }
   }
 
+  // já logado abrindo /login ou /cadastro (ex.: atalho do iPhone salvo na tela de login,
+  // aba restaurada pelo navegador): vai para o Início, não direto para uma tela interna
   if (to.meta.apenasVisitante && logado) {
-    return '/diagnostico'
+    return '/'
   }
 })
 

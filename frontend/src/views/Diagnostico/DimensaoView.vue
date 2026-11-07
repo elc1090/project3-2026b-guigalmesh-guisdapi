@@ -74,10 +74,12 @@ const proxima = computed(() => {
       />
 
       <!-- rodapé fixo: progresso da dimensão, status do salvamento e próxima dimensão.
-           Celular: fica logo acima da barra de navegação flutuante (BottomNav), senão ficaria escondido atrás dela.
-           Desktop: encosta na borda de baixo do <main> (compensa o p-8). -->
+           O sticky conta a partir do fim do padding do <main>, não da borda da tela:
+           Celular: o padding de baixo é 7rem (+ área segura); -bottom-5 deixa o rodapé a ~92px do fim da tela,
+           logo acima da barra de navegação flutuante (BottomNav, topo a ~76px).
+           Desktop: -bottom-8 compensa o p-8 e encosta na borda de baixo do <main>. -->
       <div
-        class="sticky bottom-[calc(5.5rem+env(safe-area-inset-bottom))] md:-bottom-8 z-10 bg-white/80 backdrop-blur-xl backdrop-saturate-150 border border-white/70 md:border-slate-200 md:border-b-0 rounded-2xl md:rounded-b-none shadow-lg px-4 py-3 md:py-4 flex items-center gap-4"
+        class="sticky -bottom-5 md:-bottom-8 z-10 bg-white/80 backdrop-blur-xl backdrop-saturate-150 border border-white/70 md:border-slate-200 md:border-b-0 rounded-2xl md:rounded-b-none shadow-lg px-4 py-3 md:py-4 flex items-center gap-4"
       >
         <div class="flex-1 min-w-0">
           <div class="flex items-center justify-between gap-2 text-xs font-semibold text-slate-600 mb-1.5">

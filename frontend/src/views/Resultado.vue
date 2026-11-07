@@ -8,7 +8,7 @@ import Esqueleto from '../components/ui/Esqueleto.vue'
 import Alerta from '../components/ui/Alerta.vue'
 import { DIMENSOES, dimensaoPorNome } from '../constants/dimensoes'
 import { classeSeloNivel, classeIconeNivel, classePrioridade } from '../constants/niveis'
-import { ICONE_GRAFICO, ICONE_LAMPADA, ICONE_SETA, ICONE_FOLHA } from '../constants/icones'
+import { ICONE_GRAFICO, ICONE_LAMPADA, ICONE_FOLHA } from '../constants/icones'
 
 // registra só o necessário para o radar ('chart.js/auto' trazia todos os tipos de gráfico)
 Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip)
@@ -51,10 +51,6 @@ const pct = (valor) => Math.min(100, Math.max(0, Number(valor) || 0))
 
 const iconeDe = (nome) => dimensaoPorNome(nome)?.icone ?? ICONE_FOLHA
 const descricaoDe = (nome) => dimensaoPorNome(nome)?.descricao ?? ''
-const rotaDimensao = (nome) => {
-  const dim = dimensaoPorNome(nome)
-  return dim ? `/diagnostico/${dim.slug}` : '/diagnostico'
-}
 
 const destruirGraficos = () => {
   try {
@@ -273,11 +269,10 @@ onBeforeUnmount(() => {
         <div class="xl:col-span-7 space-y-6">
           <!-- Cards por dimensão -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <router-link
+            <article
               v-for="dimension in dimensoes"
               :key="dimension.nome"
-              :to="rotaDimensao(dimension.nome)"
-              class="group cartao p-5 flex flex-col gap-3 hover:shadow-md transition"
+              class="cartao p-5 flex flex-col gap-3"
             >
               <div class="flex items-start gap-4">
                 <span
@@ -294,16 +289,15 @@ onBeforeUnmount(() => {
 
               <p class="text-sm text-slate-500">{{ descricaoDe(dimension.nome) }}</p>
 
-              <div class="flex items-center justify-between mt-auto pt-1">
+              <div class="mt-auto pt-1">
                 <span
-                  class="px-3 py-1 rounded-full text-xs sm:text-sm font-semibold"
+                  class="inline-block px-3 py-1 rounded-full text-xs sm:text-sm font-semibold"
                   :class="classeSeloNivel(dimension.nivel)"
                 >
                   {{ dimension.nivel }}
                 </span>
-                <Icone :d="ICONE_SETA" class="w-5 h-5 text-slate-500 group-hover:translate-x-0.5 transition" />
               </div>
-            </router-link>
+            </article>
           </div>
 
           <!-- Principais oportunidades de melhoria -->
@@ -325,12 +319,11 @@ onBeforeUnmount(() => {
               ¡Felicitaciones! Todas las dimensiones de tu empresa se encuentran en nivel <strong>Avanzado</strong>.
             </div>
 
-            <div v-else class="space-y-3">
-              <router-link
+            <ol v-else class="space-y-3">
+              <li
                 v-for="(rec, index) in recomendacoes"
                 :key="rec.id"
-                :to="rotaDimensao(rec.categoria)"
-                class="group bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs flex items-center gap-3 sm:gap-4 hover:shadow-md transition"
+                class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs flex items-start gap-3 sm:gap-4"
               >
                 <span class="w-8 h-8 rounded-full bg-emerald-900 text-white text-sm font-bold flex items-center justify-center shrink-0">
                   {{ index + 1 }}
@@ -354,10 +347,8 @@ onBeforeUnmount(() => {
                     <span class="font-semibold text-slate-700">Indicador sugerido:</span> {{ rec.indicador_sugerido }}
                   </p>
                 </div>
-
-                <Icone :d="ICONE_SETA" class="w-5 h-5 text-slate-500 shrink-0 group-hover:translate-x-0.5 transition" />
-              </router-link>
-            </div>
+              </li>
+            </ol>
           </div>
         </div>
       </div>
