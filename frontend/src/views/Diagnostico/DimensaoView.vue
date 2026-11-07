@@ -1,15 +1,18 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import CardPergunta from '../../components/CardPergunta.vue'
 import Esqueleto from '../../components/ui/Esqueleto.vue'
 import Pagina from '../../components/ui/Pagina.vue'
 import Icone from '../../components/ui/Icone.vue'
 import { DIMENSOES, dimensaoPorSlug } from '../../constants/dimensoes'
 import { ICONE_SETA } from '../../constants/icones'
-import { useDiagnostico } from '../../composables/useDiagnostico.js'
+import {
+  useDiagnostico, useProgressoDiagnostico, concluirDiagnostico, mensagemErroConclusao
+} from '../../composables/useDiagnostico.js'
 
 const route = useRoute()
+const router = useRouter()
 const { respostas, statusSalvamento, carregando, buscarPerguntas } = useDiagnostico()
 
 // o router só aceita slugs válidos, então o fallback é só por segurança
@@ -28,11 +31,35 @@ const total = computed(() => perguntasView.value.length)
 const respondidas = computed(() => perguntasView.value.filter((p) => respostas.value[p.id] != null).length)
 const porcentagem = computed(() => (total.value ? Math.round((respondidas.value / total.value) * 100) : 0))
 
-// próxima dimensão na ordem de DIMENSOES; depois da última, volta ao menu para finalizar
+// próxima dimensão na ordem de DIMENSOES
 const proxima = computed(() => {
   const i = DIMENSOES.findIndex((d) => d.slug === dimensao.value.slug)
   return DIMENSOES[i + 1] ?? null
 })
+
+// Na última dimensão o rodapé decide a ação:
+//  - tudo respondido: finaliza aqui mesmo (sem passar pelo menu);
+//  - falta outra dimensão: leva direto para ela;
+//  - falta só esta: nenhum botão, só o lembrete (as perguntas estão na tela).
+const progressoGeral = useProgressoDiagnostico()
+const pendenteEmOutra = computed(() =>
+  progressoGeral.faltantes.value.find((d) => d.slug !== dimensao.value.slug) ?? null
+)
+const finalizando = ref(false)
+const erroFinalizar = ref('')
+
+const finalizar = async () => {
+  erroFinalizar.value = ''
+  finalizando.value = true
+  try {
+    await concluirDiagnostico()
+    router.push('/resultado')
+  } catch (e) {
+    erroFinalizar.value = mensagemErroConclusao(e)
+  } finally {
+    finalizando.value = false
+  }
+}
 </script>
 
 <template>
@@ -84,7 +111,9 @@ const proxima = computed(() => {
         <div class="flex-1 min-w-0">
           <div class="flex items-center justify-between gap-2 text-xs font-semibold text-slate-600 mb-1.5">
             <span class="whitespace-nowrap">{{ respondidas }} de {{ total }} respondidas</span>
+            <span v-if="erroFinalizar" role="alert" class="font-medium text-red-600 truncate">{{ erroFinalizar }}</span>
             <span
+              v-else
               aria-live="polite"
               class="font-medium truncate"
               :class="statusSalvamento.startsWith('Error') ? 'text-red-600' : 'text-emerald-700'"
@@ -95,17 +124,35 @@ const proxima = computed(() => {
           </div>
         </div>
 
-        <router-link
-          :to="proxima ? `/diagnostico/${proxima.slug}` : '/diagnostico'"
-          class="btn-primario btn-compacto shrink-0"
-        >
-          <template v-if="proxima">
-            <span class="sm:hidden">Siguiente</span>
-            <span class="hidden sm:inline">Siguiente: {{ proxima.nome }}</span>
-          </template>
-          <span v-else>Ir a finalizar</span>
+        <router-link v-if="proxima" :to="`/diagnostico/${proxima.slug}`" class="btn-primario btn-compacto shrink-0">
+          <span class="sm:hidden">Siguiente</span>
+          <span class="hidden sm:inline">Siguiente: {{ proxima.nome }}</span>
           <Icone :d="ICONE_SETA" class="w-4 h-4" />
         </router-link>
+
+        <!-- última dimensão -->
+        <button
+          v-else-if="progressoGeral.completo.value"
+          type="button"
+          @click="finalizar"
+          :disabled="finalizando"
+          :aria-busy="finalizando"
+          class="btn-primario btn-compacto shrink-0"
+        >
+          <span v-if="finalizando" class="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" aria-hidden="true"></span>
+          {{ finalizando ? 'Calculando...' : 'Finalizar diagnóstico' }}
+        </button>
+        <router-link
+          v-else-if="pendenteEmOutra"
+          :to="`/diagnostico/${pendenteEmOutra.slug}`"
+          class="btn-secundario btn-compacto shrink-0"
+        >
+          Falta {{ pendenteEmOutra.nome }}
+          <Icone :d="ICONE_SETA" class="w-4 h-4" />
+        </router-link>
+        <span v-else class="shrink-0 text-xs font-semibold text-slate-500 max-w-[9rem] text-right">
+          Responde las preguntas pendientes para finalizar
+        </span>
       </div>
     </div>
   </Pagina>

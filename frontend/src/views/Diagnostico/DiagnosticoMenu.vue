@@ -60,10 +60,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePerguntasStore } from '../../stores/perguntas'
-import { useDiagnostico, carregarRascunho, concluirDiagnostico } from '../../composables/useDiagnostico'
+import { carregarRascunho, concluirDiagnostico, mensagemErroConclusao, useProgressoDiagnostico } from '../../composables/useDiagnostico'
 import CardCategory from '../../components/CardCategory.vue'
 import Icone from '../../components/ui/Icone.vue'
 import Pagina from '../../components/ui/Pagina.vue'
@@ -71,37 +71,19 @@ import { DIMENSOES } from '../../constants/dimensoes'
 import { ICONE_CHECKLIST } from '../../constants/icones'
 
 const router = useRouter()
-const { respostas } = useDiagnostico()
 const perguntasStore = usePerguntasStore()
 
-const totalPerguntas = computed(() => perguntasStore.total)
 const finalizando = ref(false)
 const erro = ref('')
 
-// { respondidas, total } de uma dimensão, para o card mostrar "3/5" e a barrinha
-const progressoDe = (categoria) => {
-  const perguntas = perguntasStore.daCategoria(categoria)
-  return {
-    total: perguntas.length,
-    respondidas: perguntas.filter((p) => respostas.value[p.id] != null).length
-  }
+// progresso geral e por dimensão (cards mostram "3/5" e a barrinha)
+const {
+  porDimensao, total: totalPerguntas, respondidas, completo, porcentagem: porcentagemProgresso, faltantes
+} = useProgressoDiagnostico()
+const progressoDe = (nome) => {
+  const d = porDimensao.value.find((x) => x.nome === nome)
+  return { total: d?.total ?? 0, respondidas: d?.respondidas ?? 0 }
 }
-
-const progressoPorDimensao = computed(() =>
-  DIMENSOES.map((d) => ({ nome: d.nome, slug: d.slug, ...progressoDe(d.nome) }))
-)
-// conta só as perguntas ativas (respostas antigas de perguntas desativadas não entram)
-const respondidas = computed(() => progressoPorDimensao.value.reduce((soma, d) => soma + d.respondidas, 0))
-const faltantes = computed(() =>
-  progressoPorDimensao.value
-    .map((d) => ({ ...d, faltam: d.total - d.respondidas }))
-    .filter((d) => d.faltam > 0)
-)
-const completo = computed(() => totalPerguntas.value > 0 && respondidas.value >= totalPerguntas.value)
-const porcentagemProgresso = computed(() => {
-  if (totalPerguntas.value === 0) return 0
-  return Math.min(100, Math.round((respondidas.value / totalPerguntas.value) * 100))
-})
 
 onMounted(() => {
   // os dois em paralelo; o total vem do cache se já foi carregado antes
@@ -118,13 +100,7 @@ const finalizar = async () => {
     await concluirDiagnostico()
     router.push('/resultado')
   } catch (e) {
-    // 401/403 já levam ao login pelo apiFetch
-    if (e?.status === 422) erro.value = 'Responde todas las preguntas antes de finalizar.'
-    else if (e?.status) erro.value = 'No fue posible finalizar el diagnóstico. Inténtalo de nuevo.'
-    else {
-      console.error('Erro de comunicação com o Back-end:', e)
-      erro.value = 'No se pudo conectar con el servidor.'
-    }
+    erro.value = mensagemErroConclusao(e)
   } finally {
     finalizando.value = false
   }

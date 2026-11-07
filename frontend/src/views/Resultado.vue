@@ -353,14 +353,11 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <div class="flex justify-end">
-        <router-link
-          to="/diagnostico"
-          class="btn-primario w-full sm:w-auto"
-        >
-          Nuevo diagnóstico
-        </router-link>
-      </div>
+      <!-- secundário: o questionário abre com as respostas atuais, para revisar o que mudou -->
+      <p class="text-sm text-slate-500 text-center sm:text-right">
+        ¿Hubo cambios en tu empresa?
+        <router-link to="/diagnostico" class="font-semibold text-emerald-800 hover:underline">Actualizar diagnóstico</router-link>
+      </p>
     </div>
   </Pagina>
 </template>

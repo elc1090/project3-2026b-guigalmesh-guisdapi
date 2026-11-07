@@ -1,8 +1,9 @@
-import { ref, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { apiFetch } from '../lib/api'
 import { ErroHttp } from '../lib/cache'
 import { usePerguntasStore } from '../stores/perguntas'
 import { useResultadoStore } from '../stores/resultado'
+import { DIMENSOES } from '../constants/dimensoes'
 
 const respostas = ref({})
 const statusSalvamento = ref('')
@@ -171,4 +172,36 @@ export function useDiagnostico() {
         carregando,
         buscarPerguntas
     }
+}
+// Progresso do questionário (só perguntas ativas; respostas antigas de perguntas desativadas não contam).
+// Usado no menu do diagnóstico, na tela das dimensões e no Início.
+export function useProgressoDiagnostico() {
+  const perguntasStore = usePerguntasStore()
+
+  const porDimensao = computed(() =>
+    DIMENSOES.map((d) => {
+      const perguntas = perguntasStore.daCategoria(d.nome)
+      const respondidas = perguntas.filter((p) => respostas.value[p.id] != null).length
+      return { nome: d.nome, slug: d.slug, total: perguntas.length, respondidas, faltam: perguntas.length - respondidas }
+    })
+  )
+  const total = computed(() => perguntasStore.total)
+  const respondidas = computed(() => porDimensao.value.reduce((soma, d) => soma + d.respondidas, 0))
+  const completo = computed(() => total.value > 0 && respondidas.value >= total.value)
+  const porcentagem = computed(() =>
+    total.value ? Math.min(100, Math.round((respondidas.value / total.value) * 100)) : 0
+  )
+  const faltantes = computed(() => porDimensao.value.filter((d) => d.faltam > 0))
+  // para onde o "Continuar" leva: a primeira dimensão com perguntas sem resposta
+  const primeiraIncompleta = computed(() => faltantes.value[0] ?? null)
+
+  return { porDimensao, total, respondidas, completo, porcentagem, faltantes, primeiraIncompleta }
+}
+
+// texto de erro para mostrar quando concluirDiagnostico() falha (401 já leva ao login pelo apiFetch)
+export function mensagemErroConclusao(e) {
+  if (e?.status === 422) return 'Responde todas las preguntas antes de finalizar.'
+  if (e?.status) return 'No fue posible finalizar el diagnóstico. Inténtalo de nuevo.'
+  console.error('Erro de comunicação com o Back-end:', e)
+  return 'No se pudo conectar con el servidor.'
 }
