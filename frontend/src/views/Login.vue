@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { supabase } from '../lib/supabase'
+import { servidorLento } from '../lib/api'
 import { emailValido, focarPrimeiroErro } from '../lib/validacao'
 import Campo from '../components/ui/Campo.vue'
 import CampoSenha from '../components/ui/CampoSenha.vue'
@@ -14,6 +15,8 @@ const router = useRouter()
 const email = ref('')
 const senha = ref('')
 const carregando = ref(false)
+// veio do apiFetch depois de um 401: avisa em vez de só mostrar o login
+const sessaoExpirou = computed(() => route.query.expirou === '1')
 const erro = ref('')
 // os erros dos campos só aparecem depois da primeira tentativa de enviar
 const tentou = ref(false)
@@ -56,7 +59,9 @@ const entrar = async () => {
       erro.value = traduzirErro(error.message)
       return
     }
-    router.push(route.query.redirect || '/diagnostico')
+    // await: o botão continua em "Ingresando..." até a próxima tela abrir (o guard da rota
+    // pode esperar o back-end acordar para conferir a empresa)
+    await router.push(route.query.redirect || '/diagnostico')
   } catch (e) {
     console.error('Erro ao entrar:', e)
     erro.value = 'No fue posible iniciar sesión. Inténtalo de nuevo.'
@@ -72,6 +77,8 @@ const entrar = async () => {
       <h1 class="text-3xl font-bold text-slate-800">Bienvenido de nuevo</h1>
       <p class="text-slate-500 mt-1">Accede al diagnóstico de sostenibilidad de tu empresa.</p>
     </div>
+
+    <Alerta v-if="sessaoExpirou && !erro" tipo="aviso" class="mb-5">Tu sesión expiró. Inicia sesión nuevamente para continuar.</Alerta>
 
     <form class="space-y-5" novalidate @submit.prevent="entrar">
       <Campo id="email" rotulo="Correo electrónico" :erro="erroDe('email')">
@@ -104,7 +111,7 @@ const entrar = async () => {
 
       <Alerta v-if="erro">{{ erro }}</Alerta>
 
-      <BotaoPrimario :carregando="carregando" texto-carregando="Ingresando...">
+      <BotaoPrimario :carregando="carregando" :texto-carregando="servidorLento ? 'Conectando con el servidor...' : 'Ingresando...'">
         Iniciar sesión
       </BotaoPrimario>
     </form>

@@ -2,6 +2,8 @@
 // Fundo abstrato "aurora" em verdes: degradê base + manchas de luz + linhas topográficas + grão.
 // As manchas são degradês radiais (sem filter: blur), mais leve para o celular.
 // Um véu escuro por cima garante a leitura do texto branco (menu, marca, títulos).
+// Desempenho no celular: as manchas ficam paradas e o grão (mix-blend-overlay em tela cheia) sai.
+// Animadas, elas obrigavam o navegador a refazer o desfoque da barra inferior a cada quadro.
 </script>
 
 <template>
@@ -33,7 +35,7 @@
     </svg>
 
     <!-- grão (textura de filme): ruído em tons de cinza misturado em overlay -->
-    <div class="absolute inset-0 opacity-[0.4] mix-blend-overlay bg-[length:220px_220px] bg-[url('data:image/svg+xml;utf8,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22220%22%20height=%22220%22%3E%3Cfilter%20id=%22g%22%3E%3CfeTurbulence%20type=%22fractalNoise%22%20baseFrequency=%220.7%22%20numOctaves=%223%22%20stitchTiles=%22stitch%22/%3E%3CfeColorMatrix%20type=%22saturate%22%20values=%220%22/%3E%3C/filter%3E%3Crect%20width=%22100%25%22%20height=%22100%25%22%20filter=%22url(%23g)%22/%3E%3C/svg%3E')]"></div>
+    <div class="hidden md:block absolute inset-0 opacity-[0.4] mix-blend-overlay bg-[length:220px_220px] bg-[url('data:image/svg+xml;utf8,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22220%22%20height=%22220%22%3E%3Cfilter%20id=%22g%22%3E%3CfeTurbulence%20type=%22fractalNoise%22%20baseFrequency=%220.7%22%20numOctaves=%223%22%20stitchTiles=%22stitch%22/%3E%3CfeColorMatrix%20type=%22saturate%22%20values=%220%22/%3E%3C/filter%3E%3Crect%20width=%22100%25%22%20height=%22100%25%22%20filter=%22url(%23g)%22/%3E%3C/svg%3E')]"></div>
 
     <!-- véu escuro + vinheta: mantém o contraste do texto branco -->
     <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(2,44,34,0.45)_100%)]"></div>
@@ -55,7 +57,12 @@
   to { transform: translate3d(4%, 3%, 0) scale(1.08); }
 }
 
-@media (prefers-reduced-motion: reduce) {
+/* celular (sem barra lateral) ou quem pediu menos movimento: manchas paradas */
+@media (max-width: 767px), (prefers-reduced-motion: reduce) {
   .mancha { animation: none; }
+}
+
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .mancha { will-change: transform; }
 }
 </style>

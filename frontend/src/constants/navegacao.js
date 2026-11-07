@@ -6,8 +6,8 @@ import {
 // exato: só fica ativo na rota exata (senão "/" ficaria ativo em todas as telas)
 // rotuloCurto: usado na barra inferior do celular, onde o espaço é pequeno
 export const NAVEGACAO = [
-  { para: '/guia', rotulo: 'Guía sostenible', icone: ICONE_LIVRO },
   { para: '/', rotulo: 'Inicio', icone: ICONE_CASA, exato: true },
+  { para: '/guia', rotulo: 'Guía sostenible', icone: ICONE_LIVRO },
   { para: '/empresa', rotulo: 'Mi empresa', rotuloCurto: 'Empresa', icone: ICONE_EMPRESA },
   { para: '/diagnostico', rotulo: 'Diagnóstico', icone: ICONE_CHECKLIST },
   { para: '/resultado', rotulo: 'Resultados del diagnóstico', rotuloCurto: 'Resultados', icone: ICONE_TENDENCIA },

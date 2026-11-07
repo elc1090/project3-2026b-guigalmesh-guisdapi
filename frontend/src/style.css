@@ -63,6 +63,29 @@
   }
 }
 
+/* Botões e cards: usar estas classes em vez de repetir as utilitárias em cada tela */
+@utility btn-primario {
+  @apply inline-flex items-center justify-center gap-2 bg-emerald-800 text-white px-6 py-3 rounded-xl font-bold shadow-md shadow-emerald-900/20 transition cursor-pointer hover:bg-emerald-950 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-emerald-800;
+}
+
+@utility btn-secundario {
+  @apply inline-flex items-center justify-center gap-2 bg-white text-slate-700 border border-slate-300 px-5 py-3 rounded-xl font-semibold shadow-xs transition cursor-pointer hover:bg-slate-50;
+}
+
+/* variante menor (barras e rodapés): combinar com btn-primario ou btn-secundario */
+@utility btn-compacto {
+  @apply px-4 py-2.5 text-sm;
+}
+
+@utility cartao {
+  @apply bg-white rounded-2xl border border-slate-200/80 shadow-sm;
+}
+
+/* ícone dentro de um círculo verde claro (cabeçalhos de cards) */
+@utility selo-icone {
+  @apply w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0;
+}
+
 /* Classes reutilizáveis dos formulários */
 @utility campo {
   @apply w-full px-4 py-2.5 border border-slate-300 rounded-xl bg-white outline-none transition focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 aria-invalid:border-red-400 aria-invalid:focus:ring-red-500 aria-invalid:focus:border-red-500;

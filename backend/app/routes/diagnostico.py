@@ -28,17 +28,31 @@ class RespostasIn(BaseModel):
     respostas: dict[str, int]
 
 
+# user_id -> (empresa_id, quando). Cada usuário tem no máximo uma empresa (user_id é único) e
+# ela não é apagada, então o id pode ficar em memória: evita uma consulta em cada salvamento.
+# Só guarda quando a empresa existe (quem ainda não cadastrou é consultado de novo).
+CACHE_EMPRESA_SEGUNDOS = 600
+_cache_empresa: dict[str, tuple[str, float]] = {}
+
+
 def get_contexto(user=Depends(get_current_user)):
     """Dependência das rotas: cliente com o token do usuário (RLS vale) + id da empresa dele."""
+    sb = get_supabase_for_user(user["token"])
+    agora = time.monotonic()
+    em_cache = _cache_empresa.get(user["id"])
+    if em_cache and agora - em_cache[1] < CACHE_EMPRESA_SEGUNDOS:
+        return sb, em_cache[0]
+
     try:
-        sb = get_supabase_for_user(user["token"])
         emp = sb.table("empresas").select("id").eq("user_id", user["id"]).execute()
     except Exception:
         log.exception("Erro ao buscar a empresa do usuário")
         raise HTTPException(503, "Error de conexión con la base de datos")
     if not emp.data:
         raise HTTPException(400, "Primero debes registrar tu empresa")
-    return sb, emp.data[0]["id"]
+    empresa_id = emp.data[0]["id"]
+    _cache_empresa[user["id"]] = (empresa_id, agora)
+    return sb, empresa_id
 
 
 def _perguntas_ativas(sb):
@@ -89,11 +103,17 @@ def guardar_rascunho(dados: RespostasIn, ctx=Depends(get_contexto)):
     except RespostasInvalidas as e:
         raise HTTPException(422, str(e))
 
-    rascunho = _ultimo(sb, empresa_id, STATUS_RASCUNHO)
     try:
-        if rascunho:
-            sb.table("diagnostico").update({"respostas": dados.respostas}).eq("id", rascunho["id"]).execute()
-        else:
+        # caso comum (já existe rascunho): uma consulta só. O update devolve as linhas alteradas;
+        # se não alterou nenhuma, é o primeiro salvamento e o rascunho é criado.
+        atualizado = (
+            sb.table("diagnostico")
+            .update({"respostas": dados.respostas})
+            .eq("empresa_id", empresa_id)
+            .eq("status", STATUS_RASCUNHO)
+            .execute()
+        )
+        if not atualizado.data:
             sb.table("diagnostico").insert({
                 "empresa_id": empresa_id,
                 "respostas": dados.respostas,

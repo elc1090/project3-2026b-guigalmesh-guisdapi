@@ -14,5 +14,21 @@ export const useEmpresaStore = defineStore('empresa', () => {
     }
   })
 
-  return { ...recurso }
+  // cria (POST) ou atualiza (PUT) e já guarda a resposta no cache
+  async function salvar(dados) {
+    const jaExiste = !!recurso.dado.value
+    const res = await apiFetch('/api/empresa', {
+      method: jaExiste ? 'PUT' : 'POST',
+      body: JSON.stringify(dados)
+    })
+    if (!res.ok) {
+      console.error('Erro do back-end:', await res.json().catch(() => null))
+      throw new ErroHttp(res.status)
+    }
+    const empresa = await res.json()
+    recurso.definir(empresa)
+    return empresa
+  }
+
+  return { ...recurso, salvar }
 })

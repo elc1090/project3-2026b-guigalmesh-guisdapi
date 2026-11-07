@@ -2,6 +2,8 @@
 import { ref, watch } from 'vue'
 import { sessao } from '../lib/auth'
 import Icone from '../components/ui/Icone.vue'
+import Pagina from '../components/ui/Pagina.vue'
+import { NOME_APP } from '../constants/marca'
 import { dimensaoPorSlug } from '../constants/dimensoes'
 import { ICONE_LIVRO, ICONE_LAMPADA, ICONE_GRAFICO, ICONE_CHECK, ICONE_SETA } from '../constants/icones'
 
@@ -221,19 +223,7 @@ const porcentaje = (grupo) => Math.round((totalMarcados(grupo) / grupo.items.len
 </script>
 
 <template>
-  <div class="max-w-6xl mx-auto py-4 sm:py-8 px-1 sm:px-4 space-y-6 sm:space-y-8">
-    <!-- Cabeçalho -->
-    <div class="flex items-center gap-4">
-      <span class="w-14 h-14 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-        <Icone :d="ICONE_LIVRO" class="w-7 h-7" />
-      </span>
-      <div>
-        <p class="text-xs font-bold uppercase tracking-wider text-emerald-700">Verde Impulso</p>
-        <h1 class="text-2xl sm:text-3xl font-bold text-emerald-950">Guía sostenible</h1>
-        <p class="text-slate-500 mt-0.5">Pequeñas acciones, grandes cambios</p>
-      </div>
-    </div>
-
+  <Pagina :icone="ICONE_LIVRO" :sobretitulo="NOME_APP" titulo="Guía sostenible" subtitulo="Pequeñas acciones, grandes cambios">
     <!-- Boas-vindas -->
     <div class="bg-gradient-to-br from-emerald-800 to-emerald-950 text-white rounded-2xl p-6 sm:p-8 shadow-sm">
       <h2 class="text-xl sm:text-2xl font-bold mb-3">Bienvenido a tu guía de sostenibilidad</h2>
@@ -466,5 +456,5 @@ const porcentaje = (grupo) => Math.round((totalMarcados(grupo) / grupo.items.len
     <p class="text-xs text-slate-500 text-center max-w-3xl mx-auto pb-2">
       Esta guía tiene fines orientativos. Las acciones deben adaptarse a la actividad, tamaño y obligaciones aplicables a cada empresa. Los indicadores sugeridos son ejemplos y no constituyen una certificación de sostenibilidad.
     </p>
-  </div>
+  </Pagina>
 </template>

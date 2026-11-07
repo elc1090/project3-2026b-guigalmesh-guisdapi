@@ -15,8 +15,6 @@ export class ErroHttp extends Error {
   }
 }
 
-export const sessaoInvalida = (e) => e?.status === 401 || e?.status === 403
-
 const idUsuario = () => sessao.value?.user?.id ?? null
 
 /**

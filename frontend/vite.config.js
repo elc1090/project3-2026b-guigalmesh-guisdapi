@@ -13,4 +13,8 @@ export default defineConfig({
     tailwindcss(),
     vue(),
   ],
+  // testes (npm test): jsdom fornece localStorage e document
+  test: {
+    environment: 'jsdom',
+  },
 })

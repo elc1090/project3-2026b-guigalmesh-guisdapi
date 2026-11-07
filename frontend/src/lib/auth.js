@@ -1,7 +1,7 @@
 import { supabase } from './supabase'
 import { sessao } from './sessao'
 import { limparTodoCache } from './cache'
-import { limparDiagnostico } from '../composables/useDiagnostico'
+import { limparDiagnostico, salvarRascunhoAgora } from '../composables/useDiagnostico'
 
 export { sessao }
 
@@ -14,7 +14,10 @@ export async function iniciarAuth() {
   })
 }
 
-export async function sair() {
+// salvarAntes: false quando o token já foi recusado (salvar daria 401 de novo)
+export async function sair({ salvarAntes = true } = {}) {
+  // envia a última resposta antes de perder o token (o erro não impede o logout)
+  if (salvarAntes) await salvarRascunhoAgora().catch(() => {})
   await supabase.auth.signOut()
   limparDiagnostico()
   limparTodoCache()

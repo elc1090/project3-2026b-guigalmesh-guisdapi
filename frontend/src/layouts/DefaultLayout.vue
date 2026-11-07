@@ -3,7 +3,7 @@ import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import Sidebar from '@/components/Sidebar.vue'
 import BottomNav from '@/components/BottomNav.vue'
-// fundo: BackgroundAurora (novo) ou BackgroundWaves (antigo) — é só trocar o import e a tag
+// fundo decorativo verde (mais leve no celular, ver o componente)
 import BackgroundAurora from '@/components/ui/BackgroundAurora.vue'
 import Logo from '@/components/ui/Logo.vue'
 

@@ -142,7 +142,7 @@ const sair = async () => {
             class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold text-red-700 hover:bg-red-50 transition cursor-pointer"
           >
             <Icone :d="ICONE_SAIR" class="w-4 h-4" />
-            Salir
+            Cerrar sesión
           </button>
         </div>
       </div>

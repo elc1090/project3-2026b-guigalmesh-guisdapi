@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 
 import Icone from '../components/ui/Icone.vue'
+import Pagina from '../components/ui/Pagina.vue'
 import { NOMES_DIMENSOES } from '../constants/dimensoes'
 import { ICONE_GLOBO, ICONE_FOLHA, ICONE_SETA } from '../constants/icones'
 
@@ -202,28 +203,21 @@ const visibles = computed(() =>
 </script>
 
 <template>
-  <div class="max-w-6xl mx-auto py-4 sm:py-8 px-1 sm:px-4 space-y-6 sm:space-y-8">
-    <!-- Cabeçalho -->
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-      <div class="flex items-center gap-4">
-        <span class="w-14 h-14 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-          <Icone :d="ICONE_GLOBO" class="w-7 h-7" />
-        </span>
-        <div>
-          <h1 class="text-2xl sm:text-3xl font-bold text-emerald-950">Objetivos de Desarrollo Sostenible</h1>
-          <p class="text-slate-500 mt-0.5">Los 17 objetivos de la Agenda 2030 y su relación con la sostenibilidad de las empresas</p>
-        </div>
-      </div>
-
+  <Pagina
+    :icone="ICONE_GLOBO"
+    titulo="Objetivos de Desarrollo Sostenible"
+    subtitulo="Los 17 objetivos de la Agenda 2030 y su relación con la sostenibilidad de las empresas"
+  >
+    <template #lateral>
       <div class="flex items-center gap-3 bg-emerald-50 border border-emerald-100 rounded-2xl px-4 py-3 lg:max-w-md">
-        <span class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+        <span class="selo-icone bg-emerald-100!">
           <Icone :d="ICONE_FOLHA" class="w-5 h-5" />
         </span>
         <p class="text-sm text-slate-600">
           Las empresas pueden contribuir a estos objetivos con acciones concretas en su gestión diaria.
         </p>
       </div>
-    </div>
+    </template>
 
     <!-- Filtros por dimensão -->
     <div class="space-y-3">
@@ -253,7 +247,7 @@ const visibles = computed(() =>
       <article
         v-for="o in visibles"
         :key="o.numero"
-        class="bg-white rounded-2xl shadow-sm border border-slate-200/80 border-t-4 p-5 flex flex-col gap-3 hover:shadow-md transition"
+        class="cartao border-t-4 p-5 flex flex-col gap-3 hover:shadow-md transition"
         :style="{ borderTopColor: o.color }"
       >
         <div class="flex items-center gap-4">
@@ -299,5 +293,5 @@ const visibles = computed(() =>
         <Icone :d="ICONE_SETA" class="w-5 h-5" />
       </router-link>
     </section>
-  </div>
+  </Pagina>
 </template>

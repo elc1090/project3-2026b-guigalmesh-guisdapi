@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { supabase } from '../lib/supabase'
 import { sessao } from '../lib/sessao'
+import { navegando } from './estado'
 import { useEmpresaStore } from '../stores/empresa'
 import { SLUGS_DIMENSOES } from '../constants/dimensoes'
 
@@ -80,6 +81,21 @@ const router = createRouter({
   routes
 })
 
+// barra de progresso: só aparece se a navegação demorar (trocas rápidas não piscam a barra).
+// Registrado ANTES do guard abaixo: os guards rodam em ordem, então o timer já conta a espera dele.
+const ATRASO_BARRA_MS = 150
+let timerBarra = null
+router.beforeEach(() => {
+  clearTimeout(timerBarra)
+  timerBarra = setTimeout(() => { navegando.value = true }, ATRASO_BARRA_MS)
+})
+const fimNavegacao = () => {
+  clearTimeout(timerBarra)
+  navegando.value = false
+}
+router.afterEach(fimNavegacao)
+router.onError(fimNavegacao)
+
 router.beforeEach(async (to) => {
   const { data } = await supabase.auth.getSession()
   const logado = !!data.session
@@ -110,5 +126,6 @@ router.beforeEach(async (to) => {
     return '/diagnostico'
   }
 })
+
 
 export default router

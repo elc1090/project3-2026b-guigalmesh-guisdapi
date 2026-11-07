@@ -1,12 +1,13 @@
 <script setup>
 // Mensagem de erro ou sucesso. Uso: <Alerta v-if="erro">{{ erro }}</Alerta>
 defineProps({
-  tipo: { type: String, default: 'erro' } // 'erro' | 'sucesso'
+  tipo: { type: String, default: 'erro' } // 'erro' | 'sucesso' | 'aviso'
 })
 
 const ESTILOS = {
   erro: 'text-red-700 bg-red-50 border-red-200',
-  sucesso: 'text-emerald-800 bg-emerald-50 border-emerald-200'
+  sucesso: 'text-emerald-800 bg-emerald-50 border-emerald-200',
+  aviso: 'text-amber-800 bg-amber-50 border-amber-200'
 }
 </script>
 

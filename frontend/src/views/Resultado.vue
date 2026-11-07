@@ -1,19 +1,18 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
 import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip } from 'chart.js'
-import { sessaoInvalida } from '../lib/cache'
 import { useResultadoStore } from '../stores/resultado'
 import Icone from '../components/ui/Icone.vue'
-import LoadingSpinner from '../components/ui/LoadingSpinner.vue'
+import Pagina from '../components/ui/Pagina.vue'
+import Esqueleto from '../components/ui/Esqueleto.vue'
 import Alerta from '../components/ui/Alerta.vue'
 import { DIMENSOES, dimensaoPorNome } from '../constants/dimensoes'
+import { classeSeloNivel, classeIconeNivel, classePrioridade } from '../constants/niveis'
 import { ICONE_GRAFICO, ICONE_LAMPADA, ICONE_SETA, ICONE_FOLHA } from '../constants/icones'
 
 // registra só o necessário para o radar ('chart.js/auto' trazia todos os tipos de gráfico)
 Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip)
 
-const router = useRouter()
 const resultadoStore = useResultadoStore()
 
 const resultado = computed(() => resultadoStore.dado ?? null)
@@ -55,26 +54,6 @@ const descricaoDe = (nome) => dimensaoPorNome(nome)?.descricao ?? ''
 const rotaDimensao = (nome) => {
   const dim = dimensaoPorNome(nome)
   return dim ? `/diagnostico/${dim.slug}` : '/diagnostico'
-}
-
-const estiloNivel = {
-  'Inicial': 'bg-red-100 text-red-800',
-  'Básico': 'bg-amber-100 text-amber-800',
-  'Intermedio': 'bg-sky-100 text-sky-800',
-  'Avanzado': 'bg-emerald-100 text-emerald-800'
-}
-
-const estiloIconeNivel = {
-  'Inicial': 'bg-red-100 text-red-700',
-  'Básico': 'bg-amber-100 text-amber-700',
-  'Intermedio': 'bg-sky-100 text-sky-700',
-  'Avanzado': 'bg-emerald-100 text-emerald-700'
-}
-
-const estiloPrioridade = {
-  'Alta': 'bg-red-100 text-red-800 border-red-200',
-  'Media': 'bg-amber-100 text-amber-800 border-amber-200',
-  'Baja': 'bg-sky-100 text-sky-800 border-sky-200'
 }
 
 const destruirGraficos = () => {
@@ -145,10 +124,7 @@ onMounted(async () => {
   try {
     await resultadoStore.carregar()
   } catch (e) {
-    if (sessaoInvalida(e)) {
-      router.push('/login')
-      return
-    }
+    if (e?.status === 401) return // o apiFetch já leva ao login
     console.error('Erro ao buscar resultado:', e)
     if (resultadoStore.dado === undefined) {
       erro.value = e?.status
@@ -174,38 +150,41 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="max-w-7xl mx-auto py-4 sm:py-8 px-1 sm:px-4">
-    <!-- Cabeçalho -->
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6 sm:mb-8">
-      <div class="flex items-center gap-4">
-        <span class="w-14 h-14 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-          <Icone :d="ICONE_GRAFICO" class="w-7 h-7" />
-        </span>
-        <div>
-          <h1 class="text-2xl sm:text-3xl font-bold text-emerald-950">Resultados del diagnóstico</h1>
-          <p class="text-slate-500 mt-0.5">Nivel de madurez en sostenibilidad de tu empresa</p>
-        </div>
-      </div>
-
+  <Pagina
+    largura="larga"
+    :icone="ICONE_GRAFICO"
+    titulo="Resultados del diagnóstico"
+    subtitulo="Nivel de madurez en sostenibilidad de tu empresa"
+  >
+    <template #lateral>
       <div class="flex items-center gap-3 bg-emerald-50 border border-emerald-100 rounded-2xl px-4 py-3 lg:max-w-md">
-        <span class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+        <span class="selo-icone bg-emerald-100!">
           <Icone :d="ICONE_FOLHA" class="w-5 h-5" />
         </span>
         <p class="text-sm text-slate-600">
           Tus resultados te ayudarán a identificar fortalezas y oportunidades para mejorar tu desempeño sostenible.
         </p>
       </div>
-    </div>
+    </template>
 
-    <LoadingSpinner v-if="carregando" texto="Cargando resultado..." />
+    <!-- esqueleto com o mesmo desenho da tela (sem "pulo" quando o resultado chega) -->
+    <div v-if="carregando" class="grid grid-cols-1 xl:grid-cols-12 gap-6" aria-busy="true">
+      <div class="xl:col-span-5 space-y-6">
+        <div class="cartao p-6 space-y-4"><Esqueleto class="h-6 w-1/2" /><Esqueleto class="h-72 w-full rounded-full mx-auto max-w-72" /></div>
+      </div>
+      <div class="xl:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 content-start">
+        <div v-for="n in 4" :key="n" class="cartao p-5 space-y-3"><Esqueleto class="h-14 w-14 rounded-full" /><Esqueleto class="h-4 w-full" /><Esqueleto class="h-6 w-24 rounded-full" /></div>
+      </div>
+      <span class="sr-only" role="status">Cargando resultado...</span>
+    </div>
 
     <Alerta v-else-if="erro">{{ erro }}</Alerta>
 
-    <div v-else-if="semDiagnostico" class="bg-white p-8 rounded-2xl border border-slate-200 text-center shadow-xs">
+    <div v-else-if="semDiagnostico" class="cartao p-8 text-center">
       <p class="text-slate-700 text-lg mb-4">Aún no has completado el diagnóstico.</p>
       <router-link
         to="/diagnostico"
-        class="inline-block bg-emerald-800 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-950 transition shadow-lg"
+        class="btn-primario"
       >
         Ir al diagnóstico
       </router-link>
@@ -216,9 +195,9 @@ onBeforeUnmount(() => {
         <!-- Coluna esquerda -->
         <div class="xl:col-span-5 space-y-6">
           <!-- Resumo por dimensão (radar) -->
-          <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200/80">
+          <div class="cartao p-5 sm:p-6">
             <div class="flex flex-wrap items-center gap-3 mb-2">
-              <span class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+              <span class="selo-icone">
                 <Icone :d="ICONE_GRAFICO" class="w-5 h-5" />
               </span>
               <h2 class="text-lg font-semibold text-slate-800">Resumen por dimensión</h2>
@@ -230,7 +209,7 @@ onBeforeUnmount(() => {
                 <span
                   v-if="resultado.geral?.nivel"
                   class="px-3 py-1 text-xs rounded-full font-semibold"
-                  :class="estiloNivel[resultado.geral.nivel] || 'bg-slate-100 text-slate-800'"
+                  :class="classeSeloNivel(resultado.geral.nivel)"
                 >
                   {{ resultado.geral.nivel }}
                 </span>
@@ -260,9 +239,9 @@ onBeforeUnmount(() => {
           </div>
 
           <!-- Comparativo de dimensões -->
-          <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200/80">
+          <div class="cartao p-5 sm:p-6">
             <div class="flex items-center gap-3 mb-5">
-              <span class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+              <span class="selo-icone">
                 <Icone :d="ICONE_GRAFICO" class="w-5 h-5" />
               </span>
               <h2 class="text-lg font-semibold text-slate-800">Comparativo de dimensiones</h2>
@@ -274,7 +253,7 @@ onBeforeUnmount(() => {
                 :key="dimension.nome"
                 class="flex items-center gap-3"
               >
-                <span class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+                <span class="selo-icone">
                   <Icone :d="iconeDe(dimension.nome)" class="w-5 h-5" />
                 </span>
                 <span class="w-24 sm:w-28 text-sm font-semibold text-slate-700 shrink-0">{{ dimension.nome }}</span>
@@ -298,12 +277,12 @@ onBeforeUnmount(() => {
               v-for="dimension in dimensoes"
               :key="dimension.nome"
               :to="rotaDimensao(dimension.nome)"
-              class="group bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col gap-3 hover:shadow-md transition"
+              class="group cartao p-5 flex flex-col gap-3 hover:shadow-md transition"
             >
               <div class="flex items-start gap-4">
                 <span
                   class="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
-                  :class="estiloIconeNivel[dimension.nivel] || 'bg-slate-100 text-slate-700'"
+                  :class="classeIconeNivel(dimension.nivel)"
                 >
                   <Icone :d="iconeDe(dimension.nome)" class="w-7 h-7" />
                 </span>
@@ -318,7 +297,7 @@ onBeforeUnmount(() => {
               <div class="flex items-center justify-between mt-auto pt-1">
                 <span
                   class="px-3 py-1 rounded-full text-xs sm:text-sm font-semibold"
-                  :class="estiloNivel[dimension.nivel] || 'bg-slate-100 text-slate-800'"
+                  :class="classeSeloNivel(dimension.nivel)"
                 >
                   {{ dimension.nivel }}
                 </span>
@@ -365,7 +344,7 @@ onBeforeUnmount(() => {
                     <h3 class="text-sm sm:text-base font-bold text-slate-800">{{ rec.titulo }}</h3>
                     <span
                       class="text-[11px] font-semibold px-2 py-0.5 rounded-full border"
-                      :class="estiloPrioridade[rec.prioridade] || 'bg-slate-100 text-slate-700 border-slate-200'"
+                      :class="classePrioridade(rec.prioridade)"
                     >
                       Prioridad {{ rec.prioridade }}
                     </span>
@@ -386,11 +365,11 @@ onBeforeUnmount(() => {
       <div class="flex justify-end">
         <router-link
           to="/diagnostico"
-          class="w-full sm:w-auto text-center bg-emerald-800 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-950 transition shadow-lg"
+          class="btn-primario w-full sm:w-auto"
         >
           Nuevo diagnóstico
         </router-link>
       </div>
     </div>
-  </div>
+  </Pagina>
 </template>
