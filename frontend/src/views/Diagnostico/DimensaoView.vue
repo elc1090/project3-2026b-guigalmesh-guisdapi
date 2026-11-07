@@ -72,11 +72,11 @@ const finalizar = async () => {
   >
     <template #antes>
       <router-link
-        to="/diagnostico"
+        to="/#diagnostico"
         class="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-800 hover:underline"
       >
         <Icone :d="ICONE_SETA" class="w-4 h-4 rotate-180" />
-        Volver al diagnóstico
+        Volver al inicio
       </router-link>
     </template>
 

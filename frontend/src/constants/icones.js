@@ -28,7 +28,7 @@ export const ICONE_BROTO = [
   'M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z'
 ]
 export const ICONE_CASA = ['m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z']
-export const ICONE_EMPRESA = ['M3 21h18M5 21V7l8-4v18m6 0V11l-6-4']
+export const ICONE_USUARIO = ['M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2', 'M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0z']
 export const ICONE_CHECKLIST = ['M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11']
 export const ICONE_SAIR = ['M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4m7 14 5-5-5-5m5 5H9']
 export const ICONE_OLHO = [
@@ -46,5 +46,3 @@ export const ICONE_EMAIL = [
   'M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z'
 ]
 export const ICONE_FECHAR = ['M6 18L18 6M6 6l12 12']
-// três pontos: usar com :stroke-width="3"
-export const ICONE_MAIS = ['M5 12h.01', 'M12 12h.01', 'M19 12h.01']

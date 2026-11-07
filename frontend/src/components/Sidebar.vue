@@ -1,10 +1,12 @@
 <script setup>
+import { useRoute } from 'vue-router'
 import Icone from './ui/Icone.vue'
 import Logo from './ui/Logo.vue'
-import { NAVEGACAO } from '../constants/navegacao'
+import { NAVEGACAO, itemAtivo } from '../constants/navegacao'
 import { ICONE_SAIR } from '../constants/icones'
 import { useUsuario } from '../composables/useUsuario'
 
+const route = useRoute()
 const { nome, email, inicial, sairDaConta } = useUsuario()
 
 // item ativo com efeito de vidro fosco: fundo translúcido + blur do que está atrás + borda clara
@@ -24,8 +26,8 @@ const CLASSE_ATIVA = 'bg-white/15 backdrop-blur-md !border-white/25 !text-white 
           :key="item.para"
           :to="item.para"
           class="flex items-center gap-3 px-4 py-3 text-emerald-100/80 rounded-xl font-medium border border-transparent hover:bg-white/10 hover:text-white transition focus-visible:outline-white"
-          :active-class="item.exato ? '' : CLASSE_ATIVA"
-          :exact-active-class="CLASSE_ATIVA"
+          :class="itemAtivo(item, route.path) ? CLASSE_ATIVA : ''"
+          :aria-current="itemAtivo(item, route.path) ? 'page' : undefined"
         >
           <Icone :d="item.icone" class="w-5 h-5 shrink-0" />
           {{ item.rotulo }}

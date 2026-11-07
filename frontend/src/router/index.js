@@ -8,12 +8,10 @@ import { SLUGS_DIMENSOES } from '../constants/dimensoes'
 import DefaultLayout from '../layouts/DefaultLayout.vue'
 import AuthLayout from '../layouts/AuthLayout.vue'
 // Telas carregadas sob demanda: cada uma vira um arquivo JS separado no build
-const DiagnosticoMenu = () => import('../views/Diagnostico/DiagnosticoMenu.vue')
 const DimensaoView = () => import('../views/Diagnostico/DimensaoView.vue')
 const SignIn = () => import('../views/SignIn.vue')
 const Login = () => import('../views/Login.vue')
 const Home = () => import('../views/Home.vue')
-const Empresa = () => import('../views/Empresa.vue')
 const Resultado = () => import('../views/Resultado.vue')
 
 const routes = [
@@ -33,30 +31,25 @@ const routes = [
     path: '/',
     component: DefaultLayout,
     children: [
-      {
-        path: 'diagnostico',
-        meta: { requerLogin: true, requerEmpresa: true },
-        children: [
-          {
-            path: '',
-            component: DiagnosticoMenu
-          },
-          {
-            path: `:dimensao(${SLUGS_DIMENSOES})`,
-            component: DimensaoView
-          }
-        ]
-      },
+      // Início = empresa + diagnóstico numa página só
       {
         path: '',
         component: Home,
         meta: { requerLogin: true }
       },
       {
-        path: 'empresa',
-        component: Empresa,
-        meta: { requerLogin: true }
+        path: 'diagnostico',
+        children: [
+          // a lista das dimensões agora é uma seção do Início (endereços antigos continuam funcionando)
+          { path: '', redirect: { path: '/', hash: '#diagnostico' } },
+          {
+            path: `:dimensao(${SLUGS_DIMENSOES})`,
+            component: DimensaoView,
+            meta: { requerLogin: true, requerEmpresa: true }
+          }
+        ]
       },
+      { path: 'empresa', redirect: { path: '/', hash: '#empresa' } },
       {
         path: 'resultado',
         component: Resultado,
@@ -114,8 +107,9 @@ router.beforeEach(async (to) => {
     try {
       // vem do cache quando possível (revalida em segundo plano se estiver velho)
       const empresa = await useEmpresaStore().carregar()
+      // sem empresa: o Início mostra o formulário de cadastro
       if (empresa === null) {
-        return '/empresa'
+        return '/'
       }
     } catch (e) {
       console.error('Erro ao verificar empresa no router:', e)

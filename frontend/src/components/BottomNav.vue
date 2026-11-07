@@ -2,40 +2,35 @@
 import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import Icone from './ui/Icone.vue'
-import { NAV_PRINCIPAL, NAV_SECUNDARIA } from '../constants/navegacao'
-import { ICONE_MAIS, ICONE_SAIR, ICONE_FECHAR } from '../constants/icones'
+import { NAVEGACAO, itemAtivo } from '../constants/navegacao'
+import { ICONE_SAIR, ICONE_FECHAR } from '../constants/icones'
 import { useUsuario } from '../composables/useUsuario'
 
+// Barra inferior do celular: os 4 itens de navegação + "Cuenta" (dados do usuário e sair)
 const route = useRoute()
 const { nome, email, inicial, sairDaConta } = useUsuario()
 
-const maisAberto = ref(false)
+const contaAberta = ref(false)
 const painel = ref(null)
 
-// "Más" fica destacado quando a tela atual é uma das que estão dentro dele (Guía, ODS)
-const secundariaAtiva = computed(() => NAV_SECUNDARIA.some((item) => route.path.startsWith(item.para)))
-// posição do indicador de vidro: 0-3 = itens principais, 4 = "Más", -1 = nenhum
-const indiceAtivo = computed(() => {
-  const i = NAV_PRINCIPAL.findIndex((item) => (item.exato ? route.path === item.para : route.path.startsWith(item.para)))
-  if (i !== -1) return i
-  return secundariaAtiva.value ? NAV_PRINCIPAL.length : -1
-})
+// posição da "gota" de vidro: índice do item ativo, -1 = nenhum
+const indiceAtivo = computed(() => NAVEGACAO.findIndex((item) => itemAtivo(item, route.path)))
 
-const abrirMais = async () => {
-  maisAberto.value = true
+const abrirConta = async () => {
+  contaAberta.value = true
   await nextTick()
-  painel.value?.querySelector('a, button')?.focus()
+  painel.value?.querySelector('button')?.focus()
 }
-const fecharMais = () => { maisAberto.value = false }
+const fecharConta = () => { contaAberta.value = false }
 
 // fecha ao trocar de tela ou ao apertar Esc
-watch(() => route.path, fecharMais)
-const aoTeclar = (e) => { if (e.key === 'Escape') fecharMais() }
+watch(() => route.path, fecharConta)
+const aoTeclar = (e) => { if (e.key === 'Escape') fecharConta() }
 onMounted(() => window.addEventListener('keydown', aoTeclar))
 onBeforeUnmount(() => window.removeEventListener('keydown', aoTeclar))
 
 const sair = async () => {
-  fecharMais()
+  fecharConta()
   await sairDaConta()
 }
 </script>
@@ -59,11 +54,12 @@ const sair = async () => {
         :style="{ transform: `translateX(${indiceAtivo * 100}%)` }"
       ></li>
 
-      <li v-for="(item, i) in NAV_PRINCIPAL" :key="item.para" class="relative">
+      <li v-for="(item, i) in NAVEGACAO" :key="item.para" class="relative">
         <router-link
           :to="item.para"
           class="flex flex-col items-center gap-0.5 py-1.5 rounded-full text-[11px] font-medium transition-colors"
           :class="indiceAtivo === i ? 'text-emerald-800 font-semibold' : 'text-slate-600'"
+          :aria-current="indiceAtivo === i ? 'page' : undefined"
         >
           <Icone :d="item.icone" class="w-[22px] h-[22px]" />
           {{ item.rotuloCurto ?? item.rotulo }}
@@ -73,14 +69,16 @@ const sair = async () => {
       <li class="relative">
         <button
           type="button"
-          @click="abrirMais"
+          @click="abrirConta"
           aria-haspopup="dialog"
-          :aria-expanded="maisAberto"
+          :aria-expanded="contaAberta"
           class="w-full flex flex-col items-center gap-0.5 py-1.5 rounded-full text-[11px] font-medium transition-colors cursor-pointer"
-          :class="indiceAtivo === NAV_PRINCIPAL.length || maisAberto ? 'text-emerald-800 font-semibold' : 'text-slate-600'"
+          :class="contaAberta ? 'text-emerald-800 font-semibold' : 'text-slate-600'"
         >
-          <Icone :d="ICONE_MAIS" :stroke-width="3" class="w-[22px] h-[22px]" />
-          Más
+          <span class="w-[22px] h-[22px] rounded-full bg-emerald-800 text-white text-[11px] font-bold flex items-center justify-center" aria-hidden="true">
+            {{ inicial }}
+          </span>
+          Cuenta
         </button>
       </li>
     </ul>
@@ -88,24 +86,24 @@ const sair = async () => {
 
   <Teleport to="body">
     <Transition name="fade">
-      <div v-if="maisAberto" class="md:hidden fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-[2px]" @click="fecharMais"></div>
+      <div v-if="contaAberta" class="md:hidden fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-[2px]" @click="fecharConta"></div>
     </Transition>
 
     <Transition name="painel">
       <div
-        v-if="maisAberto"
+        v-if="contaAberta"
         ref="painel"
         role="dialog"
         aria-modal="true"
-        aria-label="Más opciones"
-        class="md:hidden fixed inset-x-0 bottom-0 z-50 bg-white/80 backdrop-blur-2xl backdrop-saturate-150 border-t border-white/70 rounded-t-3xl shadow-2xl px-4 pt-3 pb-[calc(1rem+env(safe-area-inset-bottom))]"
+        aria-label="Tu cuenta"
+        class="md:hidden fixed inset-x-0 bottom-0 z-50 bg-white/90 backdrop-blur-2xl backdrop-saturate-150 border-t border-white/70 rounded-t-3xl shadow-2xl px-4 pt-3 pb-[calc(1rem+env(safe-area-inset-bottom))]"
       >
-        <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center justify-between mb-3">
           <div class="w-10"></div>
           <div class="h-1.5 w-10 rounded-full bg-slate-200"></div>
           <button
             type="button"
-            @click="fecharMais"
+            @click="fecharConta"
             class="w-10 h-10 flex items-center justify-center rounded-full text-slate-500 hover:bg-slate-100 cursor-pointer"
             aria-label="Cerrar"
           >
@@ -113,38 +111,24 @@ const sair = async () => {
           </button>
         </div>
 
-        <nav class="flex flex-col gap-1">
-          <router-link
-            v-for="item in NAV_SECUNDARIA"
-            :key="item.para"
-            :to="item.para"
-            class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-700 font-medium hover:bg-slate-50 transition"
-            active-class="bg-emerald-50 !text-emerald-900 font-semibold"
-          >
-            <span class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
-              <Icone :d="item.icone" class="w-5 h-5" />
-            </span>
-            {{ item.rotulo }}
-          </router-link>
-        </nav>
-
-        <div class="border-t border-slate-100 mt-3 pt-3 flex items-center gap-3 px-3">
-          <div class="w-10 h-10 rounded-full bg-emerald-800 text-white flex items-center justify-center font-bold shrink-0">
+        <div class="flex items-center gap-3 px-2">
+          <div class="w-12 h-12 rounded-full bg-emerald-800 text-white flex items-center justify-center text-lg font-bold shrink-0">
             {{ inicial }}
           </div>
           <div class="min-w-0 flex-1">
-            <p class="text-sm font-semibold text-slate-800 truncate">{{ nome }}</p>
-            <p class="text-xs text-slate-500 truncate">{{ email }}</p>
+            <p class="font-semibold text-slate-800 truncate">{{ nome }}</p>
+            <p class="text-sm text-slate-500 truncate">{{ email }}</p>
           </div>
-          <button
-            type="button"
-            @click="sair"
-            class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold text-red-700 hover:bg-red-50 transition cursor-pointer"
-          >
-            <Icone :d="ICONE_SAIR" class="w-4 h-4" />
-            Cerrar sesión
-          </button>
         </div>
+
+        <button
+          type="button"
+          @click="sair"
+          class="mt-5 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-red-200 text-red-700 font-semibold hover:bg-red-50 transition cursor-pointer"
+        >
+          <Icone :d="ICONE_SAIR" class="w-5 h-5" />
+          Cerrar sesión
+        </button>
       </div>
     </Transition>
   </Teleport>

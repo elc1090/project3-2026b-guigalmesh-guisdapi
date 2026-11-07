@@ -32,12 +32,18 @@ describe('criarRecurso (stale-while-revalidate)', () => {
 
   it('dado velho volta na hora e é revalidado em segundo plano', async () => {
     const buscar = vi.fn().mockResolvedValueOnce('velho').mockResolvedValueOnce('novo')
-    const r = criarRecurso({ chave: 't3', buscar, ttl: 0 })
-    await r.carregar()
+    const r = criarRecurso({ chave: 't3', buscar, ttl: 1000 })
+    const agora = Date.now()
+    const relogio = vi.spyOn(Date, 'now').mockReturnValue(agora)
+    try {
+      await r.carregar()
 
-    await new Promise((ok) => setTimeout(ok, 1)) // passa do ttl
-    expect(await r.carregar()).toBe('velho')
-    await vi.waitFor(() => expect(r.dado.value).toBe('novo'))
+      relogio.mockReturnValue(agora + 2000) // passa do ttl (sem depender do relógio real)
+      expect(await r.carregar()).toBe('velho')
+      await vi.waitFor(() => expect(r.dado.value).toBe('novo'))
+    } finally {
+      relogio.mockRestore()
+    }
   })
 
   it('persiste por usuário e não mostra o cache de outro usuário', async () => {

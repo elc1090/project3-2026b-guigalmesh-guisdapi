@@ -69,7 +69,7 @@
 }
 
 @utility btn-secundario {
-  @apply inline-flex items-center justify-center gap-2 bg-white text-slate-700 border border-slate-300 px-5 py-3 rounded-xl font-semibold shadow-xs transition cursor-pointer hover:bg-slate-50;
+  @apply inline-flex items-center justify-center gap-2 bg-white text-slate-700 border border-slate-300 px-5 py-3 rounded-xl font-semibold shadow-xs transition cursor-pointer hover:bg-slate-50 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-white;
 }
 
 /* variante menor (barras e rodapés): combinar com btn-primario ou btn-secundario */

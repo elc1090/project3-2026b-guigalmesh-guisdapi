@@ -179,7 +179,7 @@ onBeforeUnmount(() => {
     <div v-else-if="semDiagnostico" class="cartao p-8 text-center">
       <p class="text-slate-700 text-lg mb-4">Aún no has completado el diagnóstico.</p>
       <router-link
-        to="/diagnostico"
+        to="/#diagnostico"
         class="btn-primario"
       >
         Ir al diagnóstico
@@ -356,7 +356,7 @@ onBeforeUnmount(() => {
       <!-- secundário: o questionário abre com as respostas atuais, para revisar o que mudou -->
       <p class="text-sm text-slate-500 text-center sm:text-right">
         ¿Hubo cambios en tu empresa?
-        <router-link to="/diagnostico" class="font-semibold text-emerald-800 hover:underline">Actualizar diagnóstico</router-link>
+        <router-link to="/#diagnostico" class="font-semibold text-emerald-800 hover:underline">Actualizar diagnóstico</router-link>
       </p>
     </div>
   </Pagina>

@@ -435,7 +435,7 @@ const porcentaje = (grupo) => Math.round((totalMarcados(grupo) / grupo.items.len
 
       <div class="flex justify-end mt-6">
         <router-link
-          to="/diagnostico"
+          to="/#diagnostico"
           class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-emerald-800 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-950 transition shadow-lg"
         >
           Ir al diagnóstico
