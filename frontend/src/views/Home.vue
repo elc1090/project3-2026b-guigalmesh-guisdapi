@@ -3,11 +3,14 @@ import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useEmpresaStore } from '../stores/empresa'
 import { useResultadoStore } from '../stores/resultado'
+import { useActividadesStore } from '../stores/actividades'
+import { FECHAS_AMBIENTALES } from '../constants/huella'
+import { proximasEfemerides, dataLocal, hojeLocal } from '../lib/fechasAmbientales'
 import { usePerguntasStore } from '../stores/perguntas'
 import { useUsuario } from '../composables/useUsuario'
 import { carregarRascunho, useProgressoDiagnostico } from '../composables/useDiagnostico'
 import { classeSeloNivel, classePrioridade } from '../constants/niveis'
-import { ICONE_LAMPADA } from '../constants/icones'
+import { ICONE_LAMPADA, ICONE_ARVORE, ICONE_SETA } from '../constants/icones'
 import Esqueleto from '../components/ui/Esqueleto.vue'
 import Icone from '../components/ui/Icone.vue'
 import SecaoEmpresa from '../components/inicio/SecaoEmpresa.vue'
@@ -24,6 +27,7 @@ import { formatarData } from '../lib/datas'
 const route = useRoute()
 const empresaStore = useEmpresaStore()
 const resultadoStore = useResultadoStore()
+const actividadesStore = useActividadesStore()
 const perguntasStore = usePerguntasStore()
 const { nome: nomeUsuario } = useUsuario()
 const progresso = useProgressoDiagnostico()
@@ -70,6 +74,18 @@ const realizadas = computed(() => recomendacoes.value.filter((r) => r.status ===
 const planoConcluido = computed(() => recomendacoes.value.length > 0 && realizadas.value === recomendacoes.value.length)
 const dataDiagnostico = computed(() => formatarData(resultado.value?.concluido_em))
 
+// cartão "Tu huella positiva": totais + próxima atividade planejada (ou a próxima data ambiental)
+const huella = computed(() => actividadesStore.dado ?? null)
+const proximaActividad = computed(() => {
+  const hoje = hojeLocal()
+  return (huella.value?.actividades ?? [])
+    .filter((a) => a.estado === 'planificada' && dataLocal(a.fecha) >= hoje)
+    .sort((a, b) => a.fecha.localeCompare(b.fecha))[0] ?? null
+})
+const proximaFecha = proximasEfemerides(FECHAS_AMBIENTALES, hojeLocal(), 1)[0]
+const fmtNum = (n) => Number(n || 0).toLocaleString('es-CL', { maximumFractionDigits: 1 })
+const fechaCurta = (texto) => dataLocal(texto)?.toLocaleDateString('es-CL', { day: 'numeric', month: 'long' }) ?? ''
+
 // rola até uma seção (links /#diagnostico vindos de outras telas, ou depois de cadastrar a empresa)
 const irPara = async (id) => {
   await nextTick()
@@ -84,6 +100,7 @@ watch(
 onMounted(() => {
   empresaStore.carregar().catch((e) => console.error('Erro ao carregar empresa:', e))
   resultadoStore.carregar().catch((e) => console.error('Erro ao carregar resultado:', e))
+  actividadesStore.carregar().catch((e) => console.error('Erro ao carregar atividades:', e))
   perguntasStore.carregar().catch((e) => console.error('Erro ao carregar perguntas:', e))
 })
 </script>
@@ -200,6 +217,30 @@ onMounted(() => {
           <p class="text-sm text-slate-500 mt-1">Actualiza tu diagnóstico para medir tu avance y recibir nuevas recomendaciones.</p>
           <button type="button" class="btn-primario w-full sm:w-auto mt-3" @click="irPara('diagnostico')">Actualizar diagnóstico</button>
         </div>
+      </section>
+
+      <!-- huella positiva: totais das atividades ambientais (só depois de cadastrar a empresa) -->
+      <section v-if="empresa" class="cartao p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+        <span class="selo-icone">
+          <Icone :d="ICONE_ARVORE" class="w-5 h-5" />
+        </span>
+        <div class="min-w-0 flex-1">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-emerald-700">Tu huella positiva</h2>
+          <p v-if="huella?.resumen?.actividades_realizadas" class="font-semibold text-slate-800 mt-1">
+            {{ huella.resumen.actividades_realizadas }} {{ huella.resumen.actividades_realizadas === 1 ? 'actividad realizada' : 'actividades realizadas' }}
+            · {{ fmtNum(huella.resumen.kg_residuos) }} kg de residuos
+            · {{ fmtNum(huella.resumen.arboles_plantados) }} árboles nativos
+          </p>
+          <p v-else class="font-semibold text-slate-800 mt-1">Organiza actividades por la naturaleza con tu equipo.</p>
+          <p class="text-sm text-slate-500 mt-1">
+            <template v-if="proximaActividad">Próxima actividad: <strong class="text-slate-700">{{ proximaActividad.titulo }}</strong>, {{ fechaCurta(proximaActividad.fecha) }}.</template>
+            <template v-else-if="proximaFecha">Próxima fecha ambiental: <strong class="text-slate-700">{{ proximaFecha.nombre }}</strong>, {{ proximaFecha.data.toLocaleDateString('es-CL', { day: 'numeric', month: 'long' }) }}.</template>
+          </p>
+        </div>
+        <router-link to="/huella-positiva" class="btn-secundario btn-compacto shrink-0">
+          Ver huella positiva
+          <Icone :d="ICONE_SETA" class="w-4 h-4" />
+        </router-link>
       </section>
 
       <!-- 2. empresa -->

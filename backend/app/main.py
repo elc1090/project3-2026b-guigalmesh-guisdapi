@@ -4,7 +4,7 @@ import os
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from app.routes import acoes, empresa, diagnostico
+from app.routes import acoes, actividades, empresa, diagnostico
 
 log = logging.getLogger(__name__)
 
@@ -12,6 +12,7 @@ app = FastAPI()
 app.include_router(empresa.router)
 app.include_router(diagnostico.router)
 app.include_router(acoes.router)
+app.include_router(actividades.router)
 
 
 # Erro não tratado vira um 500 em JSON. Este middleware é registrado ANTES do CORS, então fica

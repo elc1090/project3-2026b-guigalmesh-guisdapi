@@ -67,6 +67,12 @@ const routes = [
         component: () => import('../views/Educacion/Tema.vue'),
         meta: { requerLogin: true }
       },
+      // Empresas que dejan huella positiva (as atividades são da empresa: precisa dela cadastrada)
+      {
+        path: 'huella-positiva',
+        component: () => import('../views/HuellaPositiva.vue'),
+        meta: { requerLogin: true, requerEmpresa: true }
+      },
       // a Guía e a tela ODS viraram temas da Educación (endereços antigos continuam funcionando)
       { path: 'guia', redirect: '/educacion/sostenibilidad' },
       { path: 'ods', redirect: '/educacion/ods' }

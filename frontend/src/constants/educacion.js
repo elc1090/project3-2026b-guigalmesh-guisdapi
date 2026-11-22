@@ -1,4 +1,4 @@
-import { ICONE_FOLHA, ICONE_GLOBO, ICONE_BROTO } from './icones'
+import { ICONE_FOLHA, ICONE_GLOBO, ICONE_BROTO, ICONE_ARVORE } from './icones'
 
 // Conteúdo da tela "Educación sostenible" (pedido da turma do Chile: seções 4 a 10 e 13 da proposta).
 // Cada tema vira uma página própria em /educacion/<slug>, na ordem desta lista.
@@ -29,7 +29,6 @@ const ICONE_SELO = [
   'm15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526',
   'M18 8a6 6 0 1 1-12 0 6 6 0 0 1 12 0z'
 ]
-const ICONE_ARVORE = ['M12 22v-6', 'M12 2 5 11h4l-4 5h14l-4-5h4z']
 const ICONE_CRESCIMENTO = ['M22 7 13.5 15.5 8.5 10.5 2 17', 'M16 7h6v6']
 
 export const TEMAS = [
