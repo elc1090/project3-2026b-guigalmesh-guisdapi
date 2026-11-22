@@ -12,6 +12,8 @@ import Esqueleto from '../components/ui/Esqueleto.vue'
 import Icone from '../components/ui/Icone.vue'
 import SecaoEmpresa from '../components/inicio/SecaoEmpresa.vue'
 import SecaoDiagnostico from '../components/inicio/SecaoDiagnostico.vue'
+import BotoesAcao from '../components/BotoesAcao.vue'
+import { formatarData } from '../lib/datas'
 
 // Início = antigas telas Início + Mi empresa + Diagnóstico, numa página só:
 //  1. cartão com a próxima ação (muda conforme o momento da pessoa);
@@ -61,7 +63,12 @@ const textoFaltantes = computed(() => {
   if (nomes.length === 1) return `Falta ${nomes[0]}.`
   return `Faltan ${nomes.slice(0, -1).join(', ')} y ${nomes.at(-1)}.`
 })
-const recomendacaoPrincipal = computed(() => resultado.value?.recomendacoes?.[0] ?? null)
+// próxima ação = a primeira recomendação (mais prioritária) que ainda não foi realizada
+const recomendacoes = computed(() => resultado.value?.recomendacoes ?? [])
+const recomendacaoPrincipal = computed(() => recomendacoes.value.find((r) => r.status !== 'realizada') ?? null)
+const realizadas = computed(() => recomendacoes.value.filter((r) => r.status === 'realizada').length)
+const planoConcluido = computed(() => recomendacoes.value.length > 0 && realizadas.value === recomendacoes.value.length)
+const dataDiagnostico = computed(() => formatarData(resultado.value?.concluido_em))
 
 // rola até uma seção (links /#diagnostico vindos de outras telas, ou depois de cadastrar a empresa)
 const irPara = async (id) => {
@@ -155,6 +162,7 @@ onMounted(() => {
             </span>
           </div>
           <p class="text-emerald-100 mt-3">Puntuación general de sostenibilidad de tu empresa.</p>
+          <p v-if="dataDiagnostico" class="text-emerald-200 text-sm mt-1">Último diagnóstico: {{ dataDiagnostico }}</p>
           <router-link to="/resultado" class="btn-primario bg-white! text-emerald-900! hover:bg-emerald-50! w-full sm:w-auto mt-6">
             Ver resultados
           </router-link>
@@ -173,6 +181,24 @@ onMounted(() => {
           <span class="inline-block mt-2 text-[11px] font-semibold px-2 py-0.5 rounded-full border" :class="classePrioridade(recomendacaoPrincipal.prioridade)">
             {{ recomendacaoPrincipal.categoria }} · Prioridad {{ recomendacaoPrincipal.prioridade }}
           </span>
+          <BotoesAcao :recomendacao="recomendacaoPrincipal" class="mt-3" />
+          <p class="text-xs text-slate-500 mt-3">
+            {{ realizadas }} de {{ recomendacoes.length }} acciones realizadas ·
+            <router-link to="/resultado" class="font-semibold text-emerald-800 hover:underline">Ver plan completo</router-link>
+          </p>
+        </div>
+      </section>
+
+      <!-- todas as recomendações realizadas: hora de medir de novo -->
+      <section v-else-if="estado === 'concluido' && planoConcluido" class="cartao p-5 flex items-start gap-4">
+        <span class="selo-icone">
+          <Icone :d="ICONE_LAMPADA" class="w-5 h-5" />
+        </span>
+        <div class="min-w-0">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-emerald-700">¡Plan de acción completado!</h2>
+          <p class="font-semibold text-slate-800 mt-1">Realizaste las {{ recomendacoes.length }} acciones recomendadas.</p>
+          <p class="text-sm text-slate-500 mt-1">Actualiza tu diagnóstico para medir tu avance y recibir nuevas recomendaciones.</p>
+          <button type="button" class="btn-primario w-full sm:w-auto mt-3" @click="irPara('diagnostico')">Actualizar diagnóstico</button>
         </div>
       </section>
 

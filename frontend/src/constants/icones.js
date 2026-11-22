@@ -7,6 +7,7 @@ export const ICONE_LAMPADA = [
   'M10 22h4'
 ]
 export const ICONE_SETA = ['M5 12h14', 'm12 5 7 7-7 7']
+export const ICONE_CALENDARIO = ['M8 2v4', 'M16 2v4', 'M3 10h18', 'M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z']
 export const ICONE_CHECK = ['M20 6 9 17l-5-5']
 export const ICONE_LIVRO = [
   'M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z',

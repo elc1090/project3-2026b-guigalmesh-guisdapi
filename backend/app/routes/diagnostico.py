@@ -1,5 +1,6 @@
 import logging
 import time
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -10,6 +11,7 @@ from app.services.calculo import (
     calcular_diagnostico,
     validar_respostas,
 )
+from app.services.historico import data_conclusao, montar_historico
 from app.services.recomendacoes import gerar_fortalezas, gerar_recomendacoes
 
 log = logging.getLogger(__name__)
@@ -96,10 +98,25 @@ def _perfil_empresa(sb, empresa_id):
         return {}  # sem perfil, as recomendações saem sem personalização por setor/porte
 
 
-def _completar_resultado(sb, empresa_id, resultado, respostas):
+def _status_acoes(sb, empresa_id):
+    """{recomendacao_id: status} do plano de ação da empresa (tabela acoes)."""
+    try:
+        res = sb.table("acoes").select("recomendacao_id, status").eq("empresa_id", empresa_id).execute()
+        return {linha["recomendacao_id"]: linha["status"] for linha in res.data or []}
+    except Exception:
+        log.exception("Erro ao buscar o status das ações")
+        return {}  # sem os status, as recomendações aparecem como pendentes
+
+
+def _completar_resultado(sb, empresa_id, resultado, respostas, concluido_em):
     empresa = _perfil_empresa(sb, empresa_id)
-    resultado["recomendacoes"] = gerar_recomendacoes(respostas, empresa=empresa, resultado=resultado)
+    status = _status_acoes(sb, empresa_id)
+    recomendacoes = gerar_recomendacoes(respostas, empresa=empresa, resultado=resultado)
+    for rec in recomendacoes:
+        rec["status"] = status.get(rec["id"], "pendiente")
+    resultado["recomendacoes"] = recomendacoes
     resultado["fortalezas"] = gerar_fortalezas(respostas)
+    resultado["concluido_em"] = concluido_em
     return resultado
 
 
@@ -152,7 +169,8 @@ def concluir(dados: RespostasIn, ctx=Depends(get_contexto)):
         raise HTTPException(422, str(e))
 
     rascunho = _ultimo(sb, empresa_id, STATUS_RASCUNHO)
-    registro = {"respostas": dados.respostas, "status": STATUS_COMPLETADO}
+    concluido_em = datetime.now(timezone.utc).isoformat()
+    registro = {"respostas": dados.respostas, "status": STATUS_COMPLETADO, "concluido_em": concluido_em}
     try:
         if rascunho:
             sb.table("diagnostico").update(registro).eq("id", rascunho["id"]).execute()
@@ -162,7 +180,7 @@ def concluir(dados: RespostasIn, ctx=Depends(get_contexto)):
         log.exception("Erro ao salvar diagnóstico")
         raise HTTPException(500, "Error al guardar")
 
-    return _completar_resultado(sb, empresa_id, resultado, dados.respostas)
+    return _completar_resultado(sb, empresa_id, resultado, dados.respostas, concluido_em)
 
 
 @router.get("/resultado")
@@ -176,6 +194,32 @@ def obter_resultado(ctx=Depends(get_contexto)):
 
     try:
         resultado = calcular_diagnostico(_perguntas_ativas(sb), concluido["respostas"])
-        return _completar_resultado(sb, empresa_id, resultado, concluido["respostas"])
+        return _completar_resultado(
+            sb, empresa_id, resultado, concluido["respostas"], data_conclusao(concluido)
+        )
     except RespostasInvalidas as e:
         raise HTTPException(409, str(e))
+
+
+# quantos diagnósticos aparecem no gráfico de evolução (os mais recentes)
+LIMITE_HISTORICO = 24
+
+
+@router.get("/historico")
+def obter_historico(ctx=Depends(get_contexto)):
+    """Nota geral e por dimensão de cada diagnóstico concluído, do mais antigo para o mais novo."""
+    sb, empresa_id = ctx
+    try:
+        res = (
+            sb.table("diagnostico")
+            .select("respostas, concluido_em, created_at")
+            .eq("empresa_id", empresa_id)
+            .eq("status", STATUS_COMPLETADO)
+            .order("created_at", desc=True)
+            .limit(LIMITE_HISTORICO)
+            .execute()
+        )
+    except Exception:
+        log.exception("Erro ao consultar o histórico")
+        raise HTTPException(503, "Error al consultar el historial")
+    return montar_historico(_perguntas_ativas(sb), res.data or [])

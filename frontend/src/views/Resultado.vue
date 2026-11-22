@@ -3,18 +3,23 @@ import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip } from 'chart.js'
 import { useResultadoStore } from '../stores/resultado'
+import { useHistoricoStore } from '../stores/historico'
+import BotoesAcao from '../components/BotoesAcao.vue'
+import GraficoEvolucao from '../components/GraficoEvolucao.vue'
+import { formatarData } from '../lib/datas'
 import Icone from '../components/ui/Icone.vue'
 import Pagina from '../components/ui/Pagina.vue'
 import Esqueleto from '../components/ui/Esqueleto.vue'
 import Alerta from '../components/ui/Alerta.vue'
 import { DIMENSOES, dimensaoPorNome } from '../constants/dimensoes'
 import { classeSeloNivel, classeIconeNivel, classePrioridade } from '../constants/niveis'
-import { ICONE_GRAFICO, ICONE_LAMPADA, ICONE_FOLHA, ICONE_CHECK, ICONE_SETA } from '../constants/icones'
+import { ICONE_GRAFICO, ICONE_LAMPADA, ICONE_FOLHA, ICONE_CHECK, ICONE_SETA, ICONE_CALENDARIO, ICONE_TENDENCIA } from '../constants/icones'
 
 // registra só o necessário para o radar ('chart.js/auto' trazia todos os tipos de gráfico)
 Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip)
 
 const resultadoStore = useResultadoStore()
+const historicoStore = useHistoricoStore()
 const router = useRouter()
 
 const resultado = computed(() => resultadoStore.dado ?? null)
@@ -47,8 +52,19 @@ const dimensoes = computed(() => {
     .sort((a, b) => posicao(a.nome) - posicao(b.nome))
 })
 
-const recomendacoes = computed(() => resultado.value?.recomendacoes ?? [])
 const fortalezas = computed(() => resultado.value?.fortalezas ?? [])
+const dataDiagnostico = computed(() => formatarData(resultado.value?.concluido_em))
+const historico = computed(() => historicoStore.dado ?? [])
+
+// plano de ação: as já realizadas vão para o fim da lista (a ordem de prioridade se mantém)
+const recomendacoes = computed(() => {
+  const todas = resultado.value?.recomendacoes ?? []
+  return [...todas.filter((r) => r.status !== 'realizada'), ...todas.filter((r) => r.status === 'realizada')]
+})
+const realizadas = computed(() => recomendacoes.value.filter((r) => r.status === 'realizada').length)
+const progressoPlano = computed(() =>
+  recomendacoes.value.length ? Math.round((realizadas.value / recomendacoes.value.length) * 100) : 0
+)
 
 // mostra as principais primeiro; o resto fica atrás do botão "Ver todas"
 const LIMITE_RECOMENDACOES = 6
@@ -137,6 +153,9 @@ onMounted(async () => {
   // resultado já em cache: desenha na hora (o canvas já está no DOM)
   if (resultado.value) desenharGraficos()
 
+  // o gráfico de evolução carrega em paralelo e não bloqueia a tela
+  historicoStore.carregar().catch((e) => console.error('Erro ao carregar histórico:', e))
+
   try {
     await resultadoStore.carregar()
   } catch (e) {
@@ -207,6 +226,11 @@ onBeforeUnmount(() => {
     </div>
 
     <div v-else-if="resultado && resultado.geral" class="space-y-6">
+      <p v-if="dataDiagnostico" class="flex items-center gap-2 text-sm text-slate-500">
+        <Icone :d="ICONE_CALENDARIO" class="w-4 h-4 text-emerald-700" />
+        Último diagnóstico: <strong class="text-slate-700">{{ dataDiagnostico }}</strong>
+      </p>
+
       <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
         <!-- Coluna esquerda -->
         <div class="xl:col-span-5 space-y-6">
@@ -283,6 +307,20 @@ onBeforeUnmount(() => {
               </li>
             </ul>
           </div>
+
+          <!-- Evolução: uma linha por dimensão, um ponto por diagnóstico concluído -->
+          <div class="cartao p-5 sm:p-6">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="selo-icone">
+                <Icone :d="ICONE_TENDENCIA" class="w-5 h-5" />
+              </span>
+              <div>
+                <h2 class="text-lg font-semibold text-slate-800">Tu evolución</h2>
+                <p class="text-sm text-slate-500">Puntuación en cada diagnóstico finalizado.</p>
+              </div>
+            </div>
+            <GraficoEvolucao :historico="historico" />
+          </div>
         </div>
 
         <!-- Coluna direita -->
@@ -332,6 +370,19 @@ onBeforeUnmount(() => {
               </div>
             </div>
 
+            <!-- progresso do plano de ação -->
+            <div v-if="recomendacoes.length" class="mb-4">
+              <div class="flex items-center justify-between text-sm mb-1.5">
+                <span class="font-semibold text-slate-700">Tu plan de acción</span>
+                <span class="text-slate-500">
+                  <strong class="text-slate-800">{{ realizadas }}</strong> de {{ recomendacoes.length }} acciones realizadas
+                </span>
+              </div>
+              <div class="h-2.5 bg-white border border-emerald-100 rounded-full overflow-hidden" role="progressbar" :aria-valuenow="progressoPlano" aria-valuemin="0" aria-valuemax="100" aria-label="Acciones realizadas">
+                <div class="h-full rounded-full bg-gradient-to-r from-emerald-600 to-emerald-400 transition-all duration-500" :style="{ width: progressoPlano + '%' }"></div>
+              </div>
+            </div>
+
             <div
               v-if="recomendacoes.length === 0"
               class="p-6 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-900 text-center"
@@ -343,7 +394,8 @@ onBeforeUnmount(() => {
               <li
                 v-for="(rec, index) in recomendacoesVisiveis"
                 :key="rec.id"
-                class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs flex items-start gap-3 sm:gap-4"
+                class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs flex items-start gap-3 sm:gap-4 transition"
+                :class="{ 'opacity-70': rec.status === 'realizada' }"
               >
                 <span class="w-8 h-8 rounded-full bg-emerald-900 text-white text-sm font-bold flex items-center justify-center shrink-0">
                   {{ index + 1 }}
@@ -387,6 +439,7 @@ onBeforeUnmount(() => {
                       <Icone :d="ICONE_SETA" class="w-3.5 h-3.5" />
                     </router-link>
                   </div>
+                  <BotoesAcao :recomendacao="rec" class="mt-3" />
                 </div>
               </li>
             </ol>
