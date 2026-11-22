@@ -117,13 +117,13 @@ def test_campos_da_recomendacao():
     assert rec["parametro"] == "Generación de residuos"
     assert rec["ods"] == [12]
     assert rec["indicador_sugerido"]
-    assert rec["enlace"]["para"].startswith("/aprende")
+    assert rec["enlace"]["para"] == "/educacion/ley-rep"
 
 
 def test_enlace_da_etapa_tem_preferencia():
     (empieza,) = gerar_recomendacoes({"q_amb_08": 1})
     (avanza,) = gerar_recomendacoes({"q_amb_08": 3})
-    assert empieza["enlace"]["para"] == "/aprende#ecosistemas"
+    assert empieza["enlace"]["para"] == "/educacion/ecosistemas"
     assert avanza["enlace"]["para"] == "/huella-positiva"
 
 
@@ -158,3 +158,15 @@ def test_integracao_com_calcular_diagnostico():
     assert {r["categoria"] for r in recs} == {"Ambiental"}
     assert all(r["prioridade"] == "Alta" and r["etapa"] == "Empieza" for r in recs)
     assert len(gerar_fortalezas(respostas)) == 14
+
+def test_links_da_educacion_apontam_para_temas_que_existem():
+    """Os slugs dos temas ficam no front (constants/educacion.js): um link quebrado aqui
+    faria o botão sumir da recomendação sem ninguém perceber."""
+    import re
+    arquivo = Path(__file__).parents[2] / "frontend" / "src" / "constants" / "educacion.js"
+    slugs = set(re.findall(r"slug: '([a-z0-9-]+)'", arquivo.read_text(encoding="utf-8")))
+    assert slugs, "nenhum tema encontrado em constants/educacion.js"
+    for item in CATALOGO_PADRAO.values():
+        for enlace in (item.get("enlace"), item["empieza"].get("enlace"), item["avanza"].get("enlace")):
+            if enlace and enlace["para"].startswith("/educacion/"):
+                assert enlace["para"].removeprefix("/educacion/") in slugs, enlace["para"]

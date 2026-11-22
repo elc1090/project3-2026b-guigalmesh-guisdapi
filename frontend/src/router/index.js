@@ -4,6 +4,7 @@ import { sessao } from '../lib/sessao'
 import { navegando } from './estado'
 import { useEmpresaStore } from '../stores/empresa'
 import { SLUGS_DIMENSOES } from '../constants/dimensoes'
+import { SLUGS_TEMAS } from '../constants/educacion'
 
 import DefaultLayout from '../layouts/DefaultLayout.vue'
 import AuthLayout from '../layouts/AuthLayout.vue'
@@ -55,16 +56,20 @@ const routes = [
         component: Resultado,
         meta: { requerLogin: true, requerEmpresa: true }
       },
+      // Educación sostenible: índice + uma página por tema (conteúdo em constants/educacion.js)
       {
-        path: 'guia',
-        component: () => import('../views/Guia.vue'),
+        path: 'educacion',
+        component: () => import('../views/Educacion/Indice.vue'),
         meta: { requerLogin: true }
       },
       {
-        path: 'ods',
-        component: () => import('../views/Ods.vue'),
+        path: `educacion/:tema(${SLUGS_TEMAS})`,
+        component: () => import('../views/Educacion/Tema.vue'),
         meta: { requerLogin: true }
-      }
+      },
+      // a Guía e a tela ODS viraram temas da Educación (endereços antigos continuam funcionando)
+      { path: 'guia', redirect: '/educacion/sostenibilidad' },
+      { path: 'ods', redirect: '/educacion/ods' }
     ]
   }
 ]

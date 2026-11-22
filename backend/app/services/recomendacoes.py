@@ -20,10 +20,14 @@ PRIORIDADE_POR_VALOR = {1: "Alta", 2: "Media", 3: "Baja"}
 ORDEM_PRIORIDADE = {"Alta": 0, "Media": 1, "Baja": 2}
 SOBE_PRIORIDADE = {"Baja": "Media", "Media": "Alta", "Alta": "Alta"}
 
-# Links para as telas educativas. O front só mostra o link se a rota existir.
-APRENDE_HUELLA = {"para": "/aprende#huella-de-carbono", "rotulo": "Aprende sobre la huella de carbono"}
-APRENDE_REP = {"para": "/aprende#ley-rep", "rotulo": "Aprende sobre la Ley REP"}
-APRENDE_ECOSISTEMAS = {"para": "/aprende#ecosistemas", "rotulo": "Aprende sobre los ecosistemas"}
+# Links para os temas da Educación sostenible (front: constants/educacion.js) e para a seção
+# Huella positiva. O front só mostra o link se a rota existir.
+APRENDE_HUELLA = {"para": "/educacion/huella-de-carbono", "rotulo": "Aprende sobre la huella de carbono"}
+APRENDE_REP = {"para": "/educacion/ley-rep", "rotulo": "Aprende sobre la Ley REP"}
+APRENDE_ECOSISTEMAS = {"para": "/educacion/ecosistemas", "rotulo": "Aprende sobre los ecosistemas"}
+APRENDE_VERDES = {"para": "/educacion/empresas-verdes", "rotulo": "Ideas de empresas verdes"}
+APRENDE_CERTIFICACIONES = {"para": "/educacion/empresas-b-y-certificaciones", "rotulo": "Conoce las Empresas B y certificaciones"}
+APRENDE_COMPETITIVIDAD = {"para": "/educacion/competitividad", "rotulo": "Sostenibilidad y competitividad"}
 HUELLA_POSITIVA = {"para": "/huella-positiva", "rotulo": "Ir a Empresas que dejan huella positiva"}
 
 # Chave: id da pergunta (tabela perguntas). "ods": números dos ODS da Agenda 2030.
@@ -122,6 +126,7 @@ CATALOGO_PADRAO = {
         "parametro": "Uso de materiales sostenibles",
         "ods": [12],
         "indicador": "% de compras con criterios sostenibles",
+        "enlace": APRENDE_VERDES,
         "empieza": {
             "titulo": "Prefiere materiales de menor impacto",
             "descricao": "Identifica los 3 insumos que más compras y busca alternativas recicladas, reutilizables o biodegradables.",
@@ -283,6 +288,7 @@ CATALOGO_PADRAO = {
         "parametro": "Inversión en innovación y tecnología",
         "ods": [9],
         "indicador": "Mejoras de procesos implementadas por año",
+        "enlace": APRENDE_COMPETITIVIDAD,
         "empieza": {
             "titulo": "Detecta oportunidades de mejora",
             "descricao": "Identifica un proceso que consuma mucho tiempo, energía o materiales y busca una solución simple, como digitalizar boletas o controlar el inventario.",
@@ -297,6 +303,7 @@ CATALOGO_PADRAO = {
         "parametro": "Creación de valor compartido",
         "ods": [8, 17],
         "indicador": "Iniciativas de valor compartido activas",
+        "enlace": APRENDE_CERTIFICACIONES,
         "empieza": {
             "titulo": "Busca beneficios para todos",
             "descricao": "Crea una iniciativa que ayude al negocio y a otros: comprar a proveedores locales, descuentos por devolver envases o beneficios para trabajadores.",

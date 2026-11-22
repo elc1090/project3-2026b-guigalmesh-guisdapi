@@ -1,12 +1,11 @@
 <script setup>
 import { ref, computed } from 'vue'
 
-import Icone from '../components/ui/Icone.vue'
-import Pagina from '../components/ui/Pagina.vue'
-import { NOMES_DIMENSOES } from '../constants/dimensoes'
-import { ICONE_GLOBO, ICONE_FOLHA, ICONE_SETA } from '../constants/icones'
+import Icone from '../ui/Icone.vue'
+import { NOMES_DIMENSOES } from '../../constants/dimensoes'
+import { ICONE_FOLHA } from '../../constants/icones'
 
-// ---------- Filtro por dimensão da guia ----------
+// ---------- Filtro por dimensão do diagnóstico ----------
 const FILTROS = [
   { id: 'todos', etiqueta: 'Todos los ODS' },
   ...NOMES_DIMENSOES.map((nome) => ({ id: nome, etiqueta: nome }))
@@ -204,22 +203,8 @@ const visibles = computed(() =>
 </script>
 
 <template>
-  <Pagina
-    :icone="ICONE_GLOBO"
-    titulo="Objetivos de Desarrollo Sostenible"
-    subtitulo="Los 17 objetivos de la Agenda 2030 y su relación con la sostenibilidad de las empresas"
-  >
-    <template #lateral>
-      <div class="flex items-center gap-3 bg-emerald-50 border border-emerald-100 rounded-2xl px-4 py-3 lg:max-w-md">
-        <span class="selo-icone bg-emerald-100!">
-          <Icone :d="ICONE_FOLHA" class="w-5 h-5" />
-        </span>
-        <p class="text-sm text-slate-600">
-          Las empresas pueden contribuir a estos objetivos con acciones concretas en su gestión diaria.
-        </p>
-      </div>
-    </template>
-
+  <!-- Explorador dos 17 ODS (antiga tela /ods), usado no tema "Agenda 2030 y los ODS" da Educación -->
+  <div class="space-y-6 sm:space-y-8">
     <!-- Filtros por dimensão -->
     <div class="space-y-3">
       <div class="flex flex-wrap gap-2" role="group" aria-label="Filtrar por dimensión">
@@ -238,7 +223,7 @@ const visibles = computed(() =>
         </button>
       </div>
       <p class="text-xs sm:text-sm text-slate-500">
-        Las etiquetas verdes indican las dimensiones de la Guía sostenible relacionadas con cada ODS.
+        Las etiquetas verdes indican las dimensiones del diagnóstico cuyas recomendaciones aportan a cada ODS.
         Mostrando {{ visibles.length }} de {{ ODS.length }}.
       </p>
     </div>
@@ -277,22 +262,5 @@ const visibles = computed(() =>
         </div>
       </article>
     </div>
-
-    <!-- Ligação com a guia -->
-    <section class="bg-emerald-50 border border-emerald-100 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <div>
-        <h2 class="text-lg sm:text-xl font-bold text-emerald-950">¿Por dónde empezar?</h2>
-        <p class="text-slate-600 text-sm sm:text-base mt-1">
-          La Guía sostenible propone acciones concretas, ejemplos e indicadores para cada dimensión.
-        </p>
-      </div>
-      <router-link
-        to="/guia"
-        class="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 bg-emerald-800 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-950 transition shadow-lg"
-      >
-        Ver la guía
-        <Icone :d="ICONE_SETA" class="w-5 h-5" />
-      </router-link>
-    </section>
-  </Pagina>
+  </div>
 </template>

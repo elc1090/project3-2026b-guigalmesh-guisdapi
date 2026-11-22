@@ -1,4 +1,4 @@
-import { ICONE_LIVRO, ICONE_CASA, ICONE_TENDENCIA, ICONE_GLOBO } from './icones'
+import { ICONE_LIVRO, ICONE_CASA, ICONE_TENDENCIA } from './icones'
 
 // Itens de navegação do app (barra lateral no desktop e barra inferior no celular), nesta ordem.
 // rotuloCurto: usado na barra inferior do celular, onde o espaço é pequeno.
@@ -6,8 +6,7 @@ import { ICONE_LIVRO, ICONE_CASA, ICONE_TENDENCIA, ICONE_GLOBO } from './icones'
 export const NAVEGACAO = [
   { para: '/', rotulo: 'Inicio', icone: ICONE_CASA, exato: true, tambemEm: ['/diagnostico'] },
   { para: '/resultado', rotulo: 'Resultados', icone: ICONE_TENDENCIA },
-  { para: '/guia', rotulo: 'Guía sostenible', rotuloCurto: 'Guía', icone: ICONE_LIVRO },
-  { para: '/ods', rotulo: 'Objetivos de Desarrollo Sostenible', rotuloCurto: 'ODS', icone: ICONE_GLOBO }
+  { para: '/educacion', rotulo: 'Educación sostenible', rotuloCurto: 'Educación', icone: ICONE_LIVRO }
 ]
 
 // item ativo para o caminho atual

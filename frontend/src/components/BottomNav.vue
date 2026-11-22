@@ -6,7 +6,7 @@ import { NAVEGACAO, itemAtivo } from '../constants/navegacao'
 import { ICONE_SAIR, ICONE_FECHAR } from '../constants/icones'
 import { useUsuario } from '../composables/useUsuario'
 
-// Barra inferior do celular: os 4 itens de navegação + "Cuenta" (dados do usuário e sair)
+// Barra inferior do celular: os itens de navegação + "Cuenta" (dados do usuário e sair)
 const route = useRoute()
 const { nome, email, inicial, sairDaConta } = useUsuario()
 
@@ -15,6 +15,8 @@ const painel = ref(null)
 
 // posição da "gota" de vidro: índice do item ativo, -1 = nenhum
 const indiceAtivo = computed(() => NAVEGACAO.findIndex((item) => itemAtivo(item, route.path)))
+// colunas da barra: itens de navegação + "Cuenta"
+const colunas = NAVEGACAO.length + 1
 
 const abrirConta = async () => {
   contaAberta.value = true
@@ -43,15 +45,15 @@ const sair = async () => {
            shadow-[0_10px_40px_-8px_rgba(2,44,34,0.35),inset_0_1px_0_rgba(255,255,255,0.9)]"
     aria-label="Navegación principal"
   >
-    <ul class="relative grid grid-cols-5">
+    <ul class="relative grid" :style="{ gridTemplateColumns: `repeat(${colunas}, minmax(0, 1fr))` }">
       <!-- "gota" de vidro do item ativo, desliza entre os itens -->
       <li
         v-show="indiceAtivo !== -1"
         aria-hidden="true"
-        class="absolute inset-y-0 left-0 w-1/5 rounded-full bg-white/85 ring-1 ring-black/5
+        class="absolute inset-y-0 left-0 rounded-full bg-white/85 ring-1 ring-black/5
                shadow-[0_4px_14px_-2px_rgba(2,44,34,0.25),inset_0_1px_0_rgba(255,255,255,1)]
                transition-transform duration-500 ease-[cubic-bezier(0.3,1.35,0.5,1)] motion-reduce:transition-none"
-        :style="{ transform: `translateX(${indiceAtivo * 100}%)` }"
+        :style="{ width: `${100 / colunas}%`, transform: `translateX(${indiceAtivo * 100}%)` }"
       ></li>
 
       <li v-for="(item, i) in NAVEGACAO" :key="item.para" class="relative">
