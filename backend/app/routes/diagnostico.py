@@ -10,7 +10,7 @@ from app.services.calculo import (
     calcular_diagnostico,
     validar_respostas,
 )
-from app.services.recomendacoes import gerar_recomendacoes
+from app.services.recomendacoes import gerar_fortalezas, gerar_recomendacoes
 
 log = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/diagnostico", tags=["diagnostico"])
@@ -85,6 +85,24 @@ def _ultimo(sb, empresa_id, status):
         raise HTTPException(503, "Error al consultar diagnóstico")
 
 
+def _perfil_empresa(sb, empresa_id):
+    """Setor e porte da empresa, usados para personalizar as recomendações.
+    Sem cache: a empresa pode ser editada a qualquer momento."""
+    try:
+        res = sb.table("empresas").select("setor, porte").eq("id", empresa_id).execute()
+        return res.data[0] if res.data else {}
+    except Exception:
+        log.exception("Erro ao buscar o perfil da empresa")
+        return {}  # sem perfil, as recomendações saem sem personalização por setor/porte
+
+
+def _completar_resultado(sb, empresa_id, resultado, respostas):
+    empresa = _perfil_empresa(sb, empresa_id)
+    resultado["recomendacoes"] = gerar_recomendacoes(respostas, empresa=empresa, resultado=resultado)
+    resultado["fortalezas"] = gerar_fortalezas(respostas)
+    return resultado
+
+
 @router.get("/rascunho")
 def obter_rascunho(ctx=Depends(get_contexto)):
     sb, empresa_id = ctx
@@ -144,8 +162,7 @@ def concluir(dados: RespostasIn, ctx=Depends(get_contexto)):
         log.exception("Erro ao salvar diagnóstico")
         raise HTTPException(500, "Error al guardar")
 
-    resultado["recomendacoes"] = gerar_recomendacoes(resultado)
-    return resultado
+    return _completar_resultado(sb, empresa_id, resultado, dados.respostas)
 
 
 @router.get("/resultado")
@@ -159,7 +176,6 @@ def obter_resultado(ctx=Depends(get_contexto)):
 
     try:
         resultado = calcular_diagnostico(_perguntas_ativas(sb), concluido["respostas"])
-        resultado["recomendacoes"] = gerar_recomendacoes(resultado)
-        return resultado
+        return _completar_resultado(sb, empresa_id, resultado, concluido["respostas"])
     except RespostasInvalidas as e:
         raise HTTPException(409, str(e))

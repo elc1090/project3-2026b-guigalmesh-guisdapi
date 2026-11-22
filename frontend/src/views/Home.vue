@@ -16,7 +16,7 @@ import SecaoDiagnostico from '../components/inicio/SecaoDiagnostico.vue'
 // Início = antigas telas Início + Mi empresa + Diagnóstico, numa página só:
 //  1. cartão com a próxima ação (muda conforme o momento da pessoa);
 //  2. seção "Tu empresa" (formulário aberto se ainda não há empresa, resumo se já há);
-//  3. seção "Diagnóstico" (as 4 dimensões + finalizar), só depois da empresa cadastrada.
+//  3. seção "Diagnóstico" (as 3 dimensões + finalizar), só depois da empresa cadastrada.
 // /empresa e /diagnostico redirecionam para cá (#empresa / #diagnostico).
 
 const route = useRoute()
@@ -91,8 +91,8 @@ onMounted(() => {
         <Esqueleto class="h-4 w-2/3 bg-white/20!" />
       </div>
       <Esqueleto class="h-20 w-full rounded-2xl" />
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <Esqueleto v-for="n in 4" :key="n" class="h-24 sm:h-56 rounded-2xl" />
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+        <Esqueleto v-for="n in 3" :key="n" class="h-24 sm:h-56 rounded-2xl" />
       </div>
       <span class="sr-only" role="status">Cargando...</span>
     </div>
@@ -107,7 +107,7 @@ onMounted(() => {
         <template v-if="estado === 'sem-empresa'">
           <h1 class="text-2xl sm:text-3xl font-bold mt-2 text-balance">Empieza registrando tu empresa</h1>
           <p class="text-emerald-100 mt-2 max-w-xl">
-            Completa los datos de abajo (toma menos de un minuto) y después responde el diagnóstico de sostenibilidad en 4 dimensiones.
+            Completa los datos de abajo (toma menos de un minuto) y después responde el diagnóstico de sostenibilidad en 3 dimensiones.
           </p>
         </template>
 
@@ -124,7 +124,7 @@ onMounted(() => {
             </div>
           </template>
           <p v-else class="text-emerald-100 mt-2 max-w-xl">
-            {{ progresso.total.value || 'Unas' }} preguntas sobre Gobernanza, Ambiental, Social y Económica. Tu avance se guarda solo: puedes salir y volver cuando quieras.
+            {{ progresso.total.value || 'Unas' }} preguntas sobre las dimensiones ambiental, social y económica. Tu avance se guarda solo: puedes salir y volver cuando quieras.
           </p>
 
           <router-link

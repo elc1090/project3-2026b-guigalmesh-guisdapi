@@ -14,7 +14,8 @@ const FILTROS = [
 const filtro = ref('todos')
 
 // ---------- Os 17 ODS ----------
-// "dimensiones" segue a relação indicada na Guía sostenible (ODS 16 → Gobernanza, etc.)
+// "dimensiones": dimensões do diagnóstico cujas recomendações contribuem para cada ODS
+// (mesma relação do catálogo em backend/app/services/recomendacoes.py)
 const ODS = [
   {
     numero: 1,
@@ -56,7 +57,7 @@ const ODS = [
     nombre: 'Educación de calidad',
     descripcion: 'Garantizar una educación inclusiva, equitativa y de calidad, y promover oportunidades de aprendizaje durante toda la vida.',
     color: '#C5192D',
-    dimensiones: [],
+    dimensiones: ['Social'],
     icono: ['M22 10v6', 'M2 10l10-5 10 5-10 5z', 'M6 12v5c3 3 9 3 12 0v-5']
   },
   {
@@ -78,7 +79,7 @@ const ODS = [
     nombre: 'Agua limpia y saneamiento',
     descripcion: 'Garantizar la disponibilidad de agua y su gestión sostenible, y el saneamiento para todos.',
     color: '#26BDE2',
-    dimensiones: [],
+    dimensiones: ['Ambiental'],
     icono: [
       'M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z'
     ]
@@ -88,7 +89,7 @@ const ODS = [
     nombre: 'Energía asequible y no contaminante',
     descripcion: 'Garantizar el acceso a una energía asequible, segura, sostenible y moderna.',
     color: '#FCC30B',
-    dimensiones: [],
+    dimensiones: ['Ambiental'],
     icono: ['M13 2 3 14h9l-1 8 10-12h-9l1-8z']
   },
   {
@@ -116,7 +117,7 @@ const ODS = [
     nombre: 'Reducción de las desigualdades',
     descripcion: 'Reducir la desigualdad en los países y entre ellos.',
     color: '#DD1367',
-    dimensiones: [],
+    dimensiones: ['Social'],
     icono: ['M5 9h14', 'M5 15h14']
   },
   {
@@ -124,7 +125,7 @@ const ODS = [
     nombre: 'Ciudades y comunidades sostenibles',
     descripcion: 'Lograr que las ciudades y los asentamientos humanos sean inclusivos, seguros, resilientes y sostenibles.',
     color: '#FD9D24',
-    dimensiones: [],
+    dimensiones: ['Ambiental', 'Social'],
     icono: [
       'M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z',
       'M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2',
@@ -140,7 +141,7 @@ const ODS = [
     nombre: 'Producción y consumo responsables',
     descripcion: 'Garantizar modalidades de consumo y producción sostenibles.',
     color: '#BF8B2E',
-    dimensiones: ['Ambiental'],
+    dimensiones: ['Ambiental', 'Económica'],
     icono: [
       'M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8',
       'M21 3v5h-5',
@@ -161,7 +162,7 @@ const ODS = [
     nombre: 'Vida submarina',
     descripcion: 'Conservar y utilizar de forma sostenible los océanos, los mares y los recursos marinos.',
     color: '#0A97D9',
-    dimensiones: [],
+    dimensiones: ['Ambiental'],
     icono: [
       'M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1',
       'M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1',
@@ -173,7 +174,7 @@ const ODS = [
     nombre: 'Vida de ecosistemas terrestres',
     descripcion: 'Proteger, restablecer y promover el uso sostenible de los ecosistemas terrestres, gestionar los bosques de forma sostenible y detener la pérdida de biodiversidad.',
     color: '#56C02B',
-    dimensiones: [],
+    dimensiones: ['Ambiental'],
     icono: ICONE_FOLHA
   },
   {
@@ -181,7 +182,7 @@ const ODS = [
     nombre: 'Paz, justicia e instituciones sólidas',
     descripcion: 'Promover sociedades pacíficas e inclusivas, facilitar el acceso a la justicia y construir instituciones eficaces, responsables e inclusivas.',
     color: '#00689D',
-    dimensiones: ['Gobernanza'],
+    dimensiones: ['Económica'],
     icono: ['M3 22h18', 'M6 18v-7', 'M10 18v-7', 'M14 18v-7', 'M18 18v-7', 'M12 2l8 5H4z']
   },
   {
@@ -189,7 +190,7 @@ const ODS = [
     nombre: 'Alianzas para lograr los objetivos',
     descripcion: 'Fortalecer los medios de implementación y revitalizar la alianza mundial para el desarrollo sostenible.',
     color: '#19486A',
-    dimensiones: [],
+    dimensiones: ['Social', 'Económica'],
     icono: [
       'M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71',
       'M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'

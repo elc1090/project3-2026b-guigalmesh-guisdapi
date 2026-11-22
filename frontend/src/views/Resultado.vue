@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
 import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip } from 'chart.js'
 import { useResultadoStore } from '../stores/resultado'
 import Icone from '../components/ui/Icone.vue'
@@ -8,12 +9,13 @@ import Esqueleto from '../components/ui/Esqueleto.vue'
 import Alerta from '../components/ui/Alerta.vue'
 import { DIMENSOES, dimensaoPorNome } from '../constants/dimensoes'
 import { classeSeloNivel, classeIconeNivel, classePrioridade } from '../constants/niveis'
-import { ICONE_GRAFICO, ICONE_LAMPADA, ICONE_FOLHA } from '../constants/icones'
+import { ICONE_GRAFICO, ICONE_LAMPADA, ICONE_FOLHA, ICONE_CHECK, ICONE_SETA } from '../constants/icones'
 
 // registra só o necessário para o radar ('chart.js/auto' trazia todos os tipos de gráfico)
 Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip)
 
 const resultadoStore = useResultadoStore()
+const router = useRouter()
 
 const resultado = computed(() => resultadoStore.dado ?? null)
 // spinner só se nunca carregou o resultado (sem cache)
@@ -30,12 +32,12 @@ const posicao = (categoria) => {
   return i === -1 ? DIMENSOES.length : i
 }
 
-// Posição dos rótulos HTML ao redor do radar (topo, direita, base, esquerda)
+// Posição dos rótulos HTML ao redor do radar: com 3 dimensões o radar é um triângulo
+// (vértices no topo, embaixo à direita e embaixo à esquerda, no sentido horário)
 const posicoesRotulo = [
   'top-0 left-1/2 -translate-x-1/2',
-  'right-0 top-1/2 -translate-y-1/2',
-  'bottom-0 left-1/2 -translate-x-1/2',
-  'left-0 top-1/2 -translate-y-1/2'
+  'right-0 top-[68%] -translate-y-1/2',
+  'left-0 top-[68%] -translate-y-1/2'
 ]
 
 const dimensoes = computed(() => {
@@ -46,6 +48,24 @@ const dimensoes = computed(() => {
 })
 
 const recomendacoes = computed(() => resultado.value?.recomendacoes ?? [])
+const fortalezas = computed(() => resultado.value?.fortalezas ?? [])
+
+// mostra as principais primeiro; o resto fica atrás do botão "Ver todas"
+const LIMITE_RECOMENDACOES = 6
+const verTodas = ref(false)
+const recomendacoesVisiveis = computed(() =>
+  verTodas.value ? recomendacoes.value : recomendacoes.value.slice(0, LIMITE_RECOMENDACOES)
+)
+
+// o back-end pode apontar para telas que ainda não existem: só mostra o link se a rota existir
+const enlaceValido = (enlace) => !!enlace?.para && router.resolve(enlace.para).matched.length > 0
+
+// fortalezas agrupadas por dimensão, na ordem de DIMENSOES
+const fortalezasPorDimensao = computed(() =>
+  DIMENSOES
+    .map((d) => ({ nome: d.nome, itens: fortalezas.value.filter((f) => f.categoria === d.nome) }))
+    .filter((g) => g.itens.length)
+)
 
 const pct = (valor) => Math.min(100, Math.max(0, Number(valor) || 0))
 
@@ -168,8 +188,8 @@ onBeforeUnmount(() => {
       <div class="xl:col-span-5 space-y-6">
         <div class="cartao p-6 space-y-4"><Esqueleto class="h-6 w-1/2" /><Esqueleto class="h-72 w-full rounded-full mx-auto max-w-72" /></div>
       </div>
-      <div class="xl:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 content-start">
-        <div v-for="n in 4" :key="n" class="cartao p-5 space-y-3"><Esqueleto class="h-14 w-14 rounded-full" /><Esqueleto class="h-4 w-full" /><Esqueleto class="h-6 w-24 rounded-full" /></div>
+      <div class="xl:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 content-start">
+        <div v-for="n in 3" :key="n" class="cartao p-5 space-y-3"><Esqueleto class="h-14 w-14 rounded-full" /><Esqueleto class="h-4 w-full" /><Esqueleto class="h-6 w-24 rounded-full" /></div>
       </div>
       <span class="sr-only" role="status">Cargando resultado...</span>
     </div>
@@ -218,7 +238,7 @@ onBeforeUnmount(() => {
               </div>
 
               <div
-                v-for="(dimension, i) in dimensoes.slice(0, 4)"
+                v-for="(dimension, i) in dimensoes.slice(0, 3)"
                 :key="dimension.nome"
                 class="absolute flex items-center gap-2 whitespace-nowrap"
                 :class="posicoesRotulo[i]"
@@ -268,7 +288,7 @@ onBeforeUnmount(() => {
         <!-- Coluna direita -->
         <div class="xl:col-span-7 space-y-6">
           <!-- Cards por dimensão -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
             <article
               v-for="dimension in dimensoes"
               :key="dimension.nome"
@@ -316,12 +336,12 @@ onBeforeUnmount(() => {
               v-if="recomendacoes.length === 0"
               class="p-6 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-900 text-center"
             >
-              ¡Felicitaciones! Todas las dimensiones de tu empresa se encuentran en nivel <strong>Avanzado</strong>.
+              ¡Felicitaciones! Tu empresa alcanzó el nivel más alto en <strong>todos</strong> los parámetros evaluados.
             </div>
 
             <ol v-else class="space-y-3">
               <li
-                v-for="(rec, index) in recomendacoes"
+                v-for="(rec, index) in recomendacoesVisiveis"
                 :key="rec.id"
                 class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs flex items-start gap-3 sm:gap-4"
               >
@@ -342,13 +362,72 @@ onBeforeUnmount(() => {
                       Prioridad {{ rec.prioridade }}
                     </span>
                   </div>
+                  <p v-if="rec.parametro" class="text-[11px] font-semibold uppercase tracking-wide text-emerald-700 mt-0.5">
+                    {{ rec.categoria }} · {{ rec.parametro }}<template v-if="rec.etapa"> · {{ rec.etapa }}</template>
+                  </p>
                   <p class="text-xs sm:text-sm text-slate-500 mt-0.5">{{ rec.descricao }}</p>
                   <p v-if="rec.indicador_sugerido" class="text-xs text-slate-500 mt-1">
                     <span class="font-semibold text-slate-700">Indicador sugerido:</span> {{ rec.indicador_sugerido }}
                   </p>
+                  <div v-if="rec.ods?.length || enlaceValido(rec.enlace)" class="flex flex-wrap items-center gap-2 mt-2">
+                    <span
+                      v-for="n in rec.ods"
+                      :key="n"
+                      class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200"
+                      :title="`Contribuye al Objetivo de Desarrollo Sostenible ${n}`"
+                    >
+                      ODS {{ n }}
+                    </span>
+                    <router-link
+                      v-if="enlaceValido(rec.enlace)"
+                      :to="rec.enlace.para"
+                      class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-800 hover:underline"
+                    >
+                      {{ rec.enlace.rotulo }}
+                      <Icone :d="ICONE_SETA" class="w-3.5 h-3.5" />
+                    </router-link>
+                  </div>
                 </div>
               </li>
             </ol>
+
+            <button
+              v-if="recomendacoes.length > LIMITE_RECOMENDACOES"
+              type="button"
+              class="mt-4 w-full text-sm font-semibold text-emerald-800 hover:underline cursor-pointer"
+              :aria-expanded="verTodas"
+              @click="verTodas = !verTodas"
+            >
+              {{ verTodas ? 'Ver menos' : `Ver todas las recomendaciones (${recomendacoes.length})` }}
+            </button>
+          </div>
+
+          <!-- O que a empresa já faz bem (respostas no nível máximo) -->
+          <div v-if="fortalezas.length" class="cartao p-5 sm:p-6">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="selo-icone">
+                <Icone :d="ICONE_CHECK" class="w-5 h-5" />
+              </span>
+              <div>
+                <h2 class="text-lg font-semibold text-slate-800">Lo que ya haces bien</h2>
+                <p class="text-sm text-slate-500">Parámetros en los que tu empresa alcanzó el nivel más alto.</p>
+              </div>
+            </div>
+            <div class="space-y-3">
+              <div v-for="grupo in fortalezasPorDimensao" :key="grupo.nome">
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">{{ grupo.nome }}</p>
+                <ul class="flex flex-wrap gap-2">
+                  <li
+                    v-for="f in grupo.itens"
+                    :key="f.pergunta_id"
+                    class="inline-flex items-center gap-1.5 text-xs sm:text-sm px-3 py-1 rounded-full bg-emerald-50 text-emerald-900 border border-emerald-200"
+                  >
+                    <Icone :d="ICONE_CHECK" class="w-3.5 h-3.5 text-emerald-700" />
+                    {{ f.parametro }}
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>

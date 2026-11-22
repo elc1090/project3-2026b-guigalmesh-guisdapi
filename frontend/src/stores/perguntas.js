@@ -7,7 +7,7 @@ import { criarRecurso, HORA } from '../lib/cache'
 // e a contagem saem daqui. As perguntas quase nunca mudam: TTL longo.
 export const usePerguntasStore = defineStore('perguntas', () => {
   const recurso = criarRecurso({
-    chave: 'perguntas',
+    chave: 'perguntas-v2', // v2: questionário de 3 dimensões (22 perguntas)
     ttl: HORA,
     buscar: async () => {
       const { data, error } = await supabase

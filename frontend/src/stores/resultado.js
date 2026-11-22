@@ -7,7 +7,7 @@ const resultadoValido = (dados) => (dados && dados.geral && dados.dimensoes ? da
 // dado: resultado do último diagnóstico, ou null se ainda não há diagnóstico concluído
 export const useResultadoStore = defineStore('resultado', () => {
   const recurso = criarRecurso({
-    chave: 'resultado',
+    chave: 'resultado-v2', // v2: recomendações por pergunta + fortalezas
     ttl: 5 * MINUTO,
     buscar: async () => {
       const res = await apiFetch('/api/diagnostico/resultado')

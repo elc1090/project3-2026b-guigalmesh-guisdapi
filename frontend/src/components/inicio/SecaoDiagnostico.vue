@@ -7,7 +7,7 @@ import Icone from '../ui/Icone.vue'
 import { DIMENSOES } from '../../constants/dimensoes'
 
 // Seção "Diagnóstico" do Início (antiga tela do menu do diagnóstico):
-// as 4 dimensões com o progresso de cada uma e o botão de finalizar.
+// as 3 dimensões com o progresso de cada uma e o botão de finalizar.
 // O rascunho e as perguntas são carregados pelo Início.
 const props = defineProps({
   // já existe um resultado: finalizar de novo só atualiza (botão secundário,
@@ -51,11 +51,11 @@ import('../../views/Diagnostico/DimensaoView.vue')
       <p class="text-sm text-slate-500 mt-0.5">
         {{ props.concluido
           ? 'Puedes revisar tus respuestas y actualizar los resultados cuando haya cambios en tu empresa.'
-          : 'Responde las 4 dimensiones en el orden que prefieras. Tu avance se guarda automáticamente.' }}
+          : 'Responde las 3 dimensiones en el orden que prefieras. Tu avance se guarda automáticamente.' }}
       </p>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
       <CardCategory
         v-for="dim in DIMENSOES"
         :key="dim.slug"

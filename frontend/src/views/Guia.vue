@@ -9,7 +9,6 @@ import { ICONE_LIVRO, ICONE_LAMPADA, ICONE_GRAFICO, ICONE_CHECK, ICONE_SETA } fr
 
 // ---------- Navegação interna ----------
 const SECCIONES = [
-  { id: 'gobernanza', etiqueta: 'Gobernanza' },
   { id: 'ambiental', etiqueta: 'Ambiental' },
   { id: 'social', etiqueta: 'Social' },
   { id: 'economica', etiqueta: 'Económica' },
@@ -26,29 +25,6 @@ const iconeDimensao = (slug) => dimensaoPorSlug(slug)?.icone ?? []
 
 // ---------- Conteúdo da guia ----------
 const DIMENSIONES = [
-  {
-    id: 'gobernanza',
-    nombre: 'Gobernanza',
-    lema: 'Gestionar con responsabilidad, transparencia y ética.',
-    descripcion:
-      'La gobernanza se relaciona con la forma en que una empresa toma decisiones, cumple sus obligaciones y mantiene relaciones de confianza con sus trabajadores, clientes y proveedores.',
-    acciones: [
-      { titulo: 'Promueve la transparencia', texto: 'informa claramente los precios, las condiciones de venta y las políticas de tu empresa.' },
-      { titulo: 'Define responsabilidades', texto: 'establece quién se encarga de las tareas y decisiones importantes.' },
-      { titulo: 'Actúa con ética', texto: 'evita los conflictos de interés, la discriminación y las prácticas deshonestas.' },
-      { titulo: 'Cumple las normas', texto: 'mantén actualizados los permisos, registros y obligaciones que correspondan a tu actividad.' },
-      { titulo: 'Protege la información', texto: 'cuida los datos personales de tus clientes y trabajadores.' },
-      { titulo: 'Escucha a tus grupos de interés', texto: 'recibe sugerencias y reclamos, y busca soluciones oportunas.' }
-    ],
-    ejemplo:
-      'Una pequeña empresa crea un procedimiento para registrar los reclamos de sus clientes, responderlos oportunamente y utilizar esa información para mejorar sus servicios.',
-    indicadores: [
-      'Porcentaje de reclamos respondidos.',
-      'Número de procedimientos internos documentados.',
-      'Porcentaje de obligaciones revisadas y cumplidas.'
-    ],
-    ods: [{ numero: 16, nombre: 'Paz, justicia e instituciones sólidas' }]
-  },
   {
     id: 'ambiental',
     nombre: 'Ambiental',
@@ -109,9 +85,9 @@ const DIMENSIONES = [
   {
     id: 'economica',
     nombre: 'Económica',
-    lema: 'Crecer de manera responsable y mantener la estabilidad financiera.',
+    lema: 'Crecer de manera responsable, con ética, transparencia y estabilidad financiera.',
     descripcion:
-      'La sostenibilidad económica busca que la empresa sea viable en el tiempo, utilice eficientemente sus recursos y tome decisiones que favorezcan su continuidad y crecimiento.',
+      'La sostenibilidad económica busca que la empresa sea viable en el tiempo, utilice eficientemente sus recursos y tome decisiones que favorezcan su continuidad y crecimiento. También incluye la ética y la gobernanza: la forma en que la empresa toma decisiones, cumple sus obligaciones y mantiene relaciones de confianza con sus trabajadores, clientes y proveedores.',
     acciones: [
       { titulo: 'Controla tus gastos', texto: 'registra los costos fijos y variables para identificar oportunidades de ahorro.' },
       { titulo: 'Planifica tus ingresos', texto: 'elabora un presupuesto mensual y compara los resultados reales con lo planificado.' },
@@ -119,7 +95,13 @@ const DIMENSIONES = [
       { titulo: 'Mejora tus procesos', texto: 'identifica actividades que consumen demasiado tiempo o recursos.' },
       { titulo: 'Evalúa a tus proveedores', texto: 'compara calidad, precio, cumplimiento y condiciones de pago.' },
       { titulo: 'Invierte con planificación', texto: 'analiza los costos, beneficios y riesgos antes de realizar inversiones.' },
-      { titulo: 'Fortalece la relación con tus clientes', texto: 'escucha sus necesidades y mejora la calidad de tus productos o servicios.' }
+      { titulo: 'Fortalece la relación con tus clientes', texto: 'escucha sus necesidades y mejora la calidad de tus productos o servicios.' },
+      { titulo: 'Promueve la transparencia', texto: 'informa claramente los precios, las condiciones de venta y las políticas de tu empresa.' },
+      { titulo: 'Define responsabilidades', texto: 'establece quién se encarga de las tareas y decisiones importantes.' },
+      { titulo: 'Actúa con ética', texto: 'evita los conflictos de interés, la discriminación y las prácticas deshonestas.' },
+      { titulo: 'Cumple las normas', texto: 'mantén actualizados los permisos, registros y obligaciones que correspondan a tu actividad.' },
+      { titulo: 'Protege la información', texto: 'cuida los datos personales de tus clientes y trabajadores.' },
+      { titulo: 'Escucha a tus grupos de interés', texto: 'recibe sugerencias y reclamos, y busca soluciones oportunas.' }
     ],
     ejemplo:
       'Una pequeña empresa lleva un registro mensual de sus ventas, gastos e inventario. Con esta información identifica productos con baja rotación y ajusta sus compras para reducir pérdidas.',
@@ -127,11 +109,14 @@ const DIMENSIONES = [
       'Variación mensual de los gastos.',
       'Margen de ganancia.',
       'Porcentaje de pérdidas de inventario.',
-      'Nivel de satisfacción y retención de clientes.'
+      'Nivel de satisfacción y retención de clientes.',
+      'Porcentaje de reclamos respondidos.',
+      'Porcentaje de obligaciones revisadas y cumplidas.'
     ],
     ods: [
       { numero: 8, nombre: 'Trabajo decente y crecimiento económico' },
-      { numero: 9, nombre: 'Industria, innovación e infraestructura' }
+      { numero: 9, nombre: 'Industria, innovación e infraestructura' },
+      { numero: 16, nombre: 'Paz, justicia e instituciones sólidas' }
     ]
   }
 ]
@@ -145,15 +130,6 @@ const PLAN_ACCION = [
 ]
 
 const VERIFICACION = [
-  {
-    id: 'gobernanza',
-    items: [
-      'La empresa tiene responsabilidades claramente definidas.',
-      'Existen procedimientos para atender reclamos.',
-      'Se revisan las obligaciones legales aplicables.',
-      'Se protege la información de clientes y trabajadores.'
-    ]
-  },
   {
     id: 'ambiental',
     items: [
@@ -178,7 +154,11 @@ const VERIFICACION = [
       'Se registran los ingresos y gastos.',
       'Se controla el inventario.',
       'Se revisan los resultados financieros.',
-      'Se evalúan los costos y beneficios de las inversiones.'
+      'Se evalúan los costos y beneficios de las inversiones.',
+      'La empresa tiene responsabilidades claramente definidas.',
+      'Existen procedimientos para atender reclamos.',
+      'Se revisan las obligaciones legales aplicables.',
+      'Se protege la información de clientes y trabajadores.'
     ]
   }
 ]

@@ -20,8 +20,8 @@ const ABAS = [
 const indiceAba = computed(() => Math.max(0, ABAS.findIndex((aba) => aba.para === route.path)))
 
 const BENEFICIOS = [
-  { icone: ICONE_CHECKLIST, titulo: 'Diagnóstico en 4 dimensiones', texto: 'Gobernanza, ambiental, social y económica, en pocos minutos.' },
-  { icone: ICONE_LAMPADA, titulo: 'Recomendaciones prácticas', texto: 'Acciones concretas según el nivel de madurez de tu empresa.' },
+  { icone: ICONE_CHECKLIST, titulo: 'Diagnóstico en 3 dimensiones', texto: 'Ambiental, social y económica, en pocos minutos.' },
+  { icone: ICONE_LAMPADA, titulo: 'Recomendaciones prácticas', texto: 'Acciones concretas según tus respuestas, el tamaño y el sector de tu empresa.' },
   { icone: ICONE_GLOBO, titulo: 'Alineado con los ODS', texto: 'Conecta la gestión de tu empresa con la Agenda 2030.' }
 ]
 </script>

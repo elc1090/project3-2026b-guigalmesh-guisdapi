@@ -1,15 +1,26 @@
-
 [
   {
     "id": "q_amb_01",
     "categoria": "Ambiental",
-    "pergunta": "¿La empresa considera el impacto ambiental antes de incorporar nuevos productos o servicios?",
+    "pergunta": "¿La empresa identifica qué actividades generan emisiones de gases de efecto invernadero (uso de electricidad, combustibles, transporte)?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sistemáticamente", "valor": 4 },
-      { "label": "Frecuentemente", "valor": 3 },
-      { "label": "Ocasionalmente", "valor": 2 },
-      { "label": "No", "valor": 1 }
+      {
+        "label": "Sí, y las mide periódicamente (huella de carbono)",
+        "valor": 4
+      },
+      {
+        "label": "Sí, las identifica, pero no las mide",
+        "valor": 3
+      },
+      {
+        "label": "Tiene solo una idea general",
+        "valor": 2
+      },
+      {
+        "label": "No / No lo sabe",
+        "valor": 1
+      }
     ],
     "peso": 1,
     "ordem": 10,
@@ -18,13 +29,25 @@
   {
     "id": "q_amb_02",
     "categoria": "Ambiental",
-    "pergunta": "¿La empresa cuenta con medidas para disminuir las emisiones generadas por sus actividades?",
+    "pergunta": "¿La empresa aplica medidas para reducir las emisiones de transporte y desplazamientos (rutas eficientes, vehículos menos contaminantes, reuniones virtuales)?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sistemáticamente", "valor": 4 },
-      { "label": "Frecuentemente", "valor": 3 },
-      { "label": "Ocasionalmente", "valor": 2 },
-      { "label": "No", "valor": 1 }
+      {
+        "label": "Sí, de forma permanente",
+        "valor": 4
+      },
+      {
+        "label": "Aplica algunas medidas",
+        "valor": 3
+      },
+      {
+        "label": "Lo ha evaluado, pero no lo ha aplicado",
+        "valor": 2
+      },
+      {
+        "label": "No / No lo sabe",
+        "valor": 1
+      }
     ],
     "peso": 1,
     "ordem": 20,
@@ -33,13 +56,25 @@
   {
     "id": "q_amb_03",
     "categoria": "Ambiental",
-    "pergunta": "¿La empresa promueve el uso de medios de transporte con menor impacto ambiental?",
+    "pergunta": "¿Cómo gestiona la empresa su consumo de electricidad?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sistemáticamente", "valor": 4 },
-      { "label": "Frecuentemente", "valor": 3 },
-      { "label": "Ocasionalmente", "valor": 2 },
-      { "label": "No", "valor": 1 }
+      {
+        "label": "Lo mide mensualmente, tiene metas de ahorro y usa o evalúa energías renovables",
+        "valor": 4
+      },
+      {
+        "label": "Revisa las boletas y aplica medidas básicas de ahorro",
+        "valor": 3
+      },
+      {
+        "label": "Solo revisa el monto a pagar",
+        "valor": 2
+      },
+      {
+        "label": "No lleva ningún control / No lo sabe",
+        "valor": 1
+      }
     ],
     "peso": 1,
     "ordem": 30,
@@ -48,13 +83,25 @@
   {
     "id": "q_amb_04",
     "categoria": "Ambiental",
-    "pergunta": "¿La empresa considera criterios ambientales al diseñar o modificar sus productos o servicios?",
+    "pergunta": "¿Cómo gestiona la empresa su consumo de agua?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sistemáticamente", "valor": 4 },
-      { "label": "Frecuentemente", "valor": 3 },
-      { "label": "Ocasionalmente", "valor": 2 },
-      { "label": "No", "valor": 1 }
+      {
+        "label": "Lo mide, tiene metas de ahorro y repara filtraciones de forma preventiva",
+        "valor": 4
+      },
+      {
+        "label": "Revisa las boletas y aplica medidas básicas de ahorro",
+        "valor": 3
+      },
+      {
+        "label": "Solo actúa cuando detecta un problema",
+        "valor": 2
+      },
+      {
+        "label": "No lleva ningún control / No lo sabe",
+        "valor": 1
+      }
     ],
     "peso": 1,
     "ordem": 40,
@@ -63,241 +110,487 @@
   {
     "id": "q_amb_05",
     "categoria": "Ambiental",
-    "pergunta": "¿La empresa informa a sus clientes sobre los impactos ambientales asociados a sus productos o servicios?",
+    "pergunta": "¿Qué hace la empresa con los residuos que genera?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sistemáticamente", "valor": 4 },
-      { "label": "Frecuentemente", "valor": 3 },
-      { "label": "Ocasionalmente", "valor": 2 },
-      { "label": "No", "valor": 1 }
+      {
+        "label": "Los reduce, separa y entrega a reciclaje o a un gestor autorizado, con registro",
+        "valor": 4
+      },
+      {
+        "label": "Separa algunos residuos para reciclaje",
+        "valor": 3
+      },
+      {
+        "label": "Intenta reducirlos, pero no los separa",
+        "valor": 2
+      },
+      {
+        "label": "No los gestiona: todo va a la basura común",
+        "valor": 1
+      }
     ],
     "peso": 1,
     "ordem": 50,
     "ativo": true
   },
   {
-    "id": "q_soc_01",
-    "categoria": "Social",
-    "pergunta": "¿La empresa ofrece medidas que faciliten la conciliación entre la vida laboral y personal de sus trabajadores?",
+    "id": "q_amb_06",
+    "categoria": "Ambiental",
+    "pergunta": "¿La empresa sabe si la Ley REP (Ley 20.920) le aplica y cumple las obligaciones que le corresponden?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sistemáticamente", "valor": 4 },
-      { "label": "Frecuentemente", "valor": 3 },
-      { "label": "Ocasionalmente", "valor": 2 },
-      { "label": "No", "valor": 1 }
+      {
+        "label": "Sí: revisó si le aplica y cumple sus obligaciones (o confirmó que no le aplica)",
+        "valor": 4
+      },
+      {
+        "label": "Conoce la ley, pero no ha revisado si le aplica",
+        "valor": 3
+      },
+      {
+        "label": "Ha oído hablar de ella",
+        "valor": 2
+      },
+      {
+        "label": "No la conoce",
+        "valor": 1
+      }
     ],
     "peso": 1,
     "ordem": 60,
     "ativo": true
   },
   {
-    "id": "q_soc_02",
-    "categoria": "Social",
-    "pergunta": "¿La empresa cuenta con mecanismos para reconocer el desempeño y los aportes de sus trabajadores?",
+    "id": "q_amb_07",
+    "categoria": "Ambiental",
+    "pergunta": "¿La empresa utiliza materiales o insumos reciclados, reutilizables, biodegradables o de menor impacto ambiental?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sistemáticamente", "valor": 4 },
-      { "label": "Frecuentemente", "valor": 3 },
-      { "label": "Ocasionalmente", "valor": 2 },
-      { "label": "No", "valor": 1 }
+      {
+        "label": "Siempre que es posible, con criterios definidos para elegirlos",
+        "valor": 4
+      },
+      {
+        "label": "Frecuentemente",
+        "valor": 3
+      },
+      {
+        "label": "Ocasionalmente",
+        "valor": 2
+      },
+      {
+        "label": "No / No lo sabe",
+        "valor": 1
+      }
     ],
     "peso": 1,
     "ordem": 70,
     "ativo": true
   },
   {
-    "id": "q_soc_03",
-    "categoria": "Social",
-    "pergunta": "¿La empresa dispone de procedimientos para prevenir y abordar situaciones de acoso laboral?",
+    "id": "q_amb_08",
+    "categoria": "Ambiental",
+    "pergunta": "¿La empresa conoce cómo sus actividades pueden afectar a la flora, la fauna y los ecosistemas de su entorno, y toma medidas para protegerlos?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sistemáticamente", "valor": 4 },
-      { "label": "Frecuentemente", "valor": 3 },
-      { "label": "Ocasionalmente", "valor": 2 },
-      { "label": "No", "valor": 1 }
+      {
+        "label": "Sí, toma medidas y participa en actividades de protección o recuperación de ecosistemas",
+        "valor": 4
+      },
+      {
+        "label": "Conoce los impactos y toma algunas medidas",
+        "valor": 3
+      },
+      {
+        "label": "Conoce los impactos, pero no toma medidas",
+        "valor": 2
+      },
+      {
+        "label": "No lo ha considerado",
+        "valor": 1
+      }
     ],
     "peso": 1,
     "ordem": 80,
     "ativo": true
   },
   {
-    "id": "q_soc_04",
+    "id": "q_soc_01",
     "categoria": "Social",
-    "pergunta": "¿La empresa promueve espacios de colaboración y participación entre sus trabajadores?",
+    "pergunta": "¿La empresa identifica los riesgos laborales y aplica medidas de prevención y seguridad?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sistemáticamente", "valor": 4 },
-      { "label": "Frecuentemente", "valor": 3 },
-      { "label": "Ocasionalmente", "valor": 2 },
-      { "label": "No", "valor": 1 }
+      {
+        "label": "Tiene procedimientos documentados, capacita y los revisa periódicamente",
+        "valor": 4
+      },
+      {
+        "label": "Aplica medidas de seguridad básicas",
+        "valor": 3
+      },
+      {
+        "label": "Solo actúa cuando ocurre un accidente o problema",
+        "valor": 2
+      },
+      {
+        "label": "No / No lo sabe",
+        "valor": 1
+      }
     ],
     "peso": 1,
-    "ordem": 90,
+    "ordem": 10,
+    "ativo": true
+  },
+  {
+    "id": "q_soc_02",
+    "categoria": "Social",
+    "pergunta": "¿La empresa promueve el bienestar y el respeto en el trabajo, y cuenta con un procedimiento para prevenir y abordar el acoso laboral?",
+    "tipoResposta": "radio",
+    "opcoesResposta": [
+      {
+        "label": "Sí, con un protocolo conocido por todos los trabajadores y acciones de bienestar",
+        "valor": 4
+      },
+      {
+        "label": "Tiene un procedimiento, pero no se ha difundido bien",
+        "valor": 3
+      },
+      {
+        "label": "Lo aborda de manera informal, caso a caso",
+        "valor": 2
+      },
+      {
+        "label": "No",
+        "valor": 1
+      }
+    ],
+    "peso": 1,
+    "ordem": 20,
+    "ativo": true
+  },
+  {
+    "id": "q_soc_03",
+    "categoria": "Social",
+    "pergunta": "¿La empresa cumple sus obligaciones laborales (contratos por escrito, pago de cotizaciones, jornada y descansos)?",
+    "tipoResposta": "radio",
+    "opcoesResposta": [
+      {
+        "label": "Siempre, y lo revisa periódicamente",
+        "valor": 4
+      },
+      {
+        "label": "Casi siempre",
+        "valor": 3
+      },
+      {
+        "label": "Parcialmente",
+        "valor": 2
+      },
+      {
+        "label": "No / No lo sabe",
+        "valor": 1
+      }
+    ],
+    "peso": 1,
+    "ordem": 30,
+    "ativo": true
+  },
+  {
+    "id": "q_soc_04",
+    "categoria": "Social",
+    "pergunta": "¿La empresa aplica criterios de igualdad de oportunidades y no discriminación en la contratación, las remuneraciones y las promociones?",
+    "tipoResposta": "radio",
+    "opcoesResposta": [
+      {
+        "label": "Sí, con criterios definidos y comunicados",
+        "valor": 4
+      },
+      {
+        "label": "En la mayoría de los casos, aunque sin criterios escritos",
+        "valor": 3
+      },
+      {
+        "label": "Ocasionalmente",
+        "valor": 2
+      },
+      {
+        "label": "No lo ha considerado",
+        "valor": 1
+      }
+    ],
+    "peso": 1,
+    "ordem": 40,
     "ativo": true
   },
   {
     "id": "q_soc_05",
     "categoria": "Social",
-    "pergunta": "¿La empresa considera el bienestar emocional de sus trabajadores dentro de sus prácticas laborales?",
+    "pergunta": "¿La empresa mantiene relaciones positivas con la comunidad donde opera (escucha a los vecinos, prefiere proveedores locales, considera el impacto de sus actividades)?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sistemáticamente", "valor": 4 },
-      { "label": "Frecuentemente", "valor": 3 },
-      { "label": "Ocasionalmente", "valor": 2 },
-      { "label": "No", "valor": 1 }
+      {
+        "label": "Sí, de forma activa y permanente",
+        "valor": 4
+      },
+      {
+        "label": "Frecuentemente",
+        "valor": 3
+      },
+      {
+        "label": "Ocasionalmente",
+        "valor": 2
+      },
+      {
+        "label": "No lo ha considerado",
+        "valor": 1
+      }
     ],
     "peso": 1,
-    "ordem": 100,
+    "ordem": 50,
+    "ativo": true
+  },
+  {
+    "id": "q_soc_06",
+    "categoria": "Social",
+    "pergunta": "¿La empresa participa o apoya iniciativas que benefician a la comunidad (voluntariado, donaciones, alianzas con organizaciones locales)?",
+    "tipoResposta": "radio",
+    "opcoesResposta": [
+      {
+        "label": "Regularmente, con actividades planificadas",
+        "valor": 4
+      },
+      {
+        "label": "Algunas veces al año",
+        "valor": 3
+      },
+      {
+        "label": "Rara vez",
+        "valor": 2
+      },
+      {
+        "label": "Nunca",
+        "valor": 1
+      }
+    ],
+    "peso": 1,
+    "ordem": 60,
+    "ativo": true
+  },
+  {
+    "id": "q_soc_07",
+    "categoria": "Social",
+    "pergunta": "¿La empresa capacita a sus trabajadores?",
+    "tipoResposta": "radio",
+    "opcoesResposta": [
+      {
+        "label": "Tiene un plan de capacitación anual para todos los trabajadores",
+        "valor": 4
+      },
+      {
+        "label": "Capacita de forma ocasional",
+        "valor": 3
+      },
+      {
+        "label": "Solo realiza una inducción al ingresar",
+        "valor": 2
+      },
+      {
+        "label": "No capacita",
+        "valor": 1
+      }
+    ],
+    "peso": 1,
+    "ordem": 70,
     "ativo": true
   },
   {
     "id": "q_eco_01",
     "categoria": "Económica",
-    "pergunta": "¿La empresa establece objetivos económicos de mediano y largo plazo?",
+    "pergunta": "¿La empresa evalúa la rentabilidad de su negocio y considera los costos y beneficios de sus iniciativas de sostenibilidad?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sistemáticamente", "valor": 4 },
-      { "label": "Frecuentemente", "valor": 3 },
-      { "label": "Ocasionalmente", "valor": 2 },
-      { "label": "No", "valor": 1 }
+      {
+        "label": "Sí, analiza sus resultados periódicamente e incluye el efecto de sus iniciativas sostenibles",
+        "valor": 4
+      },
+      {
+        "label": "Analiza su rentabilidad, pero no la relaciona con la sostenibilidad",
+        "valor": 3
+      },
+      {
+        "label": "Revisa sus resultados solo a fin de año",
+        "valor": 2
+      },
+      {
+        "label": "No / No lo sabe",
+        "valor": 1
+      }
     ],
     "peso": 1,
-    "ordem": 110,
+    "ordem": 10,
     "ativo": true
   },
   {
     "id": "q_eco_02",
     "categoria": "Económica",
-    "pergunta": "¿La empresa identifica los principales riesgos que podrían afectar la continuidad de sus operaciones?",
+    "pergunta": "¿La empresa registra y controla sus gastos para evitar pérdidas y desperdicios?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sistemáticamente", "valor": 4 },
-      { "label": "Frecuentemente", "valor": 3 },
-      { "label": "Ocasionalmente", "valor": 2 },
-      { "label": "No", "valor": 1 }
+      {
+        "label": "Tiene un presupuesto mensual y lo compara con los resultados reales",
+        "valor": 4
+      },
+      {
+        "label": "Registra sus gastos, pero no tiene presupuesto",
+        "valor": 3
+      },
+      {
+        "label": "Lleva un control informal",
+        "valor": 2
+      },
+      {
+        "label": "No controla sus gastos",
+        "valor": 1
+      }
     ],
     "peso": 1,
-    "ordem": 120,
+    "ordem": 20,
     "ativo": true
   },
   {
     "id": "q_eco_03",
     "categoria": "Económica",
-    "pergunta": "¿La empresa busca desarrollar nuevos productos o servicios para responder a las necesidades futuras de sus clientes?",
+    "pergunta": "¿La empresa invierte en tecnologías o mejoras de procesos que aumenten su eficiencia y reduzcan sus impactos (equipos eficientes, digitalización, procesos más limpios)?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sistemáticamente", "valor": 4 },
-      { "label": "Frecuentemente", "valor": 3 },
-      { "label": "Ocasionalmente", "valor": 2 },
-      { "label": "No", "valor": 1 }
+      {
+        "label": "Sí, de forma planificada y periódica",
+        "valor": 4
+      },
+      {
+        "label": "Ha realizado algunas inversiones",
+        "valor": 3
+      },
+      {
+        "label": "Lo ha evaluado, pero no ha invertido",
+        "valor": 2
+      },
+      {
+        "label": "No lo ha considerado",
+        "valor": 1
+      }
     ],
     "peso": 1,
-    "ordem": 130,
+    "ordem": 30,
     "ativo": true
   },
   {
     "id": "q_eco_04",
     "categoria": "Económica",
-    "pergunta": "¿La empresa revisa periódicamente el cumplimiento de sus objetivos económicos?",
+    "pergunta": "¿La empresa desarrolla iniciativas que generan beneficios tanto para el negocio como para sus trabajadores, clientes, proveedores y comunidad?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sistemáticamente", "valor": 4 },
-      { "label": "Frecuentemente", "valor": 3 },
-      { "label": "Ocasionalmente", "valor": 2 },
-      { "label": "No", "valor": 1 }
+      {
+        "label": "Sí, forman parte de su estrategia",
+        "valor": 4
+      },
+      {
+        "label": "Tiene algunas iniciativas",
+        "valor": 3
+      },
+      {
+        "label": "Ocasionalmente",
+        "valor": 2
+      },
+      {
+        "label": "No lo ha considerado",
+        "valor": 1
+      }
     ],
     "peso": 1,
-    "ordem": 140,
+    "ordem": 40,
     "ativo": true
   },
   {
     "id": "q_eco_05",
     "categoria": "Económica",
-    "pergunta": "¿La empresa cuenta con un plan para enfrentar períodos de disminución de ingresos?",
+    "pergunta": "¿La empresa mantiene registros financieros ordenados y entrega información clara a socios, trabajadores u otros interesados cuando corresponde?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sistemáticamente", "valor": 4 },
-      { "label": "Frecuentemente", "valor": 3 },
-      { "label": "Ocasionalmente", "valor": 2 },
-      { "label": "No", "valor": 1 }
+      {
+        "label": "Sí, con registros al día e informes periódicos",
+        "valor": 4
+      },
+      {
+        "label": "Tiene registros ordenados, pero rara vez los comunica",
+        "valor": 3
+      },
+      {
+        "label": "Sus registros son incompletos",
+        "valor": 2
+      },
+      {
+        "label": "No / No lo sabe",
+        "valor": 1
+      }
     ],
     "peso": 1,
-    "ordem": 150,
+    "ordem": 50,
     "ativo": true
   },
   {
-    "id": "q_gob_01",
-    "categoria": "Gobernanza",
-    "pergunta": "¿La empresa cuenta con mecanismos para prevenir conflictos de interés en la toma de decisiones?",
+    "id": "q_eco_06",
+    "categoria": "Económica",
+    "pergunta": "¿La empresa tiene reglas claras para la toma de decisiones y para prevenir conflictos de interés y prácticas deshonestas?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sistemáticamente", "valor": 4 },
-      { "label": "Frecuentemente", "valor": 3 },
-      { "label": "Ocasionalmente", "valor": 2 },
-      { "label": "No", "valor": 1 }
+      {
+        "label": "Sí, por escrito (por ejemplo, un código de ética) y conocidas por todos",
+        "valor": 4
+      },
+      {
+        "label": "Existen, pero de manera informal",
+        "valor": 3
+      },
+      {
+        "label": "Se resuelve caso a caso",
+        "valor": 2
+      },
+      {
+        "label": "No",
+        "valor": 1
+      }
     ],
     "peso": 1,
-    "ordem": 160,
+    "ordem": 60,
     "ativo": true
   },
   {
-    "id": "q_gob_02",
-    "categoria": "Gobernanza",
-    "pergunta": "¿La empresa tiene un procedimiento para recibir y resolver reclamos o denuncias?",
+    "id": "q_eco_07",
+    "categoria": "Económica",
+    "pergunta": "¿La empresa mantiene al día sus obligaciones legales (permisos, impuestos, normativa) y cuenta con un canal para recibir y resolver reclamos?",
     "tipoResposta": "radio",
     "opcoesResposta": [
-      { "label": "Sistemáticamente", "valor": 4 },
-      { "label": "Frecuentemente", "valor": 3 },
-      { "label": "Ocasionalmente", "valor": 2 },
-      { "label": "No", "valor": 1 }
+      {
+        "label": "Sí, ambas cosas, con seguimiento de los reclamos",
+        "valor": 4
+      },
+      {
+        "label": "Cumple sus obligaciones, pero no tiene un canal de reclamos",
+        "valor": 3
+      },
+      {
+        "label": "Cumple parcialmente",
+        "valor": 2
+      },
+      {
+        "label": "No / No lo sabe",
+        "valor": 1
+      }
     ],
     "peso": 1,
-    "ordem": 170,
-    "ativo": true
-  },
-  {
-    "id": "q_gob_03",
-    "categoria": "Gobernanza",
-    "pergunta": "¿La empresa mantiene registros de sus principales decisiones y operaciones?",
-    "tipoResposta": "radio",
-    "opcoesResposta": [
-      { "label": "Sistemáticamente", "valor": 4 },
-      { "label": "Frecuentemente", "valor": 3 },
-      { "label": "Ocasionalmente", "valor": 2 },
-      { "label": "No", "valor": 1 }
-    ],
-    "peso": 1,
-    "ordem": 180,
-    "ativo": true
-  },
-  {
-    "id": "q_gob_04",
-    "categoria": "Gobernanza",
-    "pergunta": "¿La empresa revisa periódicamente sus objetivos y estrategias?",
-    "tipoResposta": "radio",
-    "opcoesResposta": [
-      { "label": "Sistemáticamente", "valor": 4 },
-      { "label": "Frecuentemente", "valor": 3 },
-      { "label": "Ocasionalmente", "valor": 2 },
-      { "label": "No", "valor": 1 }
-    ],
-    "peso": 1,
-    "ordem": 190,
-    "ativo": true
-  },
-  {
-    "id": "q_gob_05",
-    "categoria": "Gobernanza",
-    "pergunta": "¿La empresa cuenta con mecanismos para evaluar el desempeño de quienes toman decisiones?",
-    "tipoResposta": "radio",
-    "opcoesResposta": [
-      { "label": "Sistemáticamente", "valor": 4 },
-      { "label": "Frecuentemente", "valor": 3 },
-      { "label": "Ocasionalmente", "valor": 2 },
-      { "label": "No", "valor": 1 }
-    ],
-    "peso": 1,
-    "ordem": 200,
+    "ordem": 70,
     "ativo": true
   }
 ]
