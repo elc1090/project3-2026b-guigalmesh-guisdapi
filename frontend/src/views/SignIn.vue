@@ -7,6 +7,7 @@ import Campo from '../components/ui/Campo.vue'
 import CampoSenha from '../components/ui/CampoSenha.vue'
 import BotaoPrimario from '../components/ui/BotaoPrimario.vue'
 import Alerta from '../components/ui/Alerta.vue'
+import BotaoGoogle from '../components/ui/BotaoGoogle.vue'
 import Icone from '../components/ui/Icone.vue'
 import { ICONE_EMAIL, ICONE_CHECK } from '../constants/icones'
 
@@ -248,6 +249,8 @@ const trocarEmail = () => {
           Crear cuenta
         </BotaoPrimario>
       </form>
+
+      <BotaoGoogle />
 
       <p class="text-sm text-slate-600 text-center mt-6">
         ¿Ya tienes una cuenta?

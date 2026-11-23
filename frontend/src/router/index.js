@@ -128,9 +128,11 @@ router.beforeEach(async (to) => {
   }
 
   // já logado abrindo /login ou /cadastro (ex.: atalho do iPhone salvo na tela de login,
-  // aba restaurada pelo navegador): vai para o Início, não direto para uma tela interna
+  // aba restaurada pelo navegador): vai para o Início, não direto para uma tela interna.
+  // Exceção: voltando do login com Google (/login?code=...), respeita o ?redirect= pedido.
   if (to.meta.apenasVisitante && logado) {
-    return '/'
+    const redirect = to.query.code && typeof to.query.redirect === 'string' ? to.query.redirect : ''
+    return redirect.startsWith('/') && !redirect.startsWith('//') ? redirect : '/'
   }
 })
 
