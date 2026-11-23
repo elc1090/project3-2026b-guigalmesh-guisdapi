@@ -44,8 +44,8 @@ Neste projeto, além da otimização do código, implementamos o novo documento 
 - [x] Continuar o desenvolvimento em colaboração com a equipe do Chile
 - [x] Otimização do código existente
 - [x] Aprimoramentos na interface e na experiência do usuário
-- [ ] Login federado (OAuth com Supabase)
-- [ ] IA como serviço
+- [x] Login federado (OAuth com Google, via Supabase Auth)
+- [x] IA como serviço (análise do diagnóstico com Gemini)
 - [ ] Interface em português (vue-i18n)
 
 ## Desenvolvimento
@@ -58,6 +58,8 @@ Neste projeto, além da otimização do código, implementamos o novo documento 
 | Guilherme D. | Plano de ação (tabela `acoes`), data do último diagnóstico (`concluido_em`) e gráfico de evolução (`/api/diagnostico/historico`) | Seção educativa |
 | Guilherme D. | Seção *Educación sostenible* com 8 temas e fontes oficiais; Guía e ODS integradas à seção | Seção *Huella positiva* |
 | Guilherme D. | Seção *Empresas que dejan huella positiva*: tabela `actividades` com RLS, rotas CRUD, calendário ambiental, ideias de atividades, convite e cartão no Início | Login federado, IA e interface em português |
+| Guilherme D. | Login federado com Google: cliente OAuth no Google Auth Platform, provedor Google no Supabase Auth, botão "Continuar con Google" (com o ícone oficial) no login e no cadastro, fluxo PKCE e retorno para a tela pedida | IA como serviço |
+| Guilherme D. | *Análisis con IA* no Resultado: rota `/api/ia/analisis` que envia o diagnóstico (sem dados pessoais) ao Gemini, resposta em JSON validada, tabela `analisis_ia` com RLS, limite de 3 gerações por diagnóstico e modelo reserva quando o principal está sobrecarregado | Interface em português |
 
 ### Processo
 
@@ -74,6 +76,28 @@ Nas tabelas novas (`acoes` e `actividades`) segui o mesmo padrão de RLS das tab
 
 Guilherme M.:
 
+
+### Login federado e IA como serviço
+
+**Login federado (Google).** Seguimos a mesma metodologia do [demo da professora](https://github.com/elc1090/demo-auth-profile) (OpenID Connect: redirecionar ao Google, receber o retorno no *callback*, validar o ID token e iniciar uma sessão), mas quem executa a parte do servidor é o **Supabase Auth**, que o app já usava para o login por e-mail:
+
+| Etapa | Demo da professora (Express) | Nosso projeto |
+|---|---|---|
+| Iniciar o login | Rota `/auth/google` gera `state` e `nonce` | O front chama `supabase.auth.signInWithOAuth({ provider: 'google' })`, com fluxo PKCE |
+| Callback | `/auth/google/callback` no Express | Callback do Supabase (`https://<projeto>.supabase.co/auth/v1/callback`), cadastrado no Google Auth Platform |
+| Trocar o código e validar o ID token | `google-auth-library` no servidor | Feito pelo servidor do Supabase |
+| Usuário | Tabela própria, contas locais e Google separadas | `auth.users` do Supabase; contas com o mesmo e-mail são vinculadas automaticamente |
+| Sessão | Cookie `HttpOnly` + CSRF | JWT do Supabase enviado como `Bearer`; o FastAPI valida o token e o RLS isola os dados de cada empresa |
+
+O *client secret* do Google fica só no painel do Supabase (nunca no front nem no repositório). O back-end não precisou mudar: o token de quem entra com Google é emitido pelo mesmo Supabase.
+
+**IA como serviço (Gemini).** Na tela de Resultados, o botão *Generar análisis con IA* chama o nosso back-end (`POST /api/ia/analisis`), que:
+1. monta um contexto só com dados do diagnóstico (setor, porte, notas, recomendações pendentes e fortalezas), **sem** nome da empresa, e-mail ou nomes de pessoas;
+2. envia ao Gemini (SDK `google-genai`) com instruções fixas (responder em espanhol, usar só os dados recebidos, não inventar leis nem números) e pede a resposta num **esquema JSON** (resumo, 3 prioridades com motivo e primeiro passo, fortalezas);
+3. valida a resposta com Pydantic e salva na tabela `analisis_ia` (uma por diagnóstico, com RLS), para não chamar a IA de novo a cada visita;
+4. limita a 3 gerações por diagnóstico e, se o modelo principal estiver sobrecarregado (erro 503) ou sem cota (429), tenta um modelo reserva mais leve.
+
+A chave `GEMINI_API_KEY` fica só nas variáveis de ambiente do back-end (Render e `.env` local).
 
 ### Trechos de código
 
@@ -129,13 +153,42 @@ if (!res?.ok) {
 }
 ```
 
+**6. Login com Google pelo Supabase** (`frontend/src/lib/auth.js`): o app só inicia o fluxo; o Supabase cuida do retorno do Google e da validação do token. A URL de volta precisa estar na lista de *Redirect URLs* do Supabase.
+
+```js
+export async function entrarComGoogle(redirect = '') {
+  const volta = new URL('/login', window.location.origin)
+  if (redirect.startsWith('/') && !redirect.startsWith('//')) volta.searchParams.set('redirect', redirect)
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: volta.toString(), queryParams: { prompt: 'select_account' } }
+  })
+  if (error) throw error
+}
+```
+
+**7. IA com modelo reserva** (`backend/app/services/ia.py`): no primeiro teste o Gemini respondeu *503 – high demand*. Agora, se o modelo principal estiver sobrecarregado, o back-end tenta o modelo reserva antes de desistir.
+
+```python
+for modelo in modelos_a_tentar():
+    try:
+        resposta = cliente.models.generate_content(model=modelo, contents=montar_prompt(contexto), config=config)
+    except Exception as erro:
+        codigo = _codigo_http(erro)
+        if codigo in CODIGOS_TENTAR_OUTRO:   # 404, 429, 5xx
+            continue
+        raise FalhaIA("Falha ao chamar a IA") from erro
+    return interpretar_resposta(getattr(resposta, "text", None)), modelo
+```
+
 ## Tecnologias
 
 ### Linguagens e afins
 
 - **Front-end:** Vue 3 (Composition API, `<script setup>`), Vite, Vue Router, Pinia (cache *stale-while-revalidate* em `localStorage`), Tailwind CSS 4, Chart.js (gráficos radar e de linhas), fontes Plus Jakarta Sans e Bricolage Grotesque (Fontsource)
-- **Back-end:** Python, FastAPI, Pydantic (validação), Uvicorn, PyJWT (validação local do token), supabase-py / PostgREST
-- **Banco e autenticação:** Supabase (PostgreSQL, Supabase Auth com JWT, Row Level Security)
+- **Back-end:** Python, FastAPI, Pydantic (validação), Uvicorn, PyJWT (validação local do token), supabase-py / PostgREST, google-genai (SDK do Gemini)
+- **Banco e autenticação:** Supabase (PostgreSQL, Supabase Auth com JWT, Row Level Security); login federado com Google (OAuth 2.0 / OpenID Connect, cliente criado no Google Auth Platform)
+- **IA como serviço:** Gemini API (Google AI Studio), com saída estruturada em JSON
 - **Testes e qualidade:** pytest (back-end), Vitest + jsdom (front-end), ESLint
 - **Deploy:** Vercel (front-end) e Render (back-end)
 
@@ -162,7 +215,12 @@ Guilherme M.:
   - [Agenda 2030 y ODS – Instituto Nacional de Estadísticas (INE)](https://www.ine.gob.cl/ods)
   - [Calendario Ambiental 2026 – Ministerio del Medio Ambiente (ChileAtiende)](https://www.chileatiende.gob.cl/fichas/75614-calendario-ambiental-2026)
 - Ícones no estilo [Lucide](https://lucide.dev/) (traçados SVG)
-- Claude (Anthropic): apoio na implementação das perguntas, recomendações, plano de ação, Educación sostenible e Huella positiva
+- Login federado e IA:
+  - [Demo de login federado da professora (elc1090/demo-auth-profile)](https://github.com/elc1090/demo-auth-profile)
+  - [Supabase: Login with Google](https://supabase.com/docs/guides/auth/social-login/auth-google), [Redirect URLs](https://supabase.com/docs/guides/auth/redirect-urls) e [Identity Linking](https://supabase.com/docs/guides/auth/auth-identity-linking)
+  - [Google: Sign in with Google Branding Guidelines](https://developers.google.com/identity/branding-guidelines) (ícone oficial do botão)
+  - [Gemini API: Structured outputs](https://ai.google.dev/gemini-api/docs/generate-content/structured-output) e [Rate limits](https://ai.google.dev/gemini-api/docs/rate-limits)
+- Claude (Anthropic): apoio na implementação das perguntas, recomendações, plano de ação, Educación sostenible, Huella positiva, login federado e análise com IA
 
 ---
 Projeto entregue para a disciplina de [Desenvolvimento de Software para a Web](http://github.com/andreainfufsm/elc1090-2026b) em 2026b

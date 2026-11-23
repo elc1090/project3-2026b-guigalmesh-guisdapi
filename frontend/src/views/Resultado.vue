@@ -6,6 +6,7 @@ import { useResultadoStore } from '../stores/resultado'
 import { useHistoricoStore } from '../stores/historico'
 import BotoesAcao from '../components/BotoesAcao.vue'
 import GraficoEvolucao from '../components/GraficoEvolucao.vue'
+import AnaliseIA from '../components/AnaliseIA.vue'
 import { formatarData } from '../lib/datas'
 import Icone from '../components/ui/Icone.vue'
 import Pagina from '../components/ui/Pagina.vue'
@@ -357,6 +358,9 @@ onBeforeUnmount(() => {
               </div>
             </article>
           </div>
+
+          <!-- Análise personalizada com IA (Gemini) -->
+          <AnaliseIA :concluido-em="resultado.concluido_em || ''" />
 
           <!-- Principais oportunidades de melhoria -->
           <div class="bg-emerald-50/50 p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200/80">

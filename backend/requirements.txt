@@ -4,3 +4,4 @@ uvicorn[standard]==0.54.0
 pydantic==2.13.5
 python-dotenv==1.2.4
 supabase==2.32.0
+google-genai==2.33.0

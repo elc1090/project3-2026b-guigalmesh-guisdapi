@@ -1,6 +1,9 @@
 <script setup>
 import { ref } from 'vue'
 import { entrarComGoogle } from '../../lib/auth'
+// ícone oficial baixado das diretrizes de marca do Google (Sign in with Google Branding Guidelines);
+// não editar o arquivo: o Google exige usar a arte aprovada sem alterações
+import iconeGoogle from '../../assets/google-g.svg'
 
 // Login federado: botão "Continuar con Google" + separador "o", usado no Login e no Cadastro.
 // O Supabase Auth faz o fluxo OAuth com o Google (redireciona, recebe o retorno, valida o
@@ -37,12 +40,13 @@ async function continuar() {
 
     <button
       type="button"
-      class="w-full inline-flex items-center justify-center gap-2 bg-white border border-slate-300 text-slate-700 font-semibold py-3 rounded-xl shadow-xs transition cursor-pointer hover:bg-slate-50 disabled:opacity-60 disabled:cursor-wait"
+      class="w-full inline-flex items-center justify-center gap-2.5 bg-white border border-slate-300 text-slate-700 font-semibold py-3 rounded-xl shadow-xs transition cursor-pointer hover:bg-slate-50 disabled:opacity-60 disabled:cursor-wait"
       :disabled="carregando"
       :aria-busy="carregando"
       @click="continuar"
     >
       <span v-if="carregando" class="w-4 h-4 rounded-full border-2 border-slate-300 border-t-slate-600 animate-spin" aria-hidden="true"></span>
+      <img v-else :src="iconeGoogle" alt="" aria-hidden="true" class="w-7 h-7 -my-1 shrink-0" width="28" height="28">
       {{ carregando ? 'Conectando con Google...' : 'Continuar con Google' }}
     </button>
 
