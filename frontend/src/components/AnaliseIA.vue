@@ -17,7 +17,7 @@ const ICONE_BRILHO = [
   'M20 3v4', 'M22 5h-4'
 ]
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const estado = ref('carregando') // carregando | indisponivel | vazio | pronto
 const dados = ref(null)
 const gerando = ref(false)
@@ -61,7 +61,8 @@ async function gerar() {
   }
 }
 
-watch(() => props.concluidoEm, carregar, { immediate: true })
+// a análise é salva por idioma: ao trocar, busca a do idioma novo
+watch([() => props.concluidoEm, locale], carregar, { immediate: true })
 </script>
 
 <template>

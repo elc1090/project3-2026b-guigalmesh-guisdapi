@@ -154,3 +154,20 @@ def test_sem_chave(monkeypatch):
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
     with pytest.raises(IANaoConfigurada):
         gerar_analise({})
+
+
+# ---------------------------------------------------------------- idioma
+
+def test_contexto_e_prompt_em_portugues():
+    contexto = montar_contexto(RESULTADO, {**EMPRESA, "porte": "pequena"}, "pt")
+    assert contexto["empresa"]["tamano"] == "Pequena empresa"
+    assert montar_prompt(contexto, "pt").startswith("Analise o diagnóstico")
+
+
+def test_gerar_analise_em_portugues_usa_instrucoes_em_portugues(monkeypatch):
+    monkeypatch.delenv("GEMINI_MODEL", raising=False)
+    cliente = ClienteFalso(texto=json.dumps(RESPOSTA_OK))
+    gerar_analise({}, cliente=cliente, idioma="pt")
+    (chamada,) = cliente.chamadas
+    assert "português do Brasil" in chamada["config"].system_instruction
+    assert chamada["contents"].startswith("Analise o diagnóstico")

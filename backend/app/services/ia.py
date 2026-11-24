@@ -1,8 +1,8 @@
 """Análise do diagnóstico com IA (Gemini) — "IA como serviço".
 
 O back-end monta um contexto só com os dados do diagnóstico (sem nome de pessoa, e-mail
-ou nome da empresa), pede ao Gemini uma análise em espanhol num formato JSON fixo e
-valida a resposta antes de devolver. Tudo aqui, menos chamar_gemini, é função pura
+ou nome da empresa), pede ao Gemini uma análise no idioma da interface (espanhol ou
+português) num formato JSON fixo e valida a resposta antes de devolver. Tudo aqui, menos chamar_gemini, é função pura
 (testada com pytest).
 """
 import json
@@ -22,9 +22,12 @@ MODELO_RESERVA_PADRAO = "gemini-flash-lite-latest"
 TEMPO_LIMITE_MS = 45_000
 MAX_RECOMENDACOES_NO_CONTEXTO = 10
 
-PORTES = {"micro": "Microempresa", "pequena": "Pequeña empresa", "mediana": "Mediana empresa"}
+PORTES = {
+    "es": {"micro": "Microempresa", "pequena": "Pequeña empresa", "mediana": "Mediana empresa"},
+    "pt": {"micro": "Microempresa", "pequena": "Pequena empresa", "mediana": "Média empresa"},
+}
 
-INSTRUCOES = """Eres un asesor de sostenibilidad para pequeñas y medianas empresas (pymes) de Chile.
+INSTRUCOES_ES = """Eres un asesor de sostenibilidad para pequeñas y medianas empresas (pymes) de Chile.
 Recibirás en JSON el resultado de un diagnóstico de sostenibilidad de una empresa
 (dimensiones ambiental, social y económica), sus recomendaciones pendientes y sus fortalezas.
 
@@ -38,6 +41,29 @@ Reglas:
   un primer paso concreto que se pueda hacer en una semana, sin grandes inversiones.
 - Si no hay recomendaciones pendientes, propone cómo mantener y medir lo que ya se hace bien.
 - Sé breve: resumen de 2 a 3 frases; cada campo de las prioridades en 1 o 2 frases."""
+
+INSTRUCOES_PT = """Você é um consultor de sustentabilidade para pequenas e médias empresas (PMEs).
+Você receberá em JSON o resultado de um diagnóstico de sustentabilidade de uma empresa
+(dimensões ambiental, social e econômica), suas recomendações pendentes e seus pontos fortes.
+
+Regras:
+- Escreva em português do Brasil, com um tom próximo, claro e prático, para o dono de uma PME.
+- Use SOMENTE as informações recebidas. Não invente dados, números, leis, normas, certificações,
+  programas, prazos nem custos que não estejam no JSON.
+- Se faltar informação, não suponha que a empresa cumpre algo.
+- Escolha exatamente 3 prioridades entre as recomendações pendentes, considerando a prioridade,
+  o setor e o porte da empresa. Explique por que cada uma importa para ESTA empresa e proponha
+  um primeiro passo concreto que possa ser feito em uma semana, sem grandes investimentos.
+- Se não houver recomendações pendentes, proponha como manter e medir o que já é feito bem.
+- Seja breve: resumo de 2 a 3 frases; cada campo das prioridades com 1 ou 2 frases.
+- Os nomes dos campos do JSON (resumen, prioridades, motivo, primer_paso, fortalezas) continuam
+  iguais; só o conteúdo é em português."""
+
+INSTRUCOES = {"es": INSTRUCOES_ES, "pt": INSTRUCOES_PT}
+PEDIDO = {
+    "es": "Analiza el siguiente diagnóstico de sostenibilidad y responde en el formato JSON indicado.",
+    "pt": "Analise o diagnóstico de sustentabilidade a seguir e responda no formato JSON indicado.",
+}
 
 
 class Prioridade(BaseModel):
@@ -64,7 +90,7 @@ class IASobrecarregada(FalhaIA):
     """Todos os modelos tentados estavam com alta demanda ou sem cota (503/429)."""
 
 
-def montar_contexto(resultado: dict, empresa: dict | None) -> dict:
+def montar_contexto(resultado: dict, empresa: dict | None, idioma: str = "es") -> dict:
     """Dados enviados à IA. De propósito NÃO inclui nome da empresa, e-mail nem nomes de pessoas
     (no plano gratuito do Gemini os dados podem ser usados pelo Google para melhorar os produtos)."""
     empresa = empresa or {}
@@ -73,7 +99,7 @@ def montar_contexto(resultado: dict, empresa: dict | None) -> dict:
     return {
         "empresa": {
             "sector": empresa.get("setor"),
-            "tamano": PORTES.get(empresa.get("porte"), empresa.get("porte")),
+            "tamano": PORTES.get(idioma, PORTES["es"]).get(empresa.get("porte"), empresa.get("porte")),
             "numero_trabajadores": empresa.get("num_funcionarios"),
         },
         "puntuacion_general": resultado.get("geral", {}),
@@ -95,11 +121,8 @@ def montar_contexto(resultado: dict, empresa: dict | None) -> dict:
     }
 
 
-def montar_prompt(contexto: dict) -> str:
-    return (
-        "Analiza el siguiente diagnóstico de sostenibilidad y responde en el formato JSON indicado.\n\n"
-        + json.dumps(contexto, ensure_ascii=False, indent=2)
-    )
+def montar_prompt(contexto: dict, idioma: str = "es") -> str:
+    return PEDIDO.get(idioma, PEDIDO["es"]) + "\n\n" + json.dumps(contexto, ensure_ascii=False, indent=2)
 
 
 def interpretar_resposta(texto: str | None) -> dict:
@@ -147,7 +170,7 @@ def _cliente_padrao():
 CODIGOS_TENTAR_OUTRO = {404, 429, 500, 502, 503, 504}
 
 
-def gerar_analise(contexto: dict, cliente=None) -> tuple[dict, str]:
+def gerar_analise(contexto: dict, cliente=None, idioma: str = "es") -> tuple[dict, str]:
     """Chama o Gemini e devolve (análise validada, modelo usado). Se o modelo principal
     estiver sobrecarregado, tenta o de reserva. "cliente" permite trocar o Gemini por um
     falso nos testes."""
@@ -155,7 +178,7 @@ def gerar_analise(contexto: dict, cliente=None) -> tuple[dict, str]:
 
     cliente = cliente or _cliente_padrao()
     config = types.GenerateContentConfig(
-        system_instruction=INSTRUCOES,
+        system_instruction=INSTRUCOES.get(idioma, INSTRUCOES_ES),
         response_mime_type="application/json",
         response_schema=AnaliseIA,
         temperature=0.4,
@@ -166,7 +189,7 @@ def gerar_analise(contexto: dict, cliente=None) -> tuple[dict, str]:
         try:
             resposta = cliente.models.generate_content(
                 model=modelo,
-                contents=montar_prompt(contexto),
+                contents=montar_prompt(contexto, idioma),
                 config=config,
             )
         except Exception as erro:  # rede, cota, chave inválida, tempo esgotado…
