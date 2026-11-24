@@ -6,6 +6,8 @@ import Icone from '../ui/Icone.vue'
 import { NOMES_DIMENSOES } from '../../constants/dimensoes'
 import { ICONE_FOLHA } from '../../constants/icones'
 import { nomeDimensao } from '../../i18n/rotulos'
+import { noIdioma } from '../../i18n/conteudo'
+import { ODS as ODS_PT } from '../../i18n/conteudo/ods.pt'
 
 const { t } = useI18n()
 
@@ -201,8 +203,9 @@ const ODS = [
   }
 ]
 
+const odsNoIdioma = computed(() => noIdioma(ODS, { pt: ODS_PT }))
 const visibles = computed(() =>
-  filtro.value === 'todos' ? ODS : ODS.filter((o) => o.dimensiones.includes(filtro.value))
+  filtro.value === 'todos' ? odsNoIdioma.value : odsNoIdioma.value.filter((o) => o.dimensiones.includes(filtro.value))
 )
 </script>
 
