@@ -25,8 +25,9 @@ const LARGURAS = { estreita: 'max-w-3xl', normal: 'max-w-6xl', larga: 'max-w-7xl
     <!-- ex.: link "Volver" acima do título -->
     <slot name="antes" />
 
-    <header class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-      <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+    <!-- título e #lateral lado a lado só em telas largas: em ~1024px o lateral espremia o título -->
+    <header class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+      <div class="flex items-center gap-3 sm:gap-4 min-w-0 xl:flex-1">
         <span
           v-if="icone"
           class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0"
@@ -42,7 +43,7 @@ const LARGURAS = { estreita: 'max-w-3xl', normal: 'max-w-6xl', larga: 'max-w-7xl
         </div>
       </div>
 
-      <div v-if="$slots.lateral" class="shrink-0">
+      <div v-if="$slots.lateral" class="xl:shrink-0 xl:max-w-md">
         <slot name="lateral" />
       </div>
     </header>
