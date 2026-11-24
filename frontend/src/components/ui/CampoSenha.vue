@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import Icone from './Icone.vue'
 import { ICONE_OLHO, ICONE_OLHO_FECHADO } from '../../constants/icones'
 
@@ -7,6 +8,7 @@ import { ICONE_OLHO, ICONE_OLHO_FECHADO } from '../../constants/icones'
 defineOptions({ inheritAttrs: false })
 const senha = defineModel({ type: String, default: '' })
 const visivel = ref(false)
+const { t } = useI18n()
 </script>
 
 <template>
@@ -16,7 +18,7 @@ const visivel = ref(false)
       type="button"
       @click="visivel = !visivel"
       class="absolute inset-y-0 right-0 px-3.5 flex items-center rounded-r-xl text-slate-400 hover:text-slate-600 transition cursor-pointer"
-      :aria-label="visivel ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+      :aria-label="visivel ? t('senha.ocultar') : t('senha.mostrar')"
       :aria-pressed="visivel"
     >
       <Icone :d="visivel ? ICONE_OLHO_FECHADO : ICONE_OLHO" class="w-5 h-5" />

@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import Icone from './ui/Icone.vue'
 import SeletorIdioma from './ui/SeletorIdioma.vue'
 import { NAVEGACAO, itemAtivo } from '../constants/navegacao'
@@ -9,6 +10,7 @@ import { useUsuario } from '../composables/useUsuario'
 
 // Barra inferior do celular: os itens de navegação + "Cuenta" (dados do usuário e sair)
 const route = useRoute()
+const { t } = useI18n()
 const { nome, email, inicial, sairDaConta } = useUsuario()
 
 const contaAberta = ref(false)
@@ -44,7 +46,7 @@ const sair = async () => {
     class="md:hidden fixed inset-x-4 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-30 rounded-full p-1.5
            bg-white/55 backdrop-blur-xl backdrop-saturate-150 border border-white/60
            shadow-[0_10px_40px_-8px_rgba(2,44,34,0.35),inset_0_1px_0_rgba(255,255,255,0.9)]"
-    aria-label="Navegación principal"
+    :aria-label="t('comum.navegacionPrincipal')"
   >
     <ul class="relative grid" :style="{ gridTemplateColumns: `repeat(${colunas}, minmax(0, 1fr))` }">
       <!-- "gota" de vidro do item ativo, desliza entre os itens -->
@@ -65,7 +67,7 @@ const sair = async () => {
           :aria-current="indiceAtivo === i ? 'page' : undefined"
         >
           <Icone :d="item.icone" class="w-[22px] h-[22px]" />
-          {{ item.rotuloCurto ?? item.rotulo }}
+          {{ t(item.rotuloCurto ?? item.rotulo) }}
         </router-link>
       </li>
 
@@ -81,7 +83,7 @@ const sair = async () => {
           <span class="w-[22px] h-[22px] rounded-full bg-emerald-800 text-white text-[11px] font-bold flex items-center justify-center" aria-hidden="true">
             {{ inicial }}
           </span>
-          Cuenta
+          {{ t('nav.cuenta') }}
         </button>
       </li>
     </ul>
@@ -98,7 +100,7 @@ const sair = async () => {
         ref="painel"
         role="dialog"
         aria-modal="true"
-        aria-label="Tu cuenta"
+        :aria-label="t('nav.tuCuenta')"
         class="md:hidden fixed inset-x-0 bottom-0 z-50 bg-white/90 backdrop-blur-2xl backdrop-saturate-150 border-t border-white/70 rounded-t-3xl shadow-2xl px-4 pt-3 pb-[calc(1rem+env(safe-area-inset-bottom))]"
       >
         <div class="flex items-center justify-between mb-3">
@@ -108,7 +110,7 @@ const sair = async () => {
             type="button"
             @click="fecharConta"
             class="w-10 h-10 flex items-center justify-center rounded-full text-slate-500 hover:bg-slate-100 cursor-pointer"
-            aria-label="Cerrar"
+            :aria-label="t('nav.cerrar')"
           >
             <Icone :d="ICONE_FECHAR" class="w-5 h-5" />
           </button>
@@ -134,7 +136,7 @@ const sair = async () => {
           class="mt-5 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-red-200 text-red-700 font-semibold hover:bg-red-50 transition cursor-pointer"
         >
           <Icone :d="ICONE_SAIR" class="w-5 h-5" />
-          Cerrar sesión
+          {{ t('comum.cerrarSesion') }}
         </button>
       </div>
     </Transition>

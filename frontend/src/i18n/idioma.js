@@ -13,8 +13,13 @@ export function lerIdiomaInicial() {
   return idiomaInicial(salvo, navigator.language)
 }
 
+export function atualizarDocumento(i18n, idioma) {
+  document.documentElement.lang = idioma
+  document.title = `Verde Impulso · ${i18n.global.t('marca.slogan')}`
+}
+
 export function aplicarIdioma(i18n, idioma) {
   i18n.global.locale.value = idioma
-  document.documentElement.lang = idioma
+  atualizarDocumento(i18n, idioma)
   try { localStorage.setItem(CHAVE, idioma) } catch { /* modo privado */ }
 }

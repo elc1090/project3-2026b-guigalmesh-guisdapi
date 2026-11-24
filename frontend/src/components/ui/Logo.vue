@@ -1,7 +1,10 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import Icone from './Icone.vue'
 import { ICONE_BROTO } from '../../constants/icones'
-import { NOME_APP, SLOGAN } from '../../constants/marca'
+import { NOME_APP } from '../../constants/marca'
+
+const { t } = useI18n()
 
 // compacto: só o nome, sem o slogan (cabeçalho do celular)
 defineProps({
@@ -17,7 +20,7 @@ defineProps({
     <span v-if="compacto" class="font-display font-extrabold tracking-wider text-white text-lg">{{ NOME_APP }}</span>
     <div v-else>
       <span class="font-display font-extrabold tracking-wider text-white text-lg block leading-none">{{ NOME_APP }}</span>
-      <span class="text-[11px] text-emerald-200/80 tracking-wide">{{ SLOGAN }}</span>
+      <span class="text-[11px] text-emerald-200/80 tracking-wide">{{ t('marca.slogan') }}</span>
     </div>
   </div>
 </template>

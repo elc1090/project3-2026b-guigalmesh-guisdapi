@@ -1,10 +1,9 @@
 import { createI18n } from 'vue-i18n'
 import es from './es.json'
 import pt from './pt.json'
-import { lerIdiomaInicial } from './idioma'
+import { lerIdiomaInicial, atualizarDocumento } from './idioma'
 
 const inicial = lerIdiomaInicial()
-document.documentElement.lang = inicial
 
 export const i18n = createI18n({
   legacy: false,
@@ -12,3 +11,5 @@ export const i18n = createI18n({
   fallbackLocale: 'es',
   messages: { es, pt }
 })
+
+atualizarDocumento(i18n, inicial)

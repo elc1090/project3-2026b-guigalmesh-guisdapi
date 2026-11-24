@@ -33,7 +33,7 @@ const CLASSE_ATIVA = 'bg-white/15 backdrop-blur-md !border-white/25 !text-white 
           :aria-current="itemAtivo(item, route.path) ? 'page' : undefined"
         >
           <Icone :d="item.icone" class="w-5 h-5 shrink-0" />
-          {{ item.rotulo }}
+          {{ t(item.rotulo) }}
         </router-link>
       </nav>
     </div>

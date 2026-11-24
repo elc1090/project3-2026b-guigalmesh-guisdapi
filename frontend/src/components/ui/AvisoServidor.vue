@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, watch, onBeforeUnmount } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { servidorLento, lentoDesde } from '../../lib/api'
 import { navegando } from '../../router/estado'
 
@@ -8,6 +9,7 @@ import { navegando } from '../../router/estado'
 // 2) aviso "Conectando con el servidor" quando o back-end demora (Render acordando).
 
 // segundos esperando, para trocar a mensagem se passar muito tempo
+const { t } = useI18n()
 const segundos = ref(0)
 let relogio = null
 
@@ -21,9 +23,9 @@ watch(servidorLento, (lento) => {
 onBeforeUnmount(() => clearInterval(relogio))
 
 const detalhe = computed(() => {
-  if (segundos.value < 10) return 'Un momento, por favor…'
-  if (segundos.value < 45) return 'El servidor estaba en reposo y está despertando. La primera conexión puede tardar hasta un minuto.'
-  return 'Está tardando más de lo normal. Si no avanza, revisa tu conexión a internet.'
+  if (segundos.value < 10) return t('servidor.momento')
+  if (segundos.value < 45) return t('servidor.despertando')
+  return t('servidor.tardando')
 })
 </script>
 
@@ -34,7 +36,7 @@ const detalhe = computed(() => {
       v-if="navegando"
       class="fixed inset-x-0 top-0 z-[60] h-1 overflow-hidden bg-emerald-100/40 pointer-events-none"
       role="progressbar"
-      aria-label="Cargando"
+      :aria-label="t('servidor.cargando')"
     >
       <div class="barra-indeterminada h-full w-1/3 rounded-full bg-emerald-400"></div>
     </div>
@@ -53,7 +55,7 @@ const detalhe = computed(() => {
       <span class="mt-0.5 w-5 h-5 shrink-0 rounded-full border-2 border-emerald-200 border-t-emerald-700 animate-spin motion-reduce:animate-none" aria-hidden="true"></span>
       <div class="min-w-0">
         <p class="text-sm font-semibold text-slate-800">
-          Conectando con el servidor<span v-if="segundos >= 5" class="font-normal text-slate-500"> · {{ segundos }} s</span>
+          {{ t('servidor.conectando') }}<span v-if="segundos >= 5" class="font-normal text-slate-500"> · {{ segundos }} s</span>
         </p>
         <p class="text-xs text-slate-500 mt-0.5">{{ detalhe }}</p>
       </div>

@@ -88,5 +88,30 @@
       "cambiarCorreo": "Trocar e-mail",
       "yaConfirmaste": "Já confirmou?"
     }
+  },
+  "nav": {
+    "inicio": "Início",
+    "resultados": "Resultados",
+    "educacion": "Educação sustentável",
+    "educacionCurto": "Educação",
+    "huella": "Pegada positiva",
+    "huellaCurto": "Pegada",
+    "cuenta": "Conta",
+    "tuCuenta": "Sua conta",
+    "cerrar": "Fechar"
+  },
+  "marca": {
+    "slogan": "Gestão Sustentável"
+  },
+  "servidor": {
+    "cargando": "Carregando",
+    "momento": "Um momento, por favor…",
+    "despertando": "O servidor estava em repouso e está acordando. A primeira conexão pode levar até um minuto.",
+    "tardando": "Está demorando mais que o normal. Se não avançar, confira sua conexão com a internet.",
+    "conectando": "Conectando ao servidor"
+  },
+  "senha": {
+    "mostrar": "Mostrar senha",
+    "ocultar": "Ocultar senha"
   }
 }
