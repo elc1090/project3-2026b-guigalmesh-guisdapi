@@ -199,16 +199,6 @@ onBeforeUnmount(() => {
     :titulo="t('resultado.titulo')"
     :subtitulo="t('resultado.subtitulo')"
   >
-    <template #lateral>
-      <div class="flex items-center gap-3 bg-emerald-50 border border-emerald-100 rounded-2xl px-4 py-3 lg:max-w-md">
-        <span class="selo-icone bg-emerald-100!">
-          <Icone :d="ICONE_FOLHA" class="w-5 h-5" />
-        </span>
-        <p class="text-sm text-slate-600">
-          {{ t('resultado.lateral') }}
-        </p>
-      </div>
-    </template>
 
     <!-- esqueleto com o mesmo desenho da tela (sem "pulo" quando o resultado chega) -->
     <div v-if="carregando" class="grid grid-cols-1 xl:grid-cols-12 gap-6" aria-busy="true">
@@ -239,9 +229,15 @@ onBeforeUnmount(() => {
         {{ t('resultado.ultimo') }} <strong class="text-slate-700">{{ dataDiagnostico }}</strong>
       </p>
 
+      <!-- celular: nota geral no topo (no desktop ela fica no cabeçalho do radar, visível sem rolar) -->
+      <p class="xl:hidden flex flex-wrap items-center gap-2 text-sm text-slate-500">
+        {{ t('resultado.general') }} <strong class="text-2xl text-slate-800">{{ resultado.geral.pontuacao }}</strong> / 100
+        <span class="px-3 py-1 text-xs rounded-full font-semibold" :class="classeSeloNivel(resultado.geral.nivel)">{{ rotuloNivel(resultado.geral.nivel) }}</span>
+      </p>
+
       <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
-        <!-- Coluna esquerda -->
-        <div class="xl:col-span-5 space-y-6">
+        <!-- Coluna esquerda (no celular vem depois do plano de ação: primeiro o que fazer) -->
+        <div class="xl:col-span-5 space-y-6 order-2 xl:order-1">
           <!-- Resumo por dimensão (radar) -->
           <div class="cartao p-5 sm:p-6">
             <div class="flex flex-wrap items-center gap-3 mb-2">
@@ -286,38 +282,9 @@ onBeforeUnmount(() => {
             </div>
           </div>
 
-          <!-- Comparativo de dimensões -->
-          <div class="cartao p-5 sm:p-6">
-            <div class="flex items-center gap-3 mb-5">
-              <span class="selo-icone">
-                <Icone :d="ICONE_GRAFICO" class="w-5 h-5" />
-              </span>
-              <h2 class="text-lg font-semibold text-slate-800">{{ t('resultado.comparativo') }}</h2>
-            </div>
 
-            <ul class="space-y-4">
-              <li
-                v-for="dimension in dimensoes"
-                :key="dimension.nome"
-                class="flex items-center gap-3"
-              >
-                <span class="selo-icone">
-                  <Icone :d="iconeDe(dimension.nome)" class="w-5 h-5" />
-                </span>
-                <span class="w-24 sm:w-28 text-sm font-semibold text-slate-700 shrink-0">{{ nomeDimensao(dimension.nome) }}</span>
-                <div class="flex-1 h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                  <div
-                    class="h-full rounded-full bg-gradient-to-r from-emerald-600 to-emerald-400 transition-all duration-700"
-                    :style="{ width: pct(dimension.pontuacao) + '%' }"
-                  ></div>
-                </div>
-                <span class="w-10 text-right text-sm font-semibold text-slate-700 shrink-0">{{ pct(dimension.pontuacao) }}%</span>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Evolução: uma linha por dimensão, um ponto por diagnóstico concluído -->
-          <div class="cartao p-5 sm:p-6">
+          <!-- Evolução: uma linha por dimensão, um ponto por diagnóstico concluído (só com 2 ou mais) -->
+          <div v-if="historico.length >= 2" class="cartao p-5 sm:p-6">
             <div class="flex items-center gap-3 mb-4">
               <span class="selo-icone">
                 <Icone :d="ICONE_TENDENCIA" class="w-5 h-5" />
@@ -331,33 +298,33 @@ onBeforeUnmount(() => {
           </div>
         </div>
 
-        <!-- Coluna direita -->
-        <div class="xl:col-span-7 space-y-6">
+        <!-- Coluna direita. Celular: notas, plano de ação, IA, pontos fortes; desktop: ordem do HTML -->
+        <div class="xl:col-span-7 flex flex-col gap-6 order-1 xl:order-2">
           <!-- Cards por dimensão -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+          <div class="order-1 xl:order-none grid grid-cols-3 gap-2 sm:gap-6">
             <article
               v-for="dimension in dimensoes"
               :key="dimension.nome"
-              class="cartao p-5 flex flex-col gap-3"
+              class="cartao p-3 sm:p-5 flex flex-col gap-2 sm:gap-3"
             >
               <div class="flex items-start gap-4">
                 <span
-                  class="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
+                  class="hidden sm:flex w-14 h-14 rounded-full items-center justify-center shrink-0"
                   :class="classeIconeNivel(dimension.nivel)"
                 >
                   <Icone :d="iconeDe(dimension.nome)" class="w-7 h-7" />
                 </span>
                 <div class="min-w-0">
-                  <p class="font-semibold text-slate-800">{{ nomeDimensao(dimension.nome) }}</p>
-                  <p class="text-3xl font-bold text-slate-800 leading-tight">{{ pct(dimension.pontuacao) }}%</p>
+                  <p class="text-sm sm:text-base font-semibold text-slate-800 truncate">{{ nomeDimensao(dimension.nome) }}</p>
+                  <p class="text-2xl sm:text-3xl font-bold text-slate-800 leading-tight">{{ pct(dimension.pontuacao) }}%</p>
                 </div>
               </div>
 
-              <p class="text-sm text-slate-500">{{ descricaoDe(dimension.nome) }}</p>
+              <p class="hidden sm:block text-sm text-slate-500">{{ descricaoDe(dimension.nome) }}</p>
 
               <div class="mt-auto pt-1">
                 <span
-                  class="inline-block px-3 py-1 rounded-full text-xs sm:text-sm font-semibold"
+                  class="inline-block px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold"
                   :class="classeSeloNivel(dimension.nivel)"
                 >
                   {{ rotuloNivel(dimension.nivel) }}
@@ -367,10 +334,10 @@ onBeforeUnmount(() => {
           </div>
 
           <!-- Análise personalizada com IA (Gemini) -->
-          <AnaliseIA :concluido-em="resultado.concluido_em || ''" />
+          <AnaliseIA class="order-3 xl:order-none" :concluido-em="resultado.concluido_em || ''" />
 
           <!-- Principais oportunidades de melhoria -->
-          <div class="bg-emerald-50/50 p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200/80">
+          <div class="order-2 xl:order-none bg-emerald-50/50 p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200/80">
             <div class="flex items-center gap-3 mb-4">
               <span class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
                 <Icone :d="ICONE_LAMPADA" class="w-5 h-5" />
@@ -467,7 +434,7 @@ onBeforeUnmount(() => {
           </div>
 
           <!-- O que a empresa já faz bem (respostas no nível máximo) -->
-          <div v-if="fortalezas.length" class="cartao p-5 sm:p-6">
+          <div v-if="fortalezas.length" class="order-4 xl:order-none cartao p-5 sm:p-6">
             <div class="flex items-center gap-3 mb-4">
               <span class="selo-icone">
                 <Icone :d="ICONE_CHECK" class="w-5 h-5" />

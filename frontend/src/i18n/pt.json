@@ -262,7 +262,6 @@
   "resultado": {
     "titulo": "Resultados do diagnóstico",
     "subtitulo": "Nível de maturidade em sustentabilidade da sua empresa",
-    "lateral": "Seus resultados vão ajudar a identificar pontos fortes e oportunidades para melhorar seu desempenho sustentável.",
     "cargando": "Carregando resultado...",
     "erroCargar": "Não foi possível carregar o resultado. Tente de novo.",
     "sinDiagnostico": "Você ainda não concluiu o diagnóstico.",
@@ -271,7 +270,6 @@
     "resumen": "Resumo por dimensão",
     "general": "Geral",
     "puntuacion": "Pontuação",
-    "comparativo": "Comparativo das dimensões",
     "evolucion": "Sua evolução",
     "evolucionTexto": "Pontuação em cada diagnóstico finalizado.",
     "oportunidades": "Principais oportunidades de melhoria",
