@@ -441,5 +441,9 @@
       "etiquetas": "As etiquetas verdes indicam as dimensões do diagnóstico cujas recomendações contribuem para cada ODS.",
       "mostrando": "Mostrando {n} de {total}."
     }
+  },
+  "etapa": {
+    "empieza": "Comece",
+    "avanza": "Avance"
   }
 }

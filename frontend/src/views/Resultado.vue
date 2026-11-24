@@ -14,7 +14,7 @@ import Pagina from '../components/ui/Pagina.vue'
 import Esqueleto from '../components/ui/Esqueleto.vue'
 import Alerta from '../components/ui/Alerta.vue'
 import { DIMENSOES, dimensaoPorNome } from '../constants/dimensoes'
-import { nomeDimensao, rotuloNivel, rotuloPrioridade } from '../i18n/rotulos'
+import { nomeDimensao, rotuloNivel, rotuloPrioridade, rotuloEtapa } from '../i18n/rotulos'
 import { classeSeloNivel, classeIconeNivel, classePrioridade } from '../constants/niveis'
 import { ICONE_GRAFICO, ICONE_LAMPADA, ICONE_FOLHA, ICONE_CHECK, ICONE_SETA, ICONE_CALENDARIO, ICONE_TENDENCIA } from '../constants/icones'
 
@@ -426,7 +426,7 @@ onBeforeUnmount(() => {
                     </span>
                   </div>
                   <p v-if="rec.parametro" class="text-[11px] font-semibold uppercase tracking-wide text-emerald-700 mt-0.5">
-                    {{ nomeDimensao(rec.categoria) }} · {{ rec.parametro }}<template v-if="rec.etapa"> · {{ rec.etapa }}</template>
+                    {{ nomeDimensao(rec.categoria) }} · {{ rec.parametro }}<template v-if="rec.etapa"> · {{ rotuloEtapa(rec.etapa) }}</template>
                   </p>
                   <p class="text-xs sm:text-sm text-slate-500 mt-0.5">{{ rec.descricao }}</p>
                   <p v-if="rec.indicador_sugerido" class="text-xs text-slate-500 mt-1">

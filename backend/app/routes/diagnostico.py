@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from app.auth import get_current_user
 from app.database import get_supabase_for_user
+from app.idioma import idioma
 from app.services.calculo import (
     RespostasInvalidas,
     calcular_diagnostico,
@@ -108,15 +109,15 @@ def _status_acoes(sb, empresa_id):
         return {}  # sem os status, as recomendações aparecem como pendentes
 
 
-def _completar_resultado(sb, empresa_id, resultado, respostas, concluido_em, empresa=None):
+def _completar_resultado(sb, empresa_id, resultado, respostas, concluido_em, empresa=None, idioma_pedido="es"):
     if empresa is None:
         empresa = _perfil_empresa(sb, empresa_id)
     status = _status_acoes(sb, empresa_id)
-    recomendacoes = gerar_recomendacoes(respostas, empresa=empresa, resultado=resultado)
+    recomendacoes = gerar_recomendacoes(respostas, empresa=empresa, resultado=resultado, idioma=idioma_pedido)
     for rec in recomendacoes:
         rec["status"] = status.get(rec["id"], "pendiente")
     resultado["recomendacoes"] = recomendacoes
-    resultado["fortalezas"] = gerar_fortalezas(respostas)
+    resultado["fortalezas"] = gerar_fortalezas(respostas, idioma=idioma_pedido)
     resultado["concluido_em"] = concluido_em
     return resultado
 
@@ -162,7 +163,7 @@ def guardar_rascunho(dados: RespostasIn, ctx=Depends(get_contexto)):
 
 
 @router.post("/concluir")
-def concluir(dados: RespostasIn, ctx=Depends(get_contexto)):
+def concluir(dados: RespostasIn, ctx=Depends(get_contexto), idioma_pedido: str = Depends(idioma)):
     sb, empresa_id = ctx
     try:
         resultado = calcular_diagnostico(_perguntas_ativas(sb), dados.respostas)
@@ -181,11 +182,13 @@ def concluir(dados: RespostasIn, ctx=Depends(get_contexto)):
         log.exception("Erro ao salvar diagnóstico")
         raise HTTPException(500, "Error al guardar")
 
-    return _completar_resultado(sb, empresa_id, resultado, dados.respostas, concluido_em)
+    return _completar_resultado(
+        sb, empresa_id, resultado, dados.respostas, concluido_em, idioma_pedido=idioma_pedido
+    )
 
 
 @router.get("/resultado")
-def obter_resultado(ctx=Depends(get_contexto)):
+def obter_resultado(ctx=Depends(get_contexto), idioma_pedido: str = Depends(idioma)):
     """Só leitura: devolve o último diagnóstico concluído (quem conclui é o POST /concluir)."""
     sb, empresa_id = ctx
 
@@ -196,7 +199,8 @@ def obter_resultado(ctx=Depends(get_contexto)):
     try:
         resultado = calcular_diagnostico(_perguntas_ativas(sb), concluido["respostas"])
         return _completar_resultado(
-            sb, empresa_id, resultado, concluido["respostas"], data_conclusao(concluido)
+            sb, empresa_id, resultado, concluido["respostas"], data_conclusao(concluido),
+            idioma_pedido=idioma_pedido,
         )
     except RespostasInvalidas as e:
         raise HTTPException(409, str(e))

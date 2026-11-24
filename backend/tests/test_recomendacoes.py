@@ -7,6 +7,7 @@ from app.services.recomendacoes import (
     gerar_fortalezas,
     gerar_recomendacoes,
 )
+from app.services.recomendacoes_pt import CATALOGO_PT, ENLACES_PT
 
 PERGUNTAS = json.loads(
     (Path(__file__).parent.parent / "app" / "perguntas.json").read_text(encoding="utf-8")
@@ -170,3 +171,35 @@ def test_links_da_educacion_apontam_para_temas_que_existem():
         for enlace in (item.get("enlace"), item["empieza"].get("enlace"), item["avanza"].get("enlace")):
             if enlace and enlace["para"].startswith("/educacion/"):
                 assert enlace["para"].removeprefix("/educacion/") in slugs, enlace["para"]
+
+
+# ---------------------------------------------------------------- idioma
+
+
+def test_catalogo_pt_cobre_todas_as_perguntas():
+    assert set(CATALOGO_PT) == set(CATALOGO_PADRAO)
+    for pid, item in CATALOGO_PADRAO.items():
+        pt = CATALOGO_PT[pid]
+        assert pt["parametro"] and pt["indicador"], pid
+        for etapa in ("empieza", "avanza"):
+            assert pt[etapa]["titulo"] and pt[etapa]["descricao"], pid
+            assert ("descricao_micro" in pt[etapa]) == ("descricao_micro" in item[etapa]), pid
+        for enlace in (item.get("enlace"), item["empieza"].get("enlace"), item["avanza"].get("enlace")):
+            if enlace:
+                assert enlace["para"] in ENLACES_PT, pid
+
+
+def test_recomendacoes_em_portugues_mantem_ids_e_codigos():
+    respostas = {"q_amb_01": 1, "q_soc_07": 3, "q_amb_08": 3}
+    es = gerar_recomendacoes(respostas, empresa={"porte": "micro"})
+    pt = gerar_recomendacoes(respostas, empresa={"porte": "micro"}, idioma="pt")
+    assert [r["id"] for r in pt] == [r["id"] for r in es]
+    assert [(r["categoria"], r["etapa"], r["prioridade"]) for r in pt] == [(r["categoria"], r["etapa"], r["prioridade"]) for r in es]
+    por_id = {r["pergunta_id"]: r for r in pt}
+    assert por_id["q_amb_01"]["titulo"] == "Identifique suas fontes de emissões"
+    assert por_id["q_soc_07"]["descricao"].startswith("Programe pelo menos")  # texto de microempresa
+    assert por_id["q_amb_08"]["enlace"] == {"para": "/huella-positiva", "rotulo": ENLACES_PT["/huella-positiva"]}
+
+
+def test_fortalezas_em_portugues():
+    assert gerar_fortalezas({"q_amb_04": 4}, idioma="pt")[0]["parametro"] == "Consumo de água"

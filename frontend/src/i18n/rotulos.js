@@ -20,5 +20,6 @@ export const rotuloNivel = (nivel) => traduzir('nivel', nivel)
 export const rotuloPrioridade = (prioridade) => traduzir('prioridade', prioridade)
 export const rotuloSetor = (setor) => traduzir('setor', setor)
 export const rotuloPorte = (porte) => traduzir('porte', porte)
+export const rotuloEtapa = (etapa) => traduzir('etapa', etapa)
 
 export const localeData = () => (i18n.global.locale.value === 'pt' ? 'pt-BR' : 'es-CL')

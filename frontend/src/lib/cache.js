@@ -1,5 +1,6 @@
 import { ref, computed, watch } from 'vue'
 import { sessao } from './sessao'
+import { i18n } from '../i18n'
 
 const PREFIXO = 'cache:'
 const recursos = new Set()
@@ -23,9 +24,11 @@ const idUsuario = () => sessao.value?.user?.id ?? null
  * - se há dado em cache, ele é devolvido na hora e, se estiver velho (> ttl),
  *   é revalidado em segundo plano;
  * - chamadas simultâneas compartilham a mesma requisição;
- * - persistido em localStorage, separado por usuário.
+ * - persistido em localStorage, separado por usuário;
+ * - porIdioma: o back-end responde no idioma escolhido (ex.: recomendações), então o cache é
+ *   separado por idioma e, ao trocar o idioma, o dado é buscado de novo.
  */
-export function criarRecurso({ chave, buscar, ttl = 5 * MINUTO }) {
+export function criarRecurso({ chave, buscar, ttl = 5 * MINUTO, porIdioma = false }) {
   const dado = ref(undefined)
   const erro = ref(null)
   let atualizadoEm = 0
@@ -34,7 +37,7 @@ export function criarRecurso({ chave, buscar, ttl = 5 * MINUTO }) {
   // muda a cada limpeza/troca de usuário; respostas de requisições antigas são descartadas
   let geracao = 0
 
-  const chaveStorage = () => `${PREFIXO}${usuario}:${chave}`
+  const chaveStorage = () => `${PREFIXO}${usuario}:${chave}${porIdioma ? `:${i18n.global.locale.value}` : ''}`
 
   function hidratar(uid) {
     usuario = uid
@@ -57,6 +60,14 @@ export function criarRecurso({ chave, buscar, ttl = 5 * MINUTO }) {
   }
 
   watch(idUsuario, (uid) => { if (uid !== usuario) hidratar(uid) }, { immediate: true })
+
+  if (porIdioma) {
+    watch(() => i18n.global.locale.value, () => {
+      const estavaEmUso = dado.value !== undefined
+      hidratar(usuario)
+      if (estavaEmUso) carregar().catch((e) => console.warn(`Falha ao recarregar "${chave}":`, e))
+    })
+  }
 
   function definir(valor) {
     const serializado = JSON.stringify({ dado: valor ?? null })

@@ -10,6 +10,7 @@ export const useResultadoStore = defineStore('resultado', () => {
   const recurso = criarRecurso({
     chave: 'resultado-v2', // v2: recomendações por pergunta + fortalezas
     ttl: 5 * MINUTO,
+    porIdioma: true, // recomendações e fortalezas vêm no idioma escolhido
     buscar: async () => {
       const res = await apiFetch('/api/diagnostico/resultado')
       // 404: sem diagnóstico concluído / 400: sem empresa cadastrada

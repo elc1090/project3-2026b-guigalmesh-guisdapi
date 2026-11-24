@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { nextTick } from 'vue'
 import { sessao } from '../sessao'
 import { criarRecurso, limparTodoCache } from '../cache'
+import { i18n } from '../../i18n'
 
 const logar = (id) => { sessao.value = { user: { id }, access_token: `tok-${id}` } }
 
@@ -21,6 +22,24 @@ describe('criarRecurso (stale-while-revalidate)', () => {
 
     await r.carregar()
     expect(buscar).toHaveBeenCalledTimes(1)
+  })
+
+  it('porIdioma: ao trocar o idioma, busca de novo e guarda cada idioma separado', async () => {
+    const buscar = vi.fn(async () => i18n.global.locale.value)
+    const r = criarRecurso({ chave: 't-idioma', buscar, porIdioma: true })
+    try {
+      expect(await r.carregar()).toBe('es')
+
+      i18n.global.locale.value = 'pt'
+      await vi.waitFor(() => expect(r.dado.value).toBe('pt'))
+      expect(buscar).toHaveBeenCalledTimes(2)
+
+      i18n.global.locale.value = 'es'
+      await nextTick()
+      expect(r.dado.value).toBe('es') // volta do cache do espanhol
+    } finally {
+      i18n.global.locale.value = 'es'
+    }
   })
 
   it('chamadas simultâneas compartilham a mesma requisição', async () => {

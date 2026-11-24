@@ -10,8 +10,12 @@ Personalização:
 - setor da empresa: em alguns temas a prioridade sobe um nível (ex.: Ley REP no Comercio);
 - porte: algumas recomendações têm um texto mais simples para microempresas.
 
+Idioma: os textos do catálogo estão em espanhol; com idioma="pt" vêm de recomendacoes_pt.py.
+Os códigos (categoria, etapa, prioridade) continuam em espanhol: o front traduz os rótulos.
+
 Funções puras, sem acesso a banco, para serem testadas com pytest.
 """
+from app.services.recomendacoes_pt import CATALOGO_PT, ENLACES_PT
 
 ETAPA_EMPIEZA = "Empieza"
 ETAPA_AVANZA = "Avanza"
@@ -360,6 +364,25 @@ CATALOGO_PADRAO = {
 }
 
 
+def _no_idioma(pergunta_id: str, item: dict, idioma: str) -> dict:
+    """Item do catálogo com os textos do idioma pedido (o que faltar fica em espanhol)."""
+    traducao = CATALOGO_PT.get(pergunta_id) if idioma == "pt" else None
+    if not traducao:
+        return item
+    return {
+        **item,
+        **{k: v for k, v in traducao.items() if k not in ("empieza", "avanza")},
+        "empieza": {**item["empieza"], **traducao.get("empieza", {})},
+        "avanza": {**item["avanza"], **traducao.get("avanza", {})},
+    }
+
+
+def _enlace(enlace: dict | None, idioma: str) -> dict | None:
+    if not enlace or idioma != "pt" or enlace["para"] not in ENLACES_PT:
+        return enlace
+    return {**enlace, "rotulo": ENLACES_PT[enlace["para"]]}
+
+
 def _prioridade(valor: int, item: dict, empresa: dict | None) -> str:
     prioridade = PRIORIDADE_POR_VALOR[valor]
     setor = (empresa or {}).get("setor")
@@ -373,6 +396,7 @@ def gerar_recomendacoes(
     empresa: dict | None = None,
     resultado: dict | None = None,
     catalogo: dict | None = None,
+    idioma: str = "es",
 ) -> list[dict]:
     """respostas: {id_da_pergunta: valor 1-4}; empresa: {"setor", "porte"} (opcional);
     resultado: dict de calcular_diagnostico(), usado para desempatar pela dimensão de menor nota.
@@ -390,6 +414,7 @@ def gerar_recomendacoes(
         if valor not in PRIORIDADE_POR_VALOR:  # 4 (fortaleza) ou sem resposta
             continue
 
+        item = _no_idioma(pergunta_id, item, idioma)
         etapa = ETAPA_EMPIEZA if valor <= 2 else ETAPA_AVANZA
         texto = item["empieza"] if etapa == ETAPA_EMPIEZA else item["avanza"]
         descricao = texto.get("descricao_micro") if micro else None
@@ -405,7 +430,7 @@ def gerar_recomendacoes(
             "descricao": descricao or texto["descricao"],
             "indicador_sugerido": item.get("indicador", ""),
             "ods": item.get("ods", []),
-            "enlace": texto.get("enlace") or item.get("enlace"),
+            "enlace": _enlace(texto.get("enlace") or item.get("enlace"), idioma),
             "prioridade": _prioridade(valor, item, empresa),
             "pontuacao_dimensao": dimensao.get("pontuacao"),
             "nivel_dimensao": dimensao.get("nivel"),
@@ -422,14 +447,14 @@ def gerar_recomendacoes(
     return geradas
 
 
-def gerar_fortalezas(respostas: dict[str, int], catalogo: dict | None = None) -> list[dict]:
+def gerar_fortalezas(respostas: dict[str, int], catalogo: dict | None = None, idioma: str = "es") -> list[dict]:
     """Perguntas respondidas com 4: o que a empresa já faz bem."""
     itens = catalogo if catalogo is not None else CATALOGO_PADRAO
     return [
         {
             "pergunta_id": pergunta_id,
             "categoria": item["categoria"],
-            "parametro": item["parametro"],
+            "parametro": _no_idioma(pergunta_id, item, idioma)["parametro"],
             "ods": item.get("ods", []),
         }
         for pergunta_id, item in itens.items()
