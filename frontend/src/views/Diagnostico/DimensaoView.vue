@@ -105,8 +105,8 @@ const finalizar = async () => {
 
       <!-- rodapé fixo: progresso da dimensão, status do salvamento e próxima dimensão.
            O sticky conta a partir do fim do padding do <main>, não da borda da tela:
-           Celular: o padding de baixo é 7rem (+ área segura); -bottom-5 deixa o rodapé a ~92px do fim da tela,
-           logo acima da barra de navegação flutuante (BottomNav, topo a ~76px).
+           Celular: nesta tela a barra inferior fica escondida (modo foco, DefaultLayout), então o
+           rodapé encosta perto do fim da tela.
            Desktop: -bottom-8 compensa o p-8 e encosta na borda de baixo do <main>. -->
       <div
         class="sticky -bottom-5 md:-bottom-8 z-10 bg-white/80 backdrop-blur-xl backdrop-saturate-150 border border-white/70 md:border-slate-200 md:border-b-0 rounded-2xl md:rounded-b-none shadow-lg px-4 py-3 md:py-4 flex items-center gap-4"
