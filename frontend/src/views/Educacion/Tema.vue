@@ -1,6 +1,7 @@
 <script setup>
 import { computed, defineAsyncComponent } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import Icone from '../../components/ui/Icone.vue'
 import Pagina from '../../components/ui/Pagina.vue'
 import { TEMAS } from '../../constants/educacion'
@@ -14,6 +15,7 @@ const ICONE_LINK_EXTERNO = ['M15 3h6v6', 'M10 14 21 3', 'M18 13v6a2 2 0 0 1-2 2H
 const ICONE_INFO = ['M12 16v-4', 'M12 8h.01', 'M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0z']
 
 const route = useRoute()
+const { t } = useI18n()
 
 // a rota só aceita slugs existentes, então o tema sempre é encontrado
 const indice = computed(() => TEMAS.findIndex((t) => t.slug === route.params.tema))
@@ -26,14 +28,14 @@ const seguinte = computed(() => TEMAS[indice.value + 1] ?? null)
   <Pagina
     v-if="tema"
     :icone="tema.icone"
-    :sobretitulo="`Educación sostenible · Tema ${indice + 1} de ${TEMAS.length}`"
+    :sobretitulo="t('educacion.sobretitulo', { n: indice + 1, total: TEMAS.length })"
     :titulo="tema.titulo"
     :largura="tema.componente === 'ods' ? 'larga' : 'normal'"
   >
     <template #antes>
       <router-link to="/educacion" class="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-800 hover:underline">
         <Icone :d="ICONE_VOLTAR" class="w-4 h-4" />
-        Volver a Educación
+        {{ t('educacion.volver') }}
       </router-link>
     </template>
 
@@ -68,7 +70,7 @@ const seguinte = computed(() => TEMAS[indice.value + 1] ?? null)
         <div v-if="bloque.ejemplo || bloque.dato" class="mt-auto bg-amber-50 border border-amber-100 rounded-xl p-4">
           <p class="flex items-center gap-2 text-sm font-semibold text-amber-800 mb-1">
             <Icone :d="ICONE_LAMPADA" class="w-4 h-4 shrink-0" />
-            {{ bloque.ejemplo ? 'Ejemplo' : '¿Sabías que?' }}
+            {{ bloque.ejemplo ? t('educacion.ejemplo') : t('educacion.sabias') }}
           </p>
           <p class="text-sm text-slate-600">{{ bloque.ejemplo || bloque.dato }}</p>
         </div>
@@ -77,7 +79,7 @@ const seguinte = computed(() => TEMAS[indice.value + 1] ?? null)
 
     <!-- passos numerados -->
     <section v-if="tema.pasos?.length" class="cartao p-5 sm:p-7">
-      <h2 class="text-lg sm:text-xl font-bold text-slate-800 mb-4">Paso a paso</h2>
+      <h2 class="text-lg sm:text-xl font-bold text-slate-800 mb-4">{{ t('educacion.pasoAPaso') }}</h2>
       <ol class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <li
           v-for="(paso, i) in tema.pasos"
@@ -116,7 +118,7 @@ const seguinte = computed(() => TEMAS[indice.value + 1] ?? null)
 
     <!-- fontes oficiais -->
     <section v-if="tema.fuentes?.length">
-      <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Fuentes oficiales</h2>
+      <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">{{ t('educacion.fuentes') }}</h2>
       <ul class="flex flex-wrap gap-2">
         <li v-for="fuente in tema.fuentes" :key="fuente.url">
           <a
@@ -133,13 +135,13 @@ const seguinte = computed(() => TEMAS[indice.value + 1] ?? null)
     </section>
 
     <!-- navegação entre temas -->
-    <nav class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-200" aria-label="Navegación entre temas">
+    <nav class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-200" :aria-label="t('educacion.navegacion')">
       <router-link
         v-if="anterior"
         :to="`/educacion/${anterior.slug}`"
         class="cartao block p-4 hover:border-emerald-300 transition"
       >
-        <span class="text-xs font-semibold text-slate-500">← Tema anterior</span>
+        <span class="text-xs font-semibold text-slate-500">{{ t('educacion.anterior') }}</span>
         <span class="block font-semibold text-slate-800">{{ anterior.titulo }}</span>
       </router-link>
       <span v-else class="hidden sm:block"></span>
@@ -148,7 +150,7 @@ const seguinte = computed(() => TEMAS[indice.value + 1] ?? null)
         :to="`/educacion/${seguinte.slug}`"
         class="cartao block p-4 sm:text-right hover:border-emerald-300 transition"
       >
-        <span class="text-xs font-semibold text-slate-500">Siguiente tema →</span>
+        <span class="text-xs font-semibold text-slate-500">{{ t('educacion.siguiente') }}</span>
         <span class="block font-semibold text-slate-800">{{ seguinte.titulo }}</span>
       </router-link>
       <router-link
@@ -156,9 +158,9 @@ const seguinte = computed(() => TEMAS[indice.value + 1] ?? null)
         to="/educacion"
         class="cartao block p-4 sm:text-right hover:border-emerald-300 transition"
       >
-        <span class="text-xs font-semibold text-slate-500">Terminaste los temas</span>
+        <span class="text-xs font-semibold text-slate-500">{{ t('educacion.terminaste') }}</span>
         <span class="inline-flex items-center gap-1 font-semibold text-slate-800">
-          Volver a Educación
+          {{ t('educacion.volver') }}
           <Icone :d="ICONE_SETA" class="w-4 h-4" />
         </span>
       </router-link>

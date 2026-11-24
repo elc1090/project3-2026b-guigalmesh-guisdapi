@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import Icone from '../../components/ui/Icone.vue'
 import Pagina from '../../components/ui/Pagina.vue'
 import { useResultadoStore } from '../../stores/resultado'
@@ -7,6 +8,7 @@ import { TEMAS } from '../../constants/educacion'
 import { ICONE_LIVRO, ICONE_SETA } from '../../constants/icones'
 
 // Índice da Educación sostenible: um cartão por tema; cada tema abre em /educacion/<slug>.
+const { t } = useI18n()
 const resultadoStore = useResultadoStore()
 
 // temas ligados a recomendações ainda não realizadas aparecem como "Recomendado para tu empresa"
@@ -25,15 +27,13 @@ onMounted(() => {
 <template>
   <Pagina
     :icone="ICONE_LIVRO"
-    titulo="Educación sostenible"
-    subtitulo="Conceptos clave para que tu empresa avance hacia la sostenibilidad"
+    :titulo="t('educacion.titulo')"
+    :subtitulo="t('educacion.subtitulo')"
   >
     <div class="bg-gradient-to-br from-emerald-800 to-emerald-950 text-white rounded-2xl p-6 sm:p-8 shadow-sm">
-      <h2 class="text-xl sm:text-2xl font-bold mb-2">Aprende a tu ritmo</h2>
+      <h2 class="text-xl sm:text-2xl font-bold mb-2">{{ t('educacion.aprende') }}</h2>
       <p class="text-emerald-50/90 max-w-3xl">
-        Elige un tema para conocer qué es, por qué importa para tu negocio y qué puedes hacer en tu empresa.
-        Los temas marcados como <strong class="text-white">recomendados</strong> están relacionados con las
-        oportunidades de mejora de tu diagnóstico.
+        {{ t('educacion.aprendeTexto') }}
       </p>
     </div>
 
@@ -49,7 +49,7 @@ onMounted(() => {
           </span>
           <div class="min-w-0 flex-1 sm:w-full flex flex-col gap-1.5 sm:gap-3 sm:h-full">
             <div>
-              <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Tema {{ i + 1 }}</p>
+              <p class="text-xs font-bold uppercase tracking-wider text-slate-400">{{ t('educacion.tema', { n: i + 1 }) }}</p>
               <h2 class="font-bold text-slate-800 leading-snug group-hover:text-emerald-900">{{ tema.titulo }}</h2>
             </div>
             <p class="text-sm text-slate-500">{{ tema.resumen }}</p>
@@ -57,10 +57,10 @@ onMounted(() => {
               v-if="recomendado(tema)"
               class="self-start whitespace-nowrap text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800"
             >
-              Recomendado para tu empresa
+              {{ t('educacion.recomendado') }}
             </span>
             <span class="hidden sm:inline-flex mt-auto items-center gap-1 text-sm font-semibold text-emerald-800">
-              Leer más
+              {{ t('educacion.leerMas') }}
               <Icone :d="ICONE_SETA" class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </span>
           </div>
@@ -69,8 +69,7 @@ onMounted(() => {
     </ul>
 
     <p class="text-xs text-slate-500 text-center max-w-3xl mx-auto pb-2">
-      Este contenido tiene fines orientativos y no reemplaza la asesoría profesional. Las obligaciones legales
-      dependen de la actividad y el tamaño de cada empresa: consulta siempre las fuentes oficiales indicadas en cada tema.
+      {{ t('educacion.aviso') }}
     </p>
   </Pagina>
 </template>

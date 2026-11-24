@@ -414,5 +414,31 @@
       "familia": "Seus familiares também podem participar. Sua participação faz a diferença!",
       "confirma": "Confirme sua presença respondendo esta mensagem."
     }
+  },
+  "educacion": {
+    "titulo": "Educação sustentável",
+    "subtitulo": "Conceitos-chave para sua empresa avançar rumo à sustentabilidade",
+    "aprende": "Aprenda no seu ritmo",
+    "aprendeTexto": "Escolha um tema para saber o que é, por que importa para o seu negócio e o que você pode fazer na sua empresa. Os temas marcados como recomendados estão relacionados às oportunidades de melhoria do seu diagnóstico.",
+    "tema": "Tema {n}",
+    "recomendado": "Recomendado para sua empresa",
+    "leerMas": "Ler mais",
+    "aviso": "Este conteúdo tem fins orientativos e não substitui assessoria profissional. As obrigações legais dependem da atividade e do porte de cada empresa: consulte sempre as fontes oficiais indicadas em cada tema.",
+    "sobretitulo": "Educação sustentável · Tema {n} de {total}",
+    "volver": "Voltar para Educação",
+    "ejemplo": "Exemplo",
+    "sabias": "Você sabia?",
+    "pasoAPaso": "Passo a passo",
+    "fuentes": "Fontes oficiais",
+    "navegacion": "Navegação entre temas",
+    "anterior": "← Tema anterior",
+    "siguiente": "Próximo tema →",
+    "terminaste": "Você concluiu os temas",
+    "ods": {
+      "todos": "Todos os ODS",
+      "filtrar": "Filtrar por dimensão",
+      "etiquetas": "As etiquetas verdes indicam as dimensões do diagnóstico cujas recomendações contribuem para cada ODS.",
+      "mostrando": "Mostrando {n} de {total}."
+    }
   }
 }

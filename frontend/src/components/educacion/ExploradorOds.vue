@@ -1,15 +1,19 @@
 <script setup>
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import Icone from '../ui/Icone.vue'
 import { NOMES_DIMENSOES } from '../../constants/dimensoes'
 import { ICONE_FOLHA } from '../../constants/icones'
+import { nomeDimensao } from '../../i18n/rotulos'
+
+const { t } = useI18n()
 
 // ---------- Filtro por dimensão do diagnóstico ----------
-const FILTROS = [
-  { id: 'todos', etiqueta: 'Todos los ODS' },
-  ...NOMES_DIMENSOES.map((nome) => ({ id: nome, etiqueta: nome }))
-]
+const FILTROS = computed(() => [
+  { id: 'todos', etiqueta: t('educacion.ods.todos') },
+  ...NOMES_DIMENSOES.map((nome) => ({ id: nome, etiqueta: nomeDimensao(nome) }))
+])
 const filtro = ref('todos')
 
 // ---------- Os 17 ODS ----------
@@ -207,7 +211,7 @@ const visibles = computed(() =>
   <div class="space-y-6 sm:space-y-8">
     <!-- Filtros por dimensão -->
     <div class="space-y-3">
-      <div class="flex flex-wrap gap-2" role="group" aria-label="Filtrar por dimensión">
+      <div class="flex flex-wrap gap-2" role="group" :aria-label="t('educacion.ods.filtrar')">
         <button
           v-for="f in FILTROS"
           :key="f.id"
@@ -223,8 +227,8 @@ const visibles = computed(() =>
         </button>
       </div>
       <p class="text-xs sm:text-sm text-slate-500">
-        Las etiquetas verdes indican las dimensiones del diagnóstico cuyas recomendaciones aportan a cada ODS.
-        Mostrando {{ visibles.length }} de {{ ODS.length }}.
+        {{ t('educacion.ods.etiquetas') }}
+        {{ t('educacion.ods.mostrando', { n: visibles.length, total: ODS.length }) }}
       </p>
     </div>
 
@@ -257,7 +261,7 @@ const visibles = computed(() =>
             :key="dim"
             class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold"
           >
-            {{ dim }}
+            {{ nomeDimensao(dim) }}
           </span>
         </div>
       </article>
