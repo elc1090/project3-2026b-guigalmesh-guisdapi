@@ -60,6 +60,7 @@ Neste projeto, além da otimização do código, implementamos o novo documento 
 | Guilherme D. | Seção *Empresas que dejan huella positiva*: tabela `actividades` com RLS, rotas CRUD, calendário ambiental, ideias de atividades, convite e cartão no Início | Login federado, IA e interface em português |
 | Guilherme D. | Login federado com Google: cliente OAuth no Google Auth Platform, provedor Google no Supabase Auth, botão "Continuar con Google" (com o ícone oficial) no login e no cadastro, fluxo PKCE e retorno para a tela pedida | IA como serviço |
 | Guilherme D. | *Análisis con IA* no Resultado: rota `/api/ia/analisis` que envia o diagnóstico (sem dados pessoais) ao Gemini, resposta em JSON validada, tabela `analisis_ia` com RLS, limite de 3 gerações por diagnóstico e modelo reserva quando o principal está sobrecarregado | Interface em português |
+| Guilherme M. | Otimização da rota `/api/ia/analisis`: o perfil da empresa (setor, porte e nº de funcionários) é buscado uma única vez e reaproveitado no cálculo das recomendações e no contexto enviado ao Gemini; `pytest` adicionado ao `requirements.txt` | Interface em português |
 
 ### Processo
 
