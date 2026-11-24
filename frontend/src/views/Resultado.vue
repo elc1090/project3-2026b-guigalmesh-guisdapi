@@ -232,72 +232,10 @@ onBeforeUnmount(() => {
       </p>
 
       <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
-        <!-- Coluna esquerda (no celular vem depois do plano de ação: primeiro o que fazer) -->
-        <div class="xl:col-span-5 space-y-6 order-2 xl:order-1">
-          <!-- Resumo por dimensão (radar) -->
-          <div class="cartao p-5 sm:p-6">
-            <div class="flex flex-wrap items-center gap-3 mb-2">
-              <span class="selo-icone">
-                <Icone :d="ICONE_GRAFICO" class="w-5 h-5" />
-              </span>
-              <h2 class="text-lg font-semibold text-slate-800">{{ t('resultado.resumen') }}</h2>
-
-              <div class="ml-auto flex items-center gap-2">
-                <span class="text-sm text-slate-500">
-                  {{ t('resultado.general') }} <strong class="text-slate-800">{{ fmtNumero(resultado.geral?.pontuacao) }}</strong> / 100
-                </span>
-                <span
-                  v-if="resultado.geral?.nivel"
-                  class="px-3 py-1 text-xs rounded-full font-semibold"
-                  :class="classeSeloNivel(resultado.geral.nivel)"
-                >
-                  {{ rotuloNivel(resultado.geral.nivel) }}
-                </span>
-              </div>
-            </div>
-
-            <div class="relative h-80 sm:h-96">
-              <div class="absolute inset-x-16 sm:inset-x-24 xl:inset-x-20 inset-y-14">
-                <canvas ref="radarCanvas"></canvas>
-              </div>
-
-              <div
-                v-for="(dimension, i) in dimensoes.slice(0, 3)"
-                :key="dimension.nome"
-                class="absolute flex items-center gap-2 whitespace-nowrap"
-                :class="posicoesRotulo[i]"
-              >
-                <span class="hidden sm:flex w-9 h-9 rounded-full bg-emerald-50 text-emerald-700 items-center justify-center shrink-0">
-                  <Icone :d="iconeDe(dimension.nome)" class="w-5 h-5" />
-                </span>
-                <div class="leading-tight">
-                  <p class="text-xs font-semibold text-slate-700">{{ nomeDimensao(dimension.nome) }}</p>
-                  <p class="text-sm font-bold text-slate-800">{{ fmtNumero(pct(dimension.pontuacao)) }}%</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-
-          <!-- Evolução: uma linha por dimensão, um ponto por diagnóstico concluído (só com 2 ou mais) -->
-          <div v-if="historico.length >= 2" class="cartao p-5 sm:p-6">
-            <div class="flex items-center gap-3 mb-4">
-              <span class="selo-icone">
-                <Icone :d="ICONE_TENDENCIA" class="w-5 h-5" />
-              </span>
-              <div>
-                <h2 class="text-lg font-semibold text-slate-800">{{ t('resultado.evolucion') }}</h2>
-                <p class="text-sm text-slate-500">{{ t('resultado.evolucionTexto') }}</p>
-              </div>
-            </div>
-            <GraficoEvolucao :historico="historico" />
-          </div>
-        </div>
-
-        <!-- Coluna direita. Celular: notas, plano de ação, IA, pontos fortes; desktop: ordem do HTML -->
-        <div class="xl:col-span-7 flex flex-col gap-6 order-1 xl:order-2">
+        <!-- Coluna principal: notas e plano de ação (o que fazer primeiro) -->
+        <div class="xl:col-span-7 flex flex-col gap-6">
           <!-- Cards por dimensão -->
-          <div class="order-1 xl:order-none grid grid-cols-3 gap-2 sm:gap-6">
+          <div class="grid grid-cols-3 gap-2 sm:gap-6">
             <article
               v-for="dimension in dimensoes"
               :key="dimension.nome"
@@ -329,11 +267,9 @@ onBeforeUnmount(() => {
             </article>
           </div>
 
-          <!-- Análise personalizada com IA (Gemini) -->
-          <AnaliseIA class="order-3 xl:order-none" :concluido-em="resultado.concluido_em || ''" />
 
           <!-- Principais oportunidades de melhoria -->
-          <div class="order-2 xl:order-none bg-emerald-50/50 p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200/80">
+          <div class="bg-emerald-50/50 p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200/80">
             <div class="flex items-center gap-3 mb-4">
               <span class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
                 <Icone :d="ICONE_LAMPADA" class="w-5 h-5" />
@@ -429,8 +365,60 @@ onBeforeUnmount(() => {
             </button>
           </div>
 
+        </div>
+
+        <!-- Coluna lateral. Desktop: radar, IA, pontos fortes, evolução.
+             Celular (depois do plano): IA, pontos fortes, radar, evolução -->
+        <div class="xl:col-span-5 flex flex-col gap-6">
+          <!-- Resumo por dimensão (radar) -->
+          <div class="order-3 xl:order-1 cartao p-5 sm:p-6">
+            <div class="flex flex-wrap items-center gap-3 mb-2">
+              <span class="selo-icone">
+                <Icone :d="ICONE_GRAFICO" class="w-5 h-5" />
+              </span>
+              <h2 class="text-lg font-semibold text-slate-800">{{ t('resultado.resumen') }}</h2>
+
+              <div class="ml-auto flex items-center gap-2">
+                <span class="text-sm text-slate-500">
+                  {{ t('resultado.general') }} <strong class="text-slate-800">{{ fmtNumero(resultado.geral?.pontuacao) }}</strong> / 100
+                </span>
+                <span
+                  v-if="resultado.geral?.nivel"
+                  class="px-3 py-1 text-xs rounded-full font-semibold"
+                  :class="classeSeloNivel(resultado.geral.nivel)"
+                >
+                  {{ rotuloNivel(resultado.geral.nivel) }}
+                </span>
+              </div>
+            </div>
+
+            <div class="relative h-80 sm:h-96">
+              <div class="absolute inset-x-16 sm:inset-x-24 xl:inset-x-20 inset-y-14">
+                <canvas ref="radarCanvas"></canvas>
+              </div>
+
+              <div
+                v-for="(dimension, i) in dimensoes.slice(0, 3)"
+                :key="dimension.nome"
+                class="absolute flex items-center gap-2 whitespace-nowrap"
+                :class="posicoesRotulo[i]"
+              >
+                <span class="hidden sm:flex w-9 h-9 rounded-full bg-emerald-50 text-emerald-700 items-center justify-center shrink-0">
+                  <Icone :d="iconeDe(dimension.nome)" class="w-5 h-5" />
+                </span>
+                <div class="leading-tight">
+                  <p class="text-xs font-semibold text-slate-700">{{ nomeDimensao(dimension.nome) }}</p>
+                  <p class="text-sm font-bold text-slate-800">{{ fmtNumero(pct(dimension.pontuacao)) }}%</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Análise personalizada com IA (Gemini) -->
+          <AnaliseIA class="order-1 xl:order-2" :concluido-em="resultado.concluido_em || ''" />
+
           <!-- O que a empresa já faz bem (respostas no nível máximo) -->
-          <div v-if="fortalezas.length" class="order-4 xl:order-none cartao p-5 sm:p-6">
+          <div v-if="fortalezas.length" class="order-2 xl:order-3 cartao p-5 sm:p-6">
             <div class="flex items-center gap-3 mb-4">
               <span class="selo-icone">
                 <Icone :d="ICONE_CHECK" class="w-5 h-5" />
@@ -455,6 +443,20 @@ onBeforeUnmount(() => {
                 </ul>
               </div>
             </div>
+          </div>
+
+          <!-- Evolução: uma linha por dimensão, um ponto por diagnóstico concluído (só com 2 ou mais) -->
+          <div v-if="historico.length >= 2" class="order-4 cartao p-5 sm:p-6">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="selo-icone">
+                <Icone :d="ICONE_TENDENCIA" class="w-5 h-5" />
+              </span>
+              <div>
+                <h2 class="text-lg font-semibold text-slate-800">{{ t('resultado.evolucion') }}</h2>
+                <p class="text-sm text-slate-500">{{ t('resultado.evolucionTexto') }}</p>
+              </div>
+            </div>
+            <GraficoEvolucao :historico="historico" />
           </div>
         </div>
       </div>
