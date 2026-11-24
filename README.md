@@ -68,11 +68,9 @@ Neste projeto, além da otimização do código, implementamos o novo documento 
 
 ### Processo
 
-<!-- TODO (dupla): explicar como a dupla se organizou neste projeto (divisão de tarefas, quem fez o quê). -->
 
 Guilherme D.:
 
-<!-- RASCUNHO: revisar-->
 Comecei este projeto pela otimização do que já existia: o back-end validava o token chamando o Supabase a cada requisição, então passei a validar o JWT localmente com a chave pública do projeto (JWKS), o que deixou as rotas mais rápidas. Também reorganizei o layout e a navegação, principalmente para o celular, já que a ideia é que donos de PYMES usem o app no dia a dia.
 
 Quando chegou o novo documento da equipe do Chile, a principal decisão foi passar de 4 para 3 dimensões, como eles pediram, e refazer o questionário para cobrir todos os parâmetros listados. Com isso percebi que a lógica de recomendações antiga (por nota da dimensão) não fazia sentido: duas empresas com problemas diferentes recebiam o mesmo conselho. Passei a gerar as recomendações por pergunta, considerando também o setor e o porte da empresa.
@@ -81,7 +79,6 @@ Nas tabelas novas (`acoes` e `actividades`) segui o mesmo padrão de RLS das tab
 
 Guilherme M.:
 
-<!-- RASCUNHO: revisar-->
 Comecei revisando o que já tinha sido feito e procurando pontos para otimizar. O primeiro foi na rota da análise com IA: o perfil da empresa era buscado duas vezes no banco a cada geração, então passei a buscá-lo uma vez só e reaproveitar no cálculo das recomendações e no contexto enviado ao Gemini.
 
 Depois fiquei com o último item da proposta, a interface em português. A decisão principal foi o que traduzir: só os botões e menus deixariam o app misturado, porque as perguntas, as recomendações, o conteúdo educativo e a análise da IA continuariam em espanhol. Por isso traduzi tudo. No front usei o `vue-i18n` com um arquivo de mensagens por idioma; para o conteúdo longo (temas da Educación, ODS, datas ambientais) criei a tradução como uma "camada" por cima do original, para não duplicar ícones, links e ids, com testes que avisam se alguém acrescentar um item só em espanhol. No back-end, o front envia o idioma no cabeçalho `Accept-Language` e a API devolve erros, recomendações e a análise do Gemini nesse idioma. Os códigos salvos no banco (categoria, prioridade, nível) continuam em espanhol, e o front só troca o rótulo. Fui commitando por tela para cada etapa ficar testável.
@@ -210,9 +207,10 @@ Guilherme D.:
 - Claude
 
 Guilherme M.:
--  
+- VS Code
+- Claude
 
-  
+
 ## Referências e créditos
 
 - Equipe da disciplina *Sostenibilidad en los Negocios* (Chile): documentos *Propuesta de desarrollo de una aplicación de sostenibilidad para PYMES* e texto da antiga Guía sostenible, usado no tema "La sostenibilidad y sus tres dimensiones"
