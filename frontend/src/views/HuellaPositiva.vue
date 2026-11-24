@@ -8,7 +8,7 @@ import Alerta from '../components/ui/Alerta.vue'
 import FormActividad from '../components/huella/FormActividad.vue'
 import { useActividadesStore } from '../stores/actividades'
 import { useEmpresaStore } from '../stores/empresa'
-import { TIPOS_ACTIVIDAD, FECHAS_AMBIENTALES, FUENTE_CALENDARIO, tipoPorId } from '../constants/huella'
+import { tiposActividad, fechasAmbientales, FUENTE_CALENDARIO, tipoPorId } from '../constants/huella'
 import { proximasEfemerides, efemeridesDoAno, dataLocal, hojeLocal, paraTextoData, diasEntre } from '../lib/fechasAmbientales'
 import { textoInvitacion } from '../lib/invitacion'
 import { localeData } from '../i18n/rotulos'
@@ -32,7 +32,7 @@ const INDICADORES = ['actividades_realizadas', 'participantes', 'kg_residuos', '
 
 // ---------- datas ambientais ----------
 const hoje = hojeLocal()
-const proximas = computed(() => proximasEfemerides(FECHAS_AMBIENTALES, hoje, 6))
+const proximas = computed(() => proximasEfemerides(fechasAmbientales(), hoje, 6))
 const verCalendario = ref(false)
 const anoCalendario = hoje.getFullYear()
 // nome do mês no idioma escolhido, com inicial maiúscula ("Enero" / "Janeiro")
@@ -42,7 +42,7 @@ const nomeMes = (m) => {
 }
 const calendarioPorMes = computed(() => {
   const grupos = Array.from({ length: 12 }, (_, m) => ({ nome: nomeMes(m), datas: [] }))
-  efemeridesDoAno(FECHAS_AMBIENTALES, anoCalendario).forEach((e) => grupos[e.data.getMonth()].datas.push(e))
+  efemeridesDoAno(fechasAmbientales(), anoCalendario).forEach((e) => grupos[e.data.getMonth()].datas.push(e))
   return grupos
 })
 const quando = (dias) => (dias === 0 ? t('huella.hoy') : dias === 1 ? t('huella.manana') : t('huella.enDias', { n: dias }))
@@ -305,7 +305,7 @@ onMounted(() => {
       </div>
 
       <ul class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        <li v-for="tipo in TIPOS_ACTIVIDAD.filter((x) => x.id !== 'otra')" :key="tipo.id" class="cartao p-5 flex flex-col gap-3">
+        <li v-for="tipo in tiposActividad().filter((x) => x.id !== 'otra')" :key="tipo.id" class="cartao p-5 flex flex-col gap-3">
           <div class="flex items-center gap-3">
             <span class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
               <Icone :d="tipo.icone" class="w-5 h-5" />

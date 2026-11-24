@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { useEmpresaStore } from '../stores/empresa'
 import { useResultadoStore } from '../stores/resultado'
 import { useActividadesStore } from '../stores/actividades'
-import { FECHAS_AMBIENTALES } from '../constants/huella'
+import { fechasAmbientales } from '../constants/huella'
 import { proximasEfemerides, dataLocal, hojeLocal } from '../lib/fechasAmbientales'
 import { usePerguntasStore } from '../stores/perguntas'
 import { useUsuario } from '../composables/useUsuario'
@@ -85,7 +85,7 @@ const proximaActividad = computed(() => {
     .filter((a) => a.estado === 'planificada' && dataLocal(a.fecha) >= hoje)
     .sort((a, b) => a.fecha.localeCompare(b.fecha))[0] ?? null
 })
-const proximaFecha = proximasEfemerides(FECHAS_AMBIENTALES, hojeLocal(), 1)[0]
+const proximaFecha = computed(() => proximasEfemerides(fechasAmbientales(), hojeLocal(), 1)[0])
 const fmtNum = (n) => Number(n || 0).toLocaleString(localeData(), { maximumFractionDigits: 1 })
 const diaMes = (data) => data?.toLocaleDateString(localeData(), { day: 'numeric', month: 'long' }) ?? ''
 const fechaCurta = (texto) => diaMes(dataLocal(texto))

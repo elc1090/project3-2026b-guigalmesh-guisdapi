@@ -5,7 +5,7 @@ import Campo from '../ui/Campo.vue'
 import Alerta from '../ui/Alerta.vue'
 import Icone from '../ui/Icone.vue'
 import { useActividadesStore } from '../../stores/actividades'
-import { TIPOS_ACTIVIDAD } from '../../constants/huella'
+import { tiposActividad } from '../../constants/huella'
 import { ICONE_FECHAR } from '../../constants/icones'
 
 // Janela para criar ou editar uma atividade. "inicial" pode vir preenchido pela tela
@@ -127,7 +127,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', aoTeclar))
               <template #default="{ invalido, descricao }">
                 <select id="act-tipo" v-model="form.tipo" class="campo" :aria-invalid="invalido" :aria-describedby="descricao">
                   <option value="" disabled>{{ t('huella.form.selecciona') }}</option>
-                  <option v-for="tipo in TIPOS_ACTIVIDAD" :key="tipo.id" :value="tipo.id">{{ tipo.nombre }}</option>
+                  <option v-for="tipo in tiposActividad()" :key="tipo.id" :value="tipo.id">{{ tipo.nombre }}</option>
                 </select>
               </template>
             </Campo>

@@ -1,6 +1,10 @@
 import { ICONE_FOLHA, ICONE_BROTO, ICONE_LIVRO, ICONE_ARVORE } from './icones'
+import { noIdioma } from '../i18n/conteudo'
+import * as pt from '../i18n/conteudo/huella.pt'
 
 // Empresas que dejan huella positiva (pedido da turma do Chile, seção 11 da proposta).
+// Textos em espanhol; a tradução fica em i18n/conteudo/huella.pt.js. Nas telas, usar
+// tiposActividad() e fechasAmbientales(), que devolvem a versão do idioma escolhido.
 
 const ICONE_ONDAS = [
   'M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1',
@@ -140,7 +144,11 @@ export const TIPOS_ACTIVIDAD = [
   }
 ]
 
-export const tipoPorId = (id) => TIPOS_ACTIVIDAD.find((t) => t.id === id) ?? TIPOS_ACTIVIDAD.at(-1)
+export const tiposActividad = () => noIdioma(TIPOS_ACTIVIDAD, { pt: pt.TIPOS_ACTIVIDAD })
+export const tipoPorId = (id) => {
+  const tipos = tiposActividad()
+  return tipos.find((t) => t.id === id) ?? tipos.at(-1)
+}
 
 // ---------- Fechas ambientales ----------
 // Base: Calendario Ambiental del Ministerio del Medio Ambiente de Chile + días mundiales de la ONU.
@@ -191,3 +199,5 @@ export const FECHAS_AMBIENTALES = [
   { mes: 12, dia: 11, nombre: 'Día Internacional de las Montañas', tipo: 'limpieza_bosque', sugerencia: 'Limpia un sendero o cerro cercano.' },
   { mes: 12, dia: 12, nombre: 'Aniversario del Acuerdo de París', tipo: 'educacion', sugerencia: 'Revisa el avance de tu empresa en la reducción de emisiones.' }
 ]
+
+export const fechasAmbientales = () => noIdioma(FECHAS_AMBIENTALES, { pt: pt.FECHAS_AMBIENTALES })

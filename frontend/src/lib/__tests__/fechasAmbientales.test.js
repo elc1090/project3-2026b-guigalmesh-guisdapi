@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { dataDaEfemeride, proximasEfemerides, dataLocal, paraTextoData, diasEntre } from '../fechasAmbientales'
 import { FECHAS_AMBIENTALES, TIPOS_ACTIVIDAD } from '../../constants/huella'
+import * as pt from '../../i18n/conteudo/huella.pt'
 
 const texto = (d) => paraTextoData(d)
 
@@ -63,5 +64,11 @@ describe('constantes', () => {
       expect(tipos.has(e.tipo), e.nombre).toBe(true)
       expect(dataDaEfemeride(e, 2026).getMonth(), e.nombre).toBe(e.mes - 1)
     }
+  })
+
+  it('a tradução em português tem um item para cada tipo e cada data', () => {
+    expect(pt.TIPOS_ACTIVIDAD).toHaveLength(TIPOS_ACTIVIDAD.length)
+    expect(pt.FECHAS_AMBIENTALES).toHaveLength(FECHAS_AMBIENTALES.length)
+    pt.FECHAS_AMBIENTALES.forEach((e) => expect(e.nombre && e.sugerencia).toBeTruthy())
   })
 })
