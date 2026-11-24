@@ -139,13 +139,9 @@ const desenharGraficos = () => {
             grid: { circular: true, color: 'rgba(6, 95, 70, 0.15)' },
             angleLines: { color: 'rgba(6, 95, 70, 0.15)' },
             pointLabels: { display: false },
-            ticks: {
-              stepSize: 25,
-              backdropColor: 'transparent',
-              color: '#94a3b8',
-              font: { size: 9 },
-              callback: (v) => `${v}%`
-            }
+            // sem números nos anéis: com 3 eixos eles ficavam por baixo dos pontos, e o valor
+            // de cada dimensão já aparece no rótulo ao lado do vértice
+            ticks: { stepSize: 25, display: false }
           }
         },
         plugins: { legend: { display: false } }
