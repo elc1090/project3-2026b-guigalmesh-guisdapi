@@ -91,7 +91,7 @@ def _perfil_empresa(sb, empresa_id):
     """Setor e porte da empresa, usados para personalizar as recomendações.
     Sem cache: a empresa pode ser editada a qualquer momento."""
     try:
-        res = sb.table("empresas").select("setor, porte").eq("id", empresa_id).execute()
+        res = sb.table("empresas").select("setor, porte, num_funcionarios").eq("id", empresa_id).execute()
         return res.data[0] if res.data else {}
     except Exception:
         log.exception("Erro ao buscar o perfil da empresa")
@@ -108,8 +108,9 @@ def _status_acoes(sb, empresa_id):
         return {}  # sem os status, as recomendações aparecem como pendentes
 
 
-def _completar_resultado(sb, empresa_id, resultado, respostas, concluido_em):
-    empresa = _perfil_empresa(sb, empresa_id)
+def _completar_resultado(sb, empresa_id, resultado, respostas, concluido_em, empresa=None):
+    if empresa is None:
+        empresa = _perfil_empresa(sb, empresa_id)
     status = _status_acoes(sb, empresa_id)
     recomendacoes = gerar_recomendacoes(respostas, empresa=empresa, resultado=resultado)
     for rec in recomendacoes:

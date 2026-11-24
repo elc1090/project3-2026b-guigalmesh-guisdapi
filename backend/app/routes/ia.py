@@ -12,6 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.routes.diagnostico import (
     STATUS_COMPLETADO,
     _completar_resultado,
+    _perfil_empresa,
     _perguntas_ativas,
     _ultimo,
     get_contexto,
@@ -70,20 +71,14 @@ def gerar(ctx=Depends(get_contexto)):
     if salva and salva["geracoes"] >= MAX_GERACOES:
         raise HTTPException(429, "Alcanzaste el límite de análisis para este diagnóstico.")
 
+    empresa = _perfil_empresa(sb, empresa_id)
     try:
         resultado = calcular_diagnostico(_perguntas_ativas(sb), diagnostico["respostas"])
         resultado = _completar_resultado(
-            sb, empresa_id, resultado, diagnostico["respostas"], data_conclusao(diagnostico)
+            sb, empresa_id, resultado, diagnostico["respostas"], data_conclusao(diagnostico), empresa=empresa
         )
     except RespostasInvalidas as e:
         raise HTTPException(409, str(e))
-
-    try:
-        emp = sb.table("empresas").select("setor, porte, num_funcionarios").eq("id", empresa_id).execute()
-        empresa = emp.data[0] if emp.data else {}
-    except Exception:
-        log.exception("Erro ao buscar a empresa para a análise de IA")
-        empresa = {}
 
     try:
         conteudo, modelo = gerar_analise(montar_contexto(resultado, empresa))
