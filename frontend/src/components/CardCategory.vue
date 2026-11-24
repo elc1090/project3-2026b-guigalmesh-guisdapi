@@ -29,7 +29,7 @@ const chamada = computed(() => t(completa.value ? 'diagnostico.card.revisar' : p
     <div class="flex-1 min-w-0 flex flex-col items-start sm:items-center w-full">
       <span
         v-if="total"
-        class="mb-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full"
+        class="mb-1.5 text-xs font-semibold px-2 py-0.5 rounded-full"
         :class="completa
           ? 'bg-emerald-100 text-emerald-800'
           : respondidas ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'"

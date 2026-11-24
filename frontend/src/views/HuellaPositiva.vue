@@ -187,8 +187,8 @@ onMounted(() => {
           </div>
           <div class="min-w-0 flex-1 flex flex-col gap-1.5">
             <div class="flex flex-wrap items-center gap-1.5">
-              <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">{{ quando(e.diasFaltando) }}</span>
-              <span v-if="e.chile" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800">Chile</span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">{{ quando(e.diasFaltando) }}</span>
+              <span v-if="e.chile" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800">Chile</span>
             </div>
             <h3 class="font-semibold text-slate-800 leading-snug">{{ e.nombre }}</h3>
             <p class="text-sm text-slate-500">{{ e.sugerencia }}</p>
@@ -217,7 +217,7 @@ onMounted(() => {
               <span class="w-6 shrink-0 font-bold text-slate-700 text-right">{{ e.data.getDate() }}</span>
               <span class="text-slate-600">
                 {{ e.nombre }}
-                <span v-if="e.chile" class="ml-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-sky-100 text-sky-800">Chile</span>
+                <span v-if="e.chile" class="ml-1 text-xs font-semibold px-1.5 py-0.5 rounded-full bg-sky-100 text-sky-800">Chile</span>
               </span>
             </li>
           </ul>
@@ -256,11 +256,11 @@ onMounted(() => {
                 <div class="min-w-0 flex-1">
                   <div class="flex flex-wrap items-center gap-2">
                     <h4 class="font-semibold text-slate-800">{{ a.titulo }}</h4>
-                    <span v-if="a.estado === 'realizada'" class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                    <span v-if="a.estado === 'realizada'" class="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
                       <Icone :d="ICONE_CHECK" class="w-3 h-3" /> {{ t('huella.realizada') }}
                     </span>
-                    <span v-else-if="atrasada(a)" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">{{ t('huella.atrasada') }}</span>
-                    <span v-else class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800">{{ t('huella.planificada') }}</span>
+                    <span v-else-if="atrasada(a)" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">{{ t('huella.atrasada') }}</span>
+                    <span v-else class="text-xs font-semibold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800">{{ t('huella.planificada') }}</span>
                   </div>
                   <p class="text-sm text-slate-500 mt-0.5 first-letter:uppercase">
                     {{ fechaLarga(a.fecha) }}<template v-if="a.lugar"> · {{ a.lugar }}</template>
@@ -322,7 +322,7 @@ onMounted(() => {
           </ul>
           <div class="mt-auto pt-1 flex flex-wrap items-center justify-between gap-2">
             <div class="flex flex-wrap gap-1.5">
-              <span v-for="n in tipo.ods" :key="n" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">ODS {{ n }}</span>
+              <span v-for="n in tipo.ods" :key="n" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">ODS {{ n }}</span>
             </div>
             <button type="button" class="inline-flex items-center gap-1 text-sm font-semibold text-emerald-800 hover:underline cursor-pointer" @click="planificarTipo(tipo)">
               {{ t('huella.planificar') }} <Icone :d="ICONE_SETA" class="w-4 h-4" />

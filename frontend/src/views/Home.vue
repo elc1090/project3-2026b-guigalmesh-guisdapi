@@ -199,7 +199,7 @@ onMounted(() => {
           <h2 class="text-xs font-bold uppercase tracking-wider text-emerald-700">{{ t('inicio.proximaAccion') }}</h2>
           <p class="font-semibold text-slate-800 mt-1">{{ recomendacaoPrincipal.titulo }}</p>
           <p class="text-sm text-slate-500 mt-1">{{ recomendacaoPrincipal.descricao }}</p>
-          <span class="inline-block mt-2 text-[11px] font-semibold px-2 py-0.5 rounded-full border" :class="classePrioridade(recomendacaoPrincipal.prioridade)">
+          <span class="inline-block mt-2 text-xs font-semibold px-2 py-0.5 rounded-full border" :class="classePrioridade(recomendacaoPrincipal.prioridade)">
             {{ nomeDimensao(recomendacaoPrincipal.categoria) }} · {{ t('inicio.prioridad', { p: rotuloPrioridade(recomendacaoPrincipal.prioridade) }) }}
           </span>
           <BotoesAcao :recomendacao="recomendacaoPrincipal" class="mt-3" />

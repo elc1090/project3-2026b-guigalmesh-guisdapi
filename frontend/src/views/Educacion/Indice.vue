@@ -55,7 +55,7 @@ onMounted(() => {
             <p class="text-sm text-slate-500">{{ tema.resumen }}</p>
             <span
               v-if="recomendado(tema)"
-              class="self-start whitespace-nowrap text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800"
+              class="self-start whitespace-nowrap text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800"
             >
               {{ t('educacion.recomendado') }}
             </span>

@@ -386,13 +386,13 @@ onBeforeUnmount(() => {
                   <div class="flex flex-wrap items-center gap-2">
                     <h3 class="text-sm sm:text-base font-bold text-slate-800">{{ rec.titulo }}</h3>
                     <span
-                      class="text-[11px] font-semibold px-2 py-0.5 rounded-full border"
+                      class="text-xs font-semibold px-2 py-0.5 rounded-full border"
                       :class="classePrioridade(rec.prioridade)"
                     >
                       {{ t('resultado.prioridad', { p: rotuloPrioridade(rec.prioridade) }) }}
                     </span>
                   </div>
-                  <p v-if="rec.parametro" class="text-[11px] font-semibold uppercase tracking-wide text-emerald-700 mt-0.5">
+                  <p v-if="rec.parametro" class="text-xs font-semibold uppercase tracking-wide text-emerald-700 mt-0.5">
                     {{ nomeDimensao(rec.categoria) }} · {{ rec.parametro }}<template v-if="rec.etapa"> · {{ rotuloEtapa(rec.etapa) }}</template>
                   </p>
                   <p class="text-xs sm:text-sm text-slate-500 mt-0.5">{{ rec.descricao }}</p>
@@ -403,7 +403,7 @@ onBeforeUnmount(() => {
                     <span
                       v-for="n in rec.ods"
                       :key="n"
-                      class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200"
+                      class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200"
                       :title="t('resultado.odsTitulo', { n })"
                     >
                       ODS {{ n }}
