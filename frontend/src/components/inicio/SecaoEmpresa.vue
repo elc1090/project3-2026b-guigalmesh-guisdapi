@@ -106,8 +106,11 @@ const guardar = async () => {
       </div>
       <div class="min-w-0 flex-1">
         <p id="titulo-empresa" class="font-bold text-slate-800 truncate">{{ empresa.nome }}</p>
-        <p class="text-sm text-slate-500 truncate">
-          {{ rotuloSetor(empresa.setor) }} · {{ rotuloPorte(empresa.porte) }} · {{ t('secaoEmpresa.empleados', { n: empresa.num_funcionarios }) }}
+        <!-- quebra em linhas no celular em vez de cortar o porte e o número de funcionários -->
+        <p class="text-sm text-slate-500 flex flex-wrap gap-x-1.5">
+          <span>{{ rotuloSetor(empresa.setor) }} ·</span>
+          <span>{{ rotuloPorte(empresa.porte) }} ·</span>
+          <span>{{ t('secaoEmpresa.empleados', { n: empresa.num_funcionarios }) }}</span>
         </p>
         <p v-if="mensagemSucesso" class="text-xs font-semibold text-emerald-700 mt-0.5" role="status">✓ {{ t(mensagemSucesso) }}</p>
       </div>
