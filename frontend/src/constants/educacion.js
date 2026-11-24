@@ -1,7 +1,10 @@
 import { ICONE_FOLHA, ICONE_GLOBO, ICONE_BROTO, ICONE_ARVORE } from './icones'
+import { noIdioma } from '../i18n/conteudo'
+import { TEMAS as TEMAS_PT } from '../i18n/conteudo/educacion.pt'
 
 // Conteúdo da tela "Educación sostenible" (pedido da turma do Chile: seções 4 a 10 e 13 da proposta).
 // Cada tema vira uma página própria em /educacion/<slug>, na ordem desta lista.
+// Textos em espanhol; a tradução fica em i18n/conteudo/educacion.pt.js. Nas telas, usar temas().
 //
 // Campos de um tema:
 // - slug, titulo, resumen (cartão do índice), icone
@@ -423,4 +426,4 @@ export const TEMAS = [
 ]
 
 export const SLUGS_TEMAS = TEMAS.map((t) => t.slug).join('|')
-export const temaPorSlug = (slug) => TEMAS.find((t) => t.slug === slug)
+export const temas = () => noIdioma(TEMAS, { pt: TEMAS_PT })

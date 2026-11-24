@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import Icone from '../../components/ui/Icone.vue'
 import Pagina from '../../components/ui/Pagina.vue'
 import { useResultadoStore } from '../../stores/resultado'
-import { TEMAS } from '../../constants/educacion'
+import { temas } from '../../constants/educacion'
 import { ICONE_LIVRO, ICONE_SETA } from '../../constants/icones'
 
 // Índice da Educación sostenible: um cartão por tema; cada tema abre em /educacion/<slug>.
@@ -38,7 +38,7 @@ onMounted(() => {
     </div>
 
     <ul class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
-      <li v-for="(tema, i) in TEMAS" :key="tema.slug">
+      <li v-for="(tema, i) in temas()" :key="tema.slug">
         <!-- celular: cartão em linha (ícone à esquerda), para a lista de 8 temas não ficar longa demais -->
         <router-link
           :to="`/educacion/${tema.slug}`"

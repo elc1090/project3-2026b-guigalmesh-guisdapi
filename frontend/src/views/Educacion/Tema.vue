@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import Icone from '../../components/ui/Icone.vue'
 import Pagina from '../../components/ui/Pagina.vue'
-import { TEMAS } from '../../constants/educacion'
+import { temas } from '../../constants/educacion'
 import { ICONE_CHECK, ICONE_LAMPADA, ICONE_SETA } from '../../constants/icones'
 
 // Página de um tema da Educación sostenible (/educacion/:tema). O conteúdo vem de constants/educacion.js.
@@ -18,17 +18,18 @@ const route = useRoute()
 const { t } = useI18n()
 
 // a rota só aceita slugs existentes, então o tema sempre é encontrado
-const indice = computed(() => TEMAS.findIndex((t) => t.slug === route.params.tema))
-const tema = computed(() => TEMAS[indice.value])
-const anterior = computed(() => TEMAS[indice.value - 1] ?? null)
-const seguinte = computed(() => TEMAS[indice.value + 1] ?? null)
+const lista = computed(() => temas())
+const indice = computed(() => lista.value.findIndex((x) => x.slug === route.params.tema))
+const tema = computed(() => lista.value[indice.value])
+const anterior = computed(() => lista.value[indice.value - 1] ?? null)
+const seguinte = computed(() => lista.value[indice.value + 1] ?? null)
 </script>
 
 <template>
   <Pagina
     v-if="tema"
     :icone="tema.icone"
-    :sobretitulo="t('educacion.sobretitulo', { n: indice + 1, total: TEMAS.length })"
+    :sobretitulo="t('educacion.sobretitulo', { n: indice + 1, total: lista.length })"
     :titulo="tema.titulo"
     :largura="tema.componente === 'ods' ? 'larga' : 'normal'"
   >
