@@ -1,18 +1,20 @@
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   titulo: { type: String, required: true },
-  descricao: { type: String, default: 'Evaluar indicadores de esta dimensión' },
+  descricao: { type: String, default: '' },
   rota: { type: String, required: true },
   // progresso da dimensão (0 de 0 = perguntas ainda carregando: não mostra nada)
   respondidas: { type: Number, default: 0 },
   total: { type: Number, default: 0 }
 })
 
+const { t } = useI18n()
 const completa = computed(() => props.total > 0 && props.respondidas >= props.total)
 const porcentagem = computed(() => (props.total ? Math.round((props.respondidas / props.total) * 100) : 0))
-const chamada = computed(() => (completa.value ? 'Revisar' : props.respondidas ? 'Continuar' : 'Responder'))
+const chamada = computed(() => t(completa.value ? 'diagnostico.card.revisar' : props.respondidas ? 'diagnostico.card.continuar' : 'diagnostico.card.responder'))
 </script>
 
 <template>
@@ -32,7 +34,7 @@ const chamada = computed(() => (completa.value ? 'Revisar' : props.respondidas ?
           ? 'bg-emerald-100 text-emerald-800'
           : respondidas ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'"
       >
-        {{ completa ? '✓ Completa' : `${respondidas}/${total}` }}
+        {{ completa ? t('diagnostico.card.completa') : `${respondidas}/${total}` }}
       </span>
 
       <h2 class="text-lg sm:text-xl font-bold text-slate-800 group-hover:text-emerald-900 transition">{{ titulo }}</h2>

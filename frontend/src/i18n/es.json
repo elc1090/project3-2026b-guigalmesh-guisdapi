@@ -235,5 +235,27 @@
       "tamano": "Selecciona el tamaño de la empresa.",
       "empleados": "Ingresa un número entero mayor que 0."
     }
+  },
+  "diagnostico": {
+    "sobretitulo": "Diagnóstico",
+    "subtitulo": "Responde a las siguientes preguntas de acuerdo con la realidad actual de la empresa.",
+    "volver": "Volver al inicio",
+    "cargandoPreguntas": "Cargando preguntas...",
+    "respondidas": "{n} de {total} respondidas",
+    "siguiente": "Siguiente",
+    "siguienteDim": "Siguiente: {nome}",
+    "falta": "Falta {nome}",
+    "pendientes": "Responde las preguntas pendientes para finalizar",
+    "guardado": "✓ Guardado automáticamente",
+    "guardando": "Guardando...",
+    "erroGuardar": "Error al guardar.",
+    "pregunta": "Pregunta {n}",
+    "preguntaDe": "Pregunta {n} de {total}",
+    "card": {
+      "completa": "✓ Completa",
+      "revisar": "Revisar",
+      "continuar": "Continuar",
+      "responder": "Responder"
+    }
   }
 }

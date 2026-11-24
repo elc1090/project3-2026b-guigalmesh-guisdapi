@@ -6,6 +6,7 @@ import { useResultadoStore } from '../stores/resultado'
 import { DIMENSOES } from '../constants/dimensoes'
 
 const respostas = ref({})
+// chave do i18n da mensagem de salvamento ('' = nada a mostrar)
 const statusSalvamento = ref('')
 let timeoutId = null
 let timeoutStatusId = null
@@ -40,11 +41,11 @@ async function enviar({ keepalive = false } = {}) {
       keepalive
     })
     if (!res.ok) throw new Error(`Falha ao guardar o rascunho (HTTP ${res.status})`)
-    if (!sujo) mostrarStatus('✓ Guardado automáticamente', 2000)
+    if (!sujo) mostrarStatus('diagnostico.guardado', 2000)
   } catch (e) {
     sujo = true // tenta de novo no próximo salvamento
     console.error(e)
-    mostrarStatus('Error al guardar.')
+    mostrarStatus('diagnostico.erroGuardar')
   }
 }
 
@@ -74,7 +75,7 @@ watch(respostas, () => {
   if (restaurando) return
 
   sujo = true
-  mostrarStatus('Guardando...')
+  mostrarStatus('diagnostico.guardando')
   clearTimeout(timeoutId)
   timeoutId = setTimeout(salvarRascunhoAgora, ESPERA_SALVAMENTO_MS)
 }, { deep: true })

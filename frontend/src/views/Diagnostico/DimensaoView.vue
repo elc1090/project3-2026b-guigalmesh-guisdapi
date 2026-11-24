@@ -7,6 +7,7 @@ import Esqueleto from '../../components/ui/Esqueleto.vue'
 import Pagina from '../../components/ui/Pagina.vue'
 import Icone from '../../components/ui/Icone.vue'
 import { DIMENSOES, dimensaoPorSlug } from '../../constants/dimensoes'
+import { nomeDimensao } from '../../i18n/rotulos'
 import { ICONE_SETA } from '../../constants/icones'
 import {
   useDiagnostico, useProgressoDiagnostico, concluirDiagnostico, mensagemErroConclusao
@@ -68,9 +69,9 @@ const finalizar = async () => {
   <Pagina
     largura="estreita"
     :icone="dimensao.icone"
-    sobretitulo="Diagnóstico"
-    :titulo="dimensao.nome"
-    subtitulo="Responde a las siguientes preguntas de acuerdo con la realidad actual de la empresa."
+    :sobretitulo="t('diagnostico.sobretitulo')"
+    :titulo="nomeDimensao(dimensao.nome)"
+    :subtitulo="t('diagnostico.subtitulo')"
   >
     <template #antes>
       <router-link
@@ -78,7 +79,7 @@ const finalizar = async () => {
         class="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-800 hover:underline"
       >
         <Icone :d="ICONE_SETA" class="w-4 h-4 rotate-180" />
-        Volver al inicio
+        {{ t('diagnostico.volver') }}
       </router-link>
     </template>
 
@@ -89,7 +90,7 @@ const finalizar = async () => {
         <Esqueleto class="h-6 w-4/5" />
         <Esqueleto v-for="m in 4" :key="m" class="h-12 w-full" />
       </div>
-      <span class="sr-only" role="status">Cargando preguntas...</span>
+      <span class="sr-only" role="status">{{ t('diagnostico.cargandoPreguntas') }}</span>
     </div>
 
     <div v-else>
@@ -112,14 +113,14 @@ const finalizar = async () => {
       >
         <div class="flex-1 min-w-0">
           <div class="flex items-center justify-between gap-2 text-xs font-semibold text-slate-600 mb-1.5">
-            <span class="whitespace-nowrap">{{ respondidas }} de {{ total }} respondidas</span>
+            <span class="whitespace-nowrap">{{ t('diagnostico.respondidas', { n: respondidas, total }) }}</span>
             <span v-if="erroFinalizar" role="alert" class="font-medium text-red-600 truncate">{{ t(erroFinalizar) }}</span>
             <span
               v-else
               aria-live="polite"
               class="font-medium truncate"
-              :class="statusSalvamento.startsWith('Error') ? 'text-red-600' : 'text-emerald-700'"
-            >{{ statusSalvamento }}</span>
+              :class="statusSalvamento === 'diagnostico.erroGuardar' ? 'text-red-600' : 'text-emerald-700'"
+            >{{ statusSalvamento && t(statusSalvamento) }}</span>
           </div>
           <div class="h-1.5 bg-slate-200 rounded-full overflow-hidden" aria-hidden="true">
             <div class="h-full bg-emerald-600 rounded-full transition-all duration-300" :style="{ width: `${porcentagem}%` }"></div>
@@ -127,8 +128,8 @@ const finalizar = async () => {
         </div>
 
         <router-link v-if="proxima" :to="`/diagnostico/${proxima.slug}`" class="btn-primario btn-compacto shrink-0">
-          <span class="sm:hidden">Siguiente</span>
-          <span class="hidden sm:inline">Siguiente: {{ proxima.nome }}</span>
+          <span class="sm:hidden">{{ t('diagnostico.siguiente') }}</span>
+          <span class="hidden sm:inline">{{ t('diagnostico.siguienteDim', { nome: nomeDimensao(proxima.nome) }) }}</span>
           <Icone :d="ICONE_SETA" class="w-4 h-4" />
         </router-link>
 
@@ -142,18 +143,18 @@ const finalizar = async () => {
           class="btn-primario btn-compacto shrink-0"
         >
           <span v-if="finalizando" class="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" aria-hidden="true"></span>
-          {{ finalizando ? 'Calculando...' : 'Finalizar diagnóstico' }}
+          {{ finalizando ? t('secaoDiagnostico.calculando') : t('secaoDiagnostico.finalizar') }}
         </button>
         <router-link
           v-else-if="pendenteEmOutra"
           :to="`/diagnostico/${pendenteEmOutra.slug}`"
           class="btn-secundario btn-compacto shrink-0"
         >
-          Falta {{ pendenteEmOutra.nome }}
+          {{ t('diagnostico.falta', { nome: nomeDimensao(pendenteEmOutra.nome) }) }}
           <Icone :d="ICONE_SETA" class="w-4 h-4" />
         </router-link>
         <span v-else class="shrink-0 text-xs font-semibold text-slate-500 max-w-[9rem] text-right">
-          Responde las preguntas pendientes para finalizar
+          {{ t('diagnostico.pendientes') }}
         </span>
       </div>
     </div>

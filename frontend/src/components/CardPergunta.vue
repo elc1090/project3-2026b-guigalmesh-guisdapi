@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   questao: { type: Object, required: true },
@@ -11,6 +12,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue'])
+const { t } = useI18n()
 
 // liga o input interno com o v-model do pai
 const valorSelecionado = computed({
@@ -30,7 +32,7 @@ const idTitulo = computed(() => `pergunta-${props.questao.id}`)
     <!-- float: tira a legend da borda do fieldset (posição padrão do navegador) -->
     <legend class="float-left w-full">
       <span v-if="numero" class="block text-xs font-semibold uppercase tracking-wide text-emerald-700 mb-1.5">
-        Pregunta {{ numero }}<template v-if="total"> de {{ total }}</template>
+        {{ total ? t('diagnostico.preguntaDe', { n: numero, total }) : t('diagnostico.pregunta', { n: numero }) }}
       </span>
       <span :id="idTitulo" class="block text-base sm:text-lg font-semibold text-slate-800 mb-4">
         {{ questao.pergunta }}

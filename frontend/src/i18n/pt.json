@@ -235,5 +235,27 @@
       "tamano": "Selecione o porte da empresa.",
       "empleados": "Informe um número inteiro maior que 0."
     }
+  },
+  "diagnostico": {
+    "sobretitulo": "Diagnóstico",
+    "subtitulo": "Responda às perguntas a seguir de acordo com a realidade atual da empresa.",
+    "volver": "Voltar ao início",
+    "cargandoPreguntas": "Carregando perguntas...",
+    "respondidas": "{n} de {total} respondidas",
+    "siguiente": "Próxima",
+    "siguienteDim": "Próxima: {nome}",
+    "falta": "Falta {nome}",
+    "pendientes": "Responda as perguntas pendentes para finalizar",
+    "guardado": "✓ Salvo automaticamente",
+    "guardando": "Salvando...",
+    "erroGuardar": "Erro ao salvar.",
+    "pregunta": "Pergunta {n}",
+    "preguntaDe": "Pergunta {n} de {total}",
+    "card": {
+      "completa": "✓ Completa",
+      "revisar": "Revisar",
+      "continuar": "Continuar",
+      "responder": "Responder"
+    }
   }
 }
