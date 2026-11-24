@@ -1,5 +1,6 @@
 <script setup>
 import { ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { apiFetch } from '../lib/api'
 import { formatarData } from '../lib/datas'
 import Icone from './ui/Icone.vue'
@@ -16,6 +17,7 @@ const ICONE_BRILHO = [
   'M20 3v4', 'M22 5h-4'
 ]
 
+const { t } = useI18n()
 const estado = ref('carregando') // carregando | indisponivel | vazio | pronto
 const dados = ref(null)
 const gerando = ref(false)
@@ -47,13 +49,13 @@ async function gerar() {
     if (!res.ok) {
       erro.value = corpo?.detail && typeof corpo.detail === 'string'
         ? corpo.detail
-        : 'No fue posible generar el análisis. Inténtalo de nuevo.'
+        : t('ia.erroGerar')
       return
     }
     dados.value = corpo
     estado.value = 'pronto'
   } catch {
-    erro.value = 'No se pudo conectar con el servidor. Inténtalo de nuevo.'
+    erro.value = t('ia.erroConexion')
   } finally {
     gerando.value = false
   }
@@ -69,8 +71,8 @@ watch(() => props.concluidoEm, carregar, { immediate: true })
         <Icone :d="ICONE_BRILHO" class="w-5 h-5" />
       </span>
       <div class="min-w-0">
-        <h2 id="titulo-analisis-ia" class="text-lg font-semibold text-slate-800">Análisis con IA</h2>
-        <p class="text-sm text-slate-500">Un resumen personalizado de tu diagnóstico y por dónde empezar.</p>
+        <h2 id="titulo-analisis-ia" class="text-lg font-semibold text-slate-800">{{ t('ia.titulo') }}</h2>
+        <p class="text-sm text-slate-500">{{ t('ia.subtitulo') }}</p>
       </div>
     </div>
 
@@ -79,18 +81,17 @@ watch(() => props.concluidoEm, carregar, { immediate: true })
     <!-- gerando (primeira vez ou regenerando) -->
     <p v-else-if="gerando" class="flex items-center gap-3 text-sm text-slate-600 bg-violet-50/60 border border-violet-100 rounded-xl p-4" role="status">
       <span class="w-5 h-5 rounded-full border-2 border-violet-200 border-t-violet-700 animate-spin shrink-0" aria-hidden="true"></span>
-      Analizando tu diagnóstico… puede tardar hasta un minuto.
+      {{ t('ia.analizando') }}
     </p>
 
     <!-- ainda sem análise -->
     <div v-else-if="estado === 'vazio'" class="space-y-3">
       <p class="text-sm text-slate-600">
-        La IA revisa tus puntuaciones, recomendaciones y fortalezas, y te propone las 3 prioridades para empezar,
-        considerando el sector y el tamaño de tu empresa.
+        {{ t('ia.intro') }}
       </p>
       <button type="button" class="btn-primario btn-compacto bg-violet-700! hover:bg-violet-800!" @click="gerar">
         <Icone :d="ICONE_BRILHO" class="w-4 h-4" />
-        Generar análisis con IA
+        {{ t('ia.generar') }}
       </button>
     </div>
 
@@ -104,19 +105,19 @@ watch(() => props.concluidoEm, carregar, { immediate: true })
           <div class="min-w-0 space-y-1">
             <h3 class="font-semibold text-slate-800">{{ p.titulo }}</h3>
             <p class="text-sm text-slate-600">{{ p.motivo }}</p>
-            <p class="text-sm text-slate-600"><strong class="text-slate-800">Primer paso:</strong> {{ p.primer_paso }}</p>
+            <p class="text-sm text-slate-600"><strong class="text-slate-800">{{ t('ia.primerPaso') }}</strong> {{ p.primer_paso }}</p>
           </div>
         </li>
       </ol>
 
       <p v-if="dados.analisis.fortalezas" class="text-sm text-emerald-900 bg-emerald-50 border border-emerald-100 rounded-xl p-4">
-        <strong>Lo que ya haces bien:</strong> {{ dados.analisis.fortalezas }}
+        <strong>{{ t('ia.haceBien') }}</strong> {{ dados.analisis.fortalezas }}
       </p>
 
       <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
         <p class="text-xs text-slate-500">
-          Generado con IA (Gemini)<template v-if="dados.generado_em"> el {{ formatarData(dados.generado_em) }}</template>.
-          Es orientativo: revisa las recomendaciones antes de actuar.
+          {{ dados.generado_em ? t('ia.generadoEl', { data: formatarData(dados.generado_em) }) : t('ia.generado') }}.
+          {{ t('ia.orientativo') }}
         </p>
         <button
           v-if="dados.restantes > 0"
@@ -124,7 +125,7 @@ watch(() => props.concluidoEm, carregar, { immediate: true })
           class="text-sm font-semibold text-violet-700 hover:underline cursor-pointer"
           @click="gerar"
         >
-          Generar otra versión ({{ dados.restantes }})
+          {{ t('ia.otraVersion', { n: dados.restantes }) }}
         </button>
       </div>
     </div>

@@ -1,8 +1,10 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { Chart, LineController, LineElement, PointElement, CategoryScale, LinearScale, Legend, Tooltip } from 'chart.js'
 import { DIMENSOES } from '../constants/dimensoes'
 import { formatarDataCurta, formatarDataHora } from '../lib/datas'
+import { nomeDimensao } from '../i18n/rotulos'
 
 Chart.register(LineController, LineElement, PointElement, CategoryScale, LinearScale, Legend, Tooltip)
 
@@ -19,6 +21,7 @@ const CORES = {
   Económica: 'rgb(245, 158, 11)'
 }
 
+const { t, locale } = useI18n()
 const canvas = ref(null)
 let grafico = null
 
@@ -31,7 +34,7 @@ const rotulos = computed(() => {
 
 const series = computed(() => [
   {
-    label: 'General',
+    label: t('resultado.general'),
     data: props.historico.map((h) => h.geral),
     borderColor: CORES.General,
     backgroundColor: CORES.General,
@@ -39,7 +42,7 @@ const series = computed(() => [
     pointRadius: 4
   },
   ...DIMENSOES.map((d) => ({
-    label: d.nome,
+    label: nomeDimensao(d.nome),
     data: props.historico.map((h) => h.dimensoes?.[d.nome] ?? null),
     borderColor: CORES[d.nome],
     backgroundColor: CORES[d.nome],
@@ -86,15 +89,16 @@ watch(() => props.historico, async () => {
   if (props.historico.length < 2) destruir()
   else desenhar()
 })
+// legenda e datas do eixo mudam com o idioma
+watch(locale, () => { if (props.historico.length >= 2) desenhar() })
 onBeforeUnmount(destruir)
 </script>
 
 <template>
   <div v-if="historico.length >= 2" class="relative h-64 sm:h-72">
-    <canvas ref="canvas" role="img" aria-label="Evolución de la puntuación general y por dimensión en cada diagnóstico"></canvas>
+    <canvas ref="canvas" role="img" :aria-label="t('evolucao.aria')"></canvas>
   </div>
   <p v-else class="text-sm text-slate-500 bg-slate-50 border border-slate-200/80 rounded-xl p-4">
-    Completa otro diagnóstico para ver tu evolución. Cada vez que actualices tus respuestas y finalices,
-    tu puntuación quedará registrada aquí.
+    {{ t('evolucao.vacio') }}
   </p>
 </template>

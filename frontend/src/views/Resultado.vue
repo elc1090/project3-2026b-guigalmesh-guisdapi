@@ -14,6 +14,7 @@ import Pagina from '../components/ui/Pagina.vue'
 import Esqueleto from '../components/ui/Esqueleto.vue'
 import Alerta from '../components/ui/Alerta.vue'
 import { DIMENSOES, dimensaoPorNome } from '../constants/dimensoes'
+import { nomeDimensao, rotuloNivel, rotuloPrioridade } from '../i18n/rotulos'
 import { classeSeloNivel, classeIconeNivel, classePrioridade } from '../constants/niveis'
 import { ICONE_GRAFICO, ICONE_LAMPADA, ICONE_FOLHA, ICONE_CHECK, ICONE_SETA, ICONE_CALENDARIO, ICONE_TENDENCIA } from '../constants/icones'
 
@@ -88,7 +89,7 @@ const fortalezasPorDimensao = computed(() =>
 const pct = (valor) => Math.min(100, Math.max(0, Number(valor) || 0))
 
 const iconeDe = (nome) => dimensaoPorNome(nome)?.icone ?? ICONE_FOLHA
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const descricaoDe = (nome) => {
   const slug = dimensaoPorNome(nome)?.slug
   return slug ? t(`dimensao.${slug}.descricao`) : ''
@@ -111,7 +112,7 @@ const desenharGraficos = () => {
   destruirGraficos()
 
   try {
-    const rotulos = dimensoes.value.map((d) => d.nome)
+    const rotulos = dimensoes.value.map((d) => nomeDimensao(d.nome))
     const valores = dimensoes.value.map((d) => d.pontuacao ?? 0)
 
     radarChart = new Chart(radarCanvas.value, {
@@ -119,7 +120,7 @@ const desenharGraficos = () => {
       data: {
         labels: rotulos,
         datasets: [{
-          label: 'Puntuación',
+          label: t('resultado.puntuacion'),
           data: valores,
           fill: true,
           backgroundColor: 'rgba(16, 185, 129, 0.25)',
@@ -168,9 +169,7 @@ onMounted(async () => {
     if (e?.status === 401) return // o apiFetch já leva ao login
     console.error('Erro ao buscar resultado:', e)
     if (resultadoStore.dado === undefined) {
-      erro.value = e?.status
-        ? 'No fue posible cargar el resultado. Inténtalo de nuevo.'
-        : 'No se pudo conectar con el servidor.'
+      erro.value = e?.status ? 'resultado.erroCargar' : 'comum.conexion'
     }
   }
 })
@@ -185,6 +184,9 @@ watch(resultado, async (novo) => {
   desenharGraficos()
 })
 
+// o rótulo do tooltip do radar muda com o idioma
+watch(locale, () => { if (resultado.value) desenharGraficos() })
+
 onBeforeUnmount(() => {
   destruirGraficos()
 })
@@ -194,8 +196,8 @@ onBeforeUnmount(() => {
   <Pagina
     largura="larga"
     :icone="ICONE_GRAFICO"
-    titulo="Resultados del diagnóstico"
-    subtitulo="Nivel de madurez en sostenibilidad de tu empresa"
+    :titulo="t('resultado.titulo')"
+    :subtitulo="t('resultado.subtitulo')"
   >
     <template #lateral>
       <div class="flex items-center gap-3 bg-emerald-50 border border-emerald-100 rounded-2xl px-4 py-3 lg:max-w-md">
@@ -203,7 +205,7 @@ onBeforeUnmount(() => {
           <Icone :d="ICONE_FOLHA" class="w-5 h-5" />
         </span>
         <p class="text-sm text-slate-600">
-          Tus resultados te ayudarán a identificar fortalezas y oportunidades para mejorar tu desempeño sostenible.
+          {{ t('resultado.lateral') }}
         </p>
       </div>
     </template>
@@ -216,25 +218,25 @@ onBeforeUnmount(() => {
       <div class="xl:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 content-start">
         <div v-for="n in 3" :key="n" class="cartao p-5 space-y-3"><Esqueleto class="h-14 w-14 rounded-full" /><Esqueleto class="h-4 w-full" /><Esqueleto class="h-6 w-24 rounded-full" /></div>
       </div>
-      <span class="sr-only" role="status">Cargando resultado...</span>
+      <span class="sr-only" role="status">{{ t('resultado.cargando') }}</span>
     </div>
 
-    <Alerta v-else-if="erro">{{ erro }}</Alerta>
+    <Alerta v-else-if="erro">{{ t(erro) }}</Alerta>
 
     <div v-else-if="semDiagnostico" class="cartao p-8 text-center">
-      <p class="text-slate-700 text-lg mb-4">Aún no has completado el diagnóstico.</p>
+      <p class="text-slate-700 text-lg mb-4">{{ t('resultado.sinDiagnostico') }}</p>
       <router-link
         to="/#diagnostico"
         class="btn-primario"
       >
-        Ir al diagnóstico
+        {{ t('resultado.irDiagnostico') }}
       </router-link>
     </div>
 
     <div v-else-if="resultado && resultado.geral" class="space-y-6">
       <p v-if="dataDiagnostico" class="flex items-center gap-2 text-sm text-slate-500">
         <Icone :d="ICONE_CALENDARIO" class="w-4 h-4 text-emerald-700" />
-        Último diagnóstico: <strong class="text-slate-700">{{ dataDiagnostico }}</strong>
+        {{ t('resultado.ultimo') }} <strong class="text-slate-700">{{ dataDiagnostico }}</strong>
       </p>
 
       <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
@@ -246,18 +248,18 @@ onBeforeUnmount(() => {
               <span class="selo-icone">
                 <Icone :d="ICONE_GRAFICO" class="w-5 h-5" />
               </span>
-              <h2 class="text-lg font-semibold text-slate-800">Resumen por dimensión</h2>
+              <h2 class="text-lg font-semibold text-slate-800">{{ t('resultado.resumen') }}</h2>
 
               <div class="ml-auto flex items-center gap-2">
                 <span class="text-sm text-slate-500">
-                  General <strong class="text-slate-800">{{ resultado.geral?.pontuacao ?? 0 }}</strong> / 100
+                  {{ t('resultado.general') }} <strong class="text-slate-800">{{ resultado.geral?.pontuacao ?? 0 }}</strong> / 100
                 </span>
                 <span
                   v-if="resultado.geral?.nivel"
                   class="px-3 py-1 text-xs rounded-full font-semibold"
                   :class="classeSeloNivel(resultado.geral.nivel)"
                 >
-                  {{ resultado.geral.nivel }}
+                  {{ rotuloNivel(resultado.geral.nivel) }}
                 </span>
               </div>
             </div>
@@ -277,7 +279,7 @@ onBeforeUnmount(() => {
                   <Icone :d="iconeDe(dimension.nome)" class="w-5 h-5" />
                 </span>
                 <div class="leading-tight">
-                  <p class="text-xs font-semibold text-slate-700">{{ dimension.nome }}</p>
+                  <p class="text-xs font-semibold text-slate-700">{{ nomeDimensao(dimension.nome) }}</p>
                   <p class="text-sm font-bold text-slate-800">{{ pct(dimension.pontuacao) }}%</p>
                 </div>
               </div>
@@ -290,7 +292,7 @@ onBeforeUnmount(() => {
               <span class="selo-icone">
                 <Icone :d="ICONE_GRAFICO" class="w-5 h-5" />
               </span>
-              <h2 class="text-lg font-semibold text-slate-800">Comparativo de dimensiones</h2>
+              <h2 class="text-lg font-semibold text-slate-800">{{ t('resultado.comparativo') }}</h2>
             </div>
 
             <ul class="space-y-4">
@@ -302,7 +304,7 @@ onBeforeUnmount(() => {
                 <span class="selo-icone">
                   <Icone :d="iconeDe(dimension.nome)" class="w-5 h-5" />
                 </span>
-                <span class="w-24 sm:w-28 text-sm font-semibold text-slate-700 shrink-0">{{ dimension.nome }}</span>
+                <span class="w-24 sm:w-28 text-sm font-semibold text-slate-700 shrink-0">{{ nomeDimensao(dimension.nome) }}</span>
                 <div class="flex-1 h-2.5 bg-slate-100 rounded-full overflow-hidden">
                   <div
                     class="h-full rounded-full bg-gradient-to-r from-emerald-600 to-emerald-400 transition-all duration-700"
@@ -321,8 +323,8 @@ onBeforeUnmount(() => {
                 <Icone :d="ICONE_TENDENCIA" class="w-5 h-5" />
               </span>
               <div>
-                <h2 class="text-lg font-semibold text-slate-800">Tu evolución</h2>
-                <p class="text-sm text-slate-500">Puntuación en cada diagnóstico finalizado.</p>
+                <h2 class="text-lg font-semibold text-slate-800">{{ t('resultado.evolucion') }}</h2>
+                <p class="text-sm text-slate-500">{{ t('resultado.evolucionTexto') }}</p>
               </div>
             </div>
             <GraficoEvolucao :historico="historico" />
@@ -346,7 +348,7 @@ onBeforeUnmount(() => {
                   <Icone :d="iconeDe(dimension.nome)" class="w-7 h-7" />
                 </span>
                 <div class="min-w-0">
-                  <p class="font-semibold text-slate-800">{{ dimension.nome }}</p>
+                  <p class="font-semibold text-slate-800">{{ nomeDimensao(dimension.nome) }}</p>
                   <p class="text-3xl font-bold text-slate-800 leading-tight">{{ pct(dimension.pontuacao) }}%</p>
                 </div>
               </div>
@@ -358,7 +360,7 @@ onBeforeUnmount(() => {
                   class="inline-block px-3 py-1 rounded-full text-xs sm:text-sm font-semibold"
                   :class="classeSeloNivel(dimension.nivel)"
                 >
-                  {{ dimension.nivel }}
+                  {{ rotuloNivel(dimension.nivel) }}
                 </span>
               </div>
             </article>
@@ -374,20 +376,20 @@ onBeforeUnmount(() => {
                 <Icone :d="ICONE_LAMPADA" class="w-5 h-5" />
               </span>
               <div>
-                <h2 class="text-lg font-semibold text-slate-800">Principales oportunidades de mejora</h2>
-                <p class="text-sm text-slate-500">En base a tu diagnóstico, te recomendamos enfocarte en:</p>
+                <h2 class="text-lg font-semibold text-slate-800">{{ t('resultado.oportunidades') }}</h2>
+                <p class="text-sm text-slate-500">{{ t('resultado.oportunidadesTexto') }}</p>
               </div>
             </div>
 
             <!-- progresso do plano de ação -->
             <div v-if="recomendacoes.length" class="mb-4">
               <div class="flex items-center justify-between text-sm mb-1.5">
-                <span class="font-semibold text-slate-700">Tu plan de acción</span>
+                <span class="font-semibold text-slate-700">{{ t('resultado.plan') }}</span>
                 <span class="text-slate-500">
-                  <strong class="text-slate-800">{{ realizadas }}</strong> de {{ recomendacoes.length }} acciones realizadas
+                  {{ t('resultado.accionesRealizadas', { n: realizadas, total: recomendacoes.length }) }}
                 </span>
               </div>
-              <div class="h-2.5 bg-white border border-emerald-100 rounded-full overflow-hidden" role="progressbar" :aria-valuenow="progressoPlano" aria-valuemin="0" aria-valuemax="100" aria-label="Acciones realizadas">
+              <div class="h-2.5 bg-white border border-emerald-100 rounded-full overflow-hidden" role="progressbar" :aria-valuenow="progressoPlano" aria-valuemin="0" aria-valuemax="100" :aria-label="t('resultado.accionesAria')">
                 <div class="h-full rounded-full bg-gradient-to-r from-emerald-600 to-emerald-400 transition-all duration-500" :style="{ width: progressoPlano + '%' }"></div>
               </div>
             </div>
@@ -396,7 +398,7 @@ onBeforeUnmount(() => {
               v-if="recomendacoes.length === 0"
               class="p-6 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-900 text-center"
             >
-              ¡Felicitaciones! Tu empresa alcanzó el nivel más alto en <strong>todos</strong> los parámetros evaluados.
+              {{ t('resultado.felicitaciones') }}
             </div>
 
             <ol v-else class="space-y-3">
@@ -420,22 +422,22 @@ onBeforeUnmount(() => {
                       class="text-[11px] font-semibold px-2 py-0.5 rounded-full border"
                       :class="classePrioridade(rec.prioridade)"
                     >
-                      Prioridad {{ rec.prioridade }}
+                      {{ t('resultado.prioridad', { p: rotuloPrioridade(rec.prioridade) }) }}
                     </span>
                   </div>
                   <p v-if="rec.parametro" class="text-[11px] font-semibold uppercase tracking-wide text-emerald-700 mt-0.5">
-                    {{ rec.categoria }} · {{ rec.parametro }}<template v-if="rec.etapa"> · {{ rec.etapa }}</template>
+                    {{ nomeDimensao(rec.categoria) }} · {{ rec.parametro }}<template v-if="rec.etapa"> · {{ rec.etapa }}</template>
                   </p>
                   <p class="text-xs sm:text-sm text-slate-500 mt-0.5">{{ rec.descricao }}</p>
                   <p v-if="rec.indicador_sugerido" class="text-xs text-slate-500 mt-1">
-                    <span class="font-semibold text-slate-700">Indicador sugerido:</span> {{ rec.indicador_sugerido }}
+                    <span class="font-semibold text-slate-700">{{ t('resultado.indicador') }}</span> {{ rec.indicador_sugerido }}
                   </p>
                   <div v-if="rec.ods?.length || enlaceValido(rec.enlace)" class="flex flex-wrap items-center gap-2 mt-2">
                     <span
                       v-for="n in rec.ods"
                       :key="n"
                       class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200"
-                      :title="`Contribuye al Objetivo de Desarrollo Sostenible ${n}`"
+                      :title="t('resultado.odsTitulo', { n })"
                     >
                       ODS {{ n }}
                     </span>
@@ -460,7 +462,7 @@ onBeforeUnmount(() => {
               :aria-expanded="verTodas"
               @click="verTodas = !verTodas"
             >
-              {{ verTodas ? 'Ver menos' : `Ver todas las recomendaciones (${recomendacoes.length})` }}
+              {{ verTodas ? t('resultado.verMenos') : t('resultado.verTodas', { n: recomendacoes.length }) }}
             </button>
           </div>
 
@@ -471,13 +473,13 @@ onBeforeUnmount(() => {
                 <Icone :d="ICONE_CHECK" class="w-5 h-5" />
               </span>
               <div>
-                <h2 class="text-lg font-semibold text-slate-800">Lo que ya haces bien</h2>
-                <p class="text-sm text-slate-500">Parámetros en los que tu empresa alcanzó el nivel más alto.</p>
+                <h2 class="text-lg font-semibold text-slate-800">{{ t('resultado.haceBien') }}</h2>
+                <p class="text-sm text-slate-500">{{ t('resultado.haceBienTexto') }}</p>
               </div>
             </div>
             <div class="space-y-3">
               <div v-for="grupo in fortalezasPorDimensao" :key="grupo.nome">
-                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">{{ grupo.nome }}</p>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">{{ nomeDimensao(grupo.nome) }}</p>
                 <ul class="flex flex-wrap gap-2">
                   <li
                     v-for="f in grupo.itens"
@@ -496,8 +498,8 @@ onBeforeUnmount(() => {
 
       <!-- secundário: o questionário abre com as respostas atuais, para revisar o que mudou -->
       <p class="text-sm text-slate-500 text-center sm:text-right">
-        ¿Hubo cambios en tu empresa?
-        <router-link to="/#diagnostico" class="font-semibold text-emerald-800 hover:underline">Actualizar diagnóstico</router-link>
+        {{ t('resultado.cambios') }}
+        <router-link to="/#diagnostico" class="font-semibold text-emerald-800 hover:underline">{{ t('resultado.actualizar') }}</router-link>
       </p>
     </div>
   </Pagina>

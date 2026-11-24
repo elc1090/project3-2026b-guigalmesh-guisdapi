@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useResultadoStore } from '../stores/resultado'
 import Icone from './ui/Icone.vue'
 import { ICONE_CHECK } from '../constants/icones'
@@ -10,6 +11,7 @@ const props = defineProps({
   recomendacao: { type: Object, required: true }
 })
 
+const { t } = useI18n()
 const resultadoStore = useResultadoStore()
 const salvando = ref(false)
 const erro = ref('')
@@ -24,7 +26,7 @@ async function mudar(novo) {
     await resultadoStore.atualizarStatusAcao(props.recomendacao.id, novo)
   } catch (e) {
     if (e?.status === 401) return // o apiFetch já leva ao login
-    erro.value = 'No se pudo guardar. Inténtalo de nuevo.'
+    erro.value = 'acoes.erro'
   } finally {
     salvando.value = false
   }
@@ -38,7 +40,7 @@ const base = 'inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5
     <template v-if="status === 'realizada'">
       <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800">
         <Icone :d="ICONE_CHECK" class="w-3.5 h-3.5" />
-        Realizada
+        {{ t('acoes.realizada') }}
       </span>
       <button
         type="button"
@@ -46,7 +48,7 @@ const base = 'inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5
         :disabled="salvando"
         @click="mudar('pendiente')"
       >
-        Deshacer
+        {{ t('acoes.deshacer') }}
       </button>
     </template>
 
@@ -55,7 +57,7 @@ const base = 'inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5
         v-if="status === 'en_progreso'"
         class="text-xs font-semibold px-3 py-1.5 rounded-full bg-sky-100 text-sky-800"
       >
-        En progreso
+        {{ t('acoes.enProgreso') }}
       </span>
       <button
         v-else
@@ -64,7 +66,7 @@ const base = 'inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5
         :disabled="salvando"
         @click="mudar('en_progreso')"
       >
-        Empezar
+        {{ t('acoes.empezar') }}
       </button>
       <button
         type="button"
@@ -73,10 +75,10 @@ const base = 'inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5
         @click="mudar('realizada')"
       >
         <Icone :d="ICONE_CHECK" class="w-3.5 h-3.5" />
-        Marcar como realizada
+        {{ t('acoes.marcar') }}
       </button>
     </template>
 
-    <p v-if="erro" class="w-full text-xs text-red-700" role="alert">{{ erro }}</p>
+    <p v-if="erro" class="w-full text-xs text-red-700" role="alert">{{ t(erro) }}</p>
   </div>
 </template>

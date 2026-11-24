@@ -257,5 +257,63 @@
       "continuar": "Continuar",
       "responder": "Responder"
     }
+  },
+  "resultado": {
+    "titulo": "Resultados do diagnóstico",
+    "subtitulo": "Nível de maturidade em sustentabilidade da sua empresa",
+    "lateral": "Seus resultados vão ajudar a identificar pontos fortes e oportunidades para melhorar seu desempenho sustentável.",
+    "cargando": "Carregando resultado...",
+    "erroCargar": "Não foi possível carregar o resultado. Tente de novo.",
+    "sinDiagnostico": "Você ainda não concluiu o diagnóstico.",
+    "irDiagnostico": "Ir para o diagnóstico",
+    "ultimo": "Último diagnóstico:",
+    "resumen": "Resumo por dimensão",
+    "general": "Geral",
+    "puntuacion": "Pontuação",
+    "comparativo": "Comparativo das dimensões",
+    "evolucion": "Sua evolução",
+    "evolucionTexto": "Pontuação em cada diagnóstico finalizado.",
+    "oportunidades": "Principais oportunidades de melhoria",
+    "oportunidadesTexto": "Com base no seu diagnóstico, recomendamos focar em:",
+    "plan": "Seu plano de ação",
+    "accionesRealizadas": "{n} de {total} ações realizadas",
+    "accionesAria": "Ações realizadas",
+    "felicitaciones": "Parabéns! Sua empresa alcançou o nível mais alto em todos os parâmetros avaliados.",
+    "prioridad": "Prioridade {p}",
+    "indicador": "Indicador sugerido:",
+    "odsTitulo": "Contribui para o Objetivo de Desenvolvimento Sustentável {n}",
+    "verMenos": "Ver menos",
+    "verTodas": "Ver todas as recomendações ({n})",
+    "haceBien": "O que você já faz bem",
+    "haceBienTexto": "Parâmetros em que sua empresa alcançou o nível mais alto.",
+    "cambios": "Houve mudanças na sua empresa?",
+    "actualizar": "Atualizar diagnóstico"
+  },
+  "acoes": {
+    "realizada": "Realizada",
+    "deshacer": "Desfazer",
+    "enProgreso": "Em andamento",
+    "empezar": "Começar",
+    "marcar": "Marcar como realizada",
+    "erro": "Não foi possível salvar. Tente de novo."
+  },
+  "evolucao": {
+    "aria": "Evolução da pontuação geral e por dimensão em cada diagnóstico",
+    "vacio": "Conclua outro diagnóstico para ver sua evolução. Cada vez que você atualizar suas respostas e finalizar, sua pontuação ficará registrada aqui."
+  },
+  "ia": {
+    "titulo": "Análise com IA",
+    "subtitulo": "Um resumo personalizado do seu diagnóstico e por onde começar.",
+    "analizando": "Analisando seu diagnóstico… pode levar até um minuto.",
+    "intro": "A IA revisa suas pontuações, recomendações e pontos fortes, e propõe as 3 prioridades para começar, considerando o setor e o porte da sua empresa.",
+    "generar": "Gerar análise com IA",
+    "primerPaso": "Primeiro passo:",
+    "haceBien": "O que você já faz bem:",
+    "generadoEl": "Gerado com IA (Gemini) em {data}",
+    "orientativo": "É apenas uma orientação: revise as recomendações antes de agir.",
+    "otraVersion": "Gerar outra versão ({n})",
+    "erroGerar": "Não foi possível gerar a análise. Tente de novo.",
+    "erroConexion": "Não foi possível conectar ao servidor. Tente de novo.",
+    "generado": "Gerado com IA (Gemini)"
   }
 }
