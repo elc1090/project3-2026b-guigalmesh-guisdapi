@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { supabase } from './supabase'
 import { sessao } from './sessao'
+import { i18n } from '../i18n'
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 
@@ -76,6 +77,8 @@ export async function apiFetch(path, options = {}) {
       ...options,
       headers: {
         'Content-Type': 'application/json',
+        // o back-end responde mensagens, recomendações e análise de IA neste idioma
+        'Accept-Language': i18n.global.locale.value,
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...options.headers,
       },
