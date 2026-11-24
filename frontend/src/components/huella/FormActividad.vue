@@ -1,5 +1,6 @@
 <script setup>
 import { reactive, ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
 import Campo from '../ui/Campo.vue'
 import Alerta from '../ui/Alerta.vue'
 import Icone from '../ui/Icone.vue'
@@ -16,6 +17,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['fechar', 'salvo'])
 
+const { t } = useI18n()
 const store = useActividadesStore()
 const editando = computed(() => !!props.inicial.id)
 
@@ -41,13 +43,13 @@ const naoNegativo = (v) => v === '' || v === null || (Number.isFinite(Number(v))
 const erros = computed(() => {
   if (!tentou.value) return {}
   return {
-    tipo: form.tipo ? '' : 'Selecciona el tipo de actividad.',
-    titulo: form.titulo.trim().length >= 2 ? '' : 'Escribe un nombre para la actividad.',
-    fecha: form.fecha ? '' : 'Selecciona la fecha.',
-    participantes: Number.isInteger(Number(form.participantes)) && naoNegativo(form.participantes) ? '' : 'Ingresa un número entero igual o mayor que 0.',
-    horas_voluntariado: naoNegativo(form.horas_voluntariado) ? '' : 'Ingresa un número igual o mayor que 0.',
-    kg_residuos: naoNegativo(form.kg_residuos) ? '' : 'Ingresa un número igual o mayor que 0.',
-    arboles_plantados: Number.isInteger(Number(form.arboles_plantados)) && naoNegativo(form.arboles_plantados) ? '' : 'Ingresa un número entero igual o mayor que 0.'
+    tipo: form.tipo ? '' : t('huella.form.erros.tipo'),
+    titulo: form.titulo.trim().length >= 2 ? '' : t('huella.form.erros.titulo'),
+    fecha: form.fecha ? '' : t('huella.form.erros.fecha'),
+    participantes: Number.isInteger(Number(form.participantes)) && naoNegativo(form.participantes) ? '' : t('huella.form.erros.entero'),
+    horas_voluntariado: naoNegativo(form.horas_voluntariado) ? '' : t('huella.form.erros.numero'),
+    kg_residuos: naoNegativo(form.kg_residuos) ? '' : t('huella.form.erros.numero'),
+    arboles_plantados: Number.isInteger(Number(form.arboles_plantados)) && naoNegativo(form.arboles_plantados) ? '' : t('huella.form.erros.entero')
   }
 })
 const temErro = computed(() => Object.values(erros.value).some(Boolean))
@@ -79,8 +81,8 @@ async function salvar() {
   } catch (e) {
     if (e?.status === 401) return // o apiFetch já leva ao login
     erroServidor.value = e?.status === 422
-      ? 'Revisa los datos ingresados.'
-      : 'No se pudo guardar la actividad. Inténtalo de nuevo.'
+      ? t('huella.form.erros.revisa')
+      : t('huella.form.erros.guardar')
   } finally {
     salvando.value = false
   }
@@ -109,104 +111,104 @@ onBeforeUnmount(() => window.removeEventListener('keydown', aoTeclar))
       >
         <div class="flex items-start justify-between gap-4 mb-5">
           <div>
-            <p class="text-xs font-bold uppercase tracking-wider text-emerald-700">Huella positiva</p>
+            <p class="text-xs font-bold uppercase tracking-wider text-emerald-700">{{ t('huella.form.sobretitulo') }}</p>
             <h2 id="titulo-form-actividad" class="text-xl font-bold text-slate-800">
-              {{ titulo || (editando ? 'Editar actividad' : 'Nueva actividad') }}
+              {{ titulo || (editando ? t('huella.form.editar') : t('huella.form.nueva')) }}
             </h2>
           </div>
-          <button type="button" class="p-2 -m-2 rounded-full text-slate-500 hover:bg-slate-100 cursor-pointer" aria-label="Cerrar" @click="emit('fechar')">
+          <button type="button" class="p-2 -m-2 rounded-full text-slate-500 hover:bg-slate-100 cursor-pointer" :aria-label="t('huella.form.cerrar')" @click="emit('fechar')">
             <Icone :d="ICONE_FECHAR" class="w-5 h-5" />
           </button>
         </div>
 
         <form class="space-y-4" novalidate @submit.prevent="salvar">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Campo id="act-tipo" rotulo="Tipo de actividad" :erro="erros.tipo">
+            <Campo id="act-tipo" :rotulo="t('huella.form.tipo')" :erro="erros.tipo">
               <template #default="{ invalido, descricao }">
                 <select id="act-tipo" v-model="form.tipo" class="campo" :aria-invalid="invalido" :aria-describedby="descricao">
-                  <option value="" disabled>Selecciona…</option>
-                  <option v-for="t in TIPOS_ACTIVIDAD" :key="t.id" :value="t.id">{{ t.nombre }}</option>
+                  <option value="" disabled>{{ t('huella.form.selecciona') }}</option>
+                  <option v-for="tipo in TIPOS_ACTIVIDAD" :key="tipo.id" :value="tipo.id">{{ tipo.nombre }}</option>
                 </select>
               </template>
             </Campo>
-            <Campo id="act-fecha" rotulo="Fecha" :erro="erros.fecha">
+            <Campo id="act-fecha" :rotulo="t('huella.form.fecha')" :erro="erros.fecha">
               <template #default="{ invalido, descricao }">
                 <input id="act-fecha" v-model="form.fecha" type="date" class="campo" :aria-invalid="invalido" :aria-describedby="descricao">
               </template>
             </Campo>
           </div>
 
-          <Campo id="act-titulo" rotulo="Nombre de la actividad" :erro="erros.titulo">
+          <Campo id="act-titulo" :rotulo="t('huella.form.nombre')" :erro="erros.titulo">
             <template #default="{ invalido, descricao }">
-              <input id="act-titulo" v-model="form.titulo" maxlength="120" class="campo" placeholder="Ej.: Limpieza de la playa La Herradura" :aria-invalid="invalido" :aria-describedby="descricao">
+              <input id="act-titulo" v-model="form.titulo" maxlength="120" class="campo" :placeholder="t('huella.form.placeholderNombre')" :aria-invalid="invalido" :aria-describedby="descricao">
             </template>
           </Campo>
 
-          <Campo id="act-lugar" rotulo="Lugar (opcional)">
+          <Campo id="act-lugar" :rotulo="t('huella.form.lugar')">
             <template #default>
-              <input id="act-lugar" v-model="form.lugar" maxlength="160" class="campo" placeholder="Ej.: Playa La Herradura, Coquimbo">
+              <input id="act-lugar" v-model="form.lugar" maxlength="160" class="campo" :placeholder="t('huella.form.placeholderLugar')">
             </template>
           </Campo>
 
           <fieldset>
-            <legend class="rotulo">Estado</legend>
+            <legend class="rotulo">{{ t('huella.form.estado') }}</legend>
             <div class="grid grid-cols-2 gap-2">
               <label
-                v-for="op in [{ v: 'planificada', t: 'Planificada' }, { v: 'realizada', t: 'Realizada' }]"
+                v-for="op in [{ v: 'planificada', chave: 'huella.planificada' }, { v: 'realizada', chave: 'huella.realizada' }]"
                 :key="op.v"
                 class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-semibold cursor-pointer transition"
                 :class="form.estado === op.v ? 'bg-emerald-800 border-emerald-800 text-white' : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'"
               >
                 <input v-model="form.estado" type="radio" name="act-estado" :value="op.v" class="sr-only">
-                {{ op.t }}
+                {{ t(op.chave) }}
               </label>
             </div>
           </fieldset>
 
           <!-- resultados: só para atividade realizada -->
           <div v-if="form.estado === 'realizada'" class="bg-emerald-50/60 border border-emerald-100 rounded-2xl p-4 space-y-4">
-            <p class="text-sm font-semibold text-emerald-900">Resultados de la actividad</p>
+            <p class="text-sm font-semibold text-emerald-900">{{ t('huella.form.resultados') }}</p>
             <div class="grid grid-cols-2 gap-4">
-              <Campo id="act-participantes" rotulo="Participantes" :erro="erros.participantes">
+              <Campo id="act-participantes" :rotulo="t('huella.form.participantes')" :erro="erros.participantes">
                 <template #default="{ invalido, descricao }">
                   <input id="act-participantes" v-model.number="form.participantes" type="number" min="0" step="1" inputmode="numeric" class="campo" :aria-invalid="invalido" :aria-describedby="descricao">
                 </template>
               </Campo>
-              <Campo id="act-horas" rotulo="Horas de voluntariado (total)" :erro="erros.horas_voluntariado">
+              <Campo id="act-horas" :rotulo="t('huella.form.horas')" :erro="erros.horas_voluntariado">
                 <template #default="{ invalido, descricao }">
                   <input id="act-horas" v-model.number="form.horas_voluntariado" type="number" min="0" step="0.5" inputmode="decimal" class="campo" :aria-invalid="invalido" :aria-describedby="descricao">
                 </template>
               </Campo>
-              <Campo id="act-kg" rotulo="Kg de residuos recolectados" :erro="erros.kg_residuos">
+              <Campo id="act-kg" :rotulo="t('huella.form.kg')" :erro="erros.kg_residuos">
                 <template #default="{ invalido, descricao }">
                   <input id="act-kg" v-model.number="form.kg_residuos" type="number" min="0" step="0.1" inputmode="decimal" class="campo" :aria-invalid="invalido" :aria-describedby="descricao">
                 </template>
               </Campo>
-              <Campo id="act-arboles" rotulo="Árboles nativos plantados" :erro="erros.arboles_plantados">
+              <Campo id="act-arboles" :rotulo="t('huella.form.arboles')" :erro="erros.arboles_plantados">
                 <template #default="{ invalido, descricao }">
                   <input id="act-arboles" v-model.number="form.arboles_plantados" type="number" min="0" step="1" inputmode="numeric" class="campo" :aria-invalid="invalido" :aria-describedby="descricao">
                 </template>
               </Campo>
             </div>
-            <Campo id="act-espacio" rotulo="Espacio natural recuperado (opcional)">
+            <Campo id="act-espacio" :rotulo="t('huella.form.espacio')">
               <template #default>
-                <input id="act-espacio" v-model="form.espacio_recuperado" maxlength="160" class="campo" placeholder="Ej.: Plaza del barrio, 200 m de ribera del río">
+                <input id="act-espacio" v-model="form.espacio_recuperado" maxlength="160" class="campo" :placeholder="t('huella.form.placeholderEspacio')">
               </template>
             </Campo>
           </div>
 
-          <Campo id="act-notas" rotulo="Notas (opcional)">
+          <Campo id="act-notas" :rotulo="t('huella.form.notas')">
             <template #default>
-              <textarea id="act-notas" v-model="form.notas" rows="3" maxlength="1000" class="campo resize-y" placeholder="Detalles, punto de encuentro, horario…"></textarea>
+              <textarea id="act-notas" v-model="form.notas" rows="3" maxlength="1000" class="campo resize-y" :placeholder="t('huella.form.placeholderNotas')"></textarea>
             </template>
           </Campo>
 
           <Alerta v-if="erroServidor">{{ erroServidor }}</Alerta>
 
           <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-1">
-            <button type="button" class="btn-secundario btn-compacto" :disabled="salvando" @click="emit('fechar')">Cancelar</button>
+            <button type="button" class="btn-secundario btn-compacto" :disabled="salvando" @click="emit('fechar')">{{ t('comum.cancelar') }}</button>
             <button type="submit" class="btn-primario btn-compacto" :disabled="salvando">
-              {{ salvando ? 'Guardando…' : editando ? 'Guardar cambios' : 'Guardar actividad' }}
+              {{ salvando ? t('huella.form.guardando') : editando ? t('huella.form.guardarCambios') : t('huella.form.guardar') }}
             </button>
           </div>
         </form>

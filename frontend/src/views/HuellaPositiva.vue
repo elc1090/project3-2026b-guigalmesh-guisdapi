@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import Icone from '../components/ui/Icone.vue'
 import Pagina from '../components/ui/Pagina.vue'
 import Esqueleto from '../components/ui/Esqueleto.vue'
@@ -10,10 +11,12 @@ import { useEmpresaStore } from '../stores/empresa'
 import { TIPOS_ACTIVIDAD, FECHAS_AMBIENTALES, FUENTE_CALENDARIO, tipoPorId } from '../constants/huella'
 import { proximasEfemerides, efemeridesDoAno, dataLocal, hojeLocal, paraTextoData, diasEntre } from '../lib/fechasAmbientales'
 import { textoInvitacion } from '../lib/invitacion'
+import { localeData } from '../i18n/rotulos'
 import { ICONE_ARVORE, ICONE_CALENDARIO, ICONE_LAMPADA, ICONE_CHECK, ICONE_SETA } from '../constants/icones'
 
 // Empresas que dejan huella positiva (seção 11 da proposta da turma do Chile):
 // resumo do impacto, próximas datas ambientais, atividades da empresa e ideias de atividades.
+const { t } = useI18n()
 const store = useActividadesStore()
 const empresaStore = useEmpresaStore()
 
@@ -24,29 +27,26 @@ const actividades = computed(() => dados.value?.actividades ?? [])
 const resumen = computed(() => dados.value?.resumen ?? null)
 
 // ---------- resumo do impacto ----------
-const fmt = (n) => Number(n || 0).toLocaleString('es-CL', { maximumFractionDigits: 1 })
-const INDICADORES = [
-  { campo: 'actividades_realizadas', rotulo: 'Actividades realizadas' },
-  { campo: 'participantes', rotulo: 'Participantes' },
-  { campo: 'kg_residuos', rotulo: 'Kg de residuos recolectados' },
-  { campo: 'arboles_plantados', rotulo: 'Árboles nativos plantados' },
-  { campo: 'horas_voluntariado', rotulo: 'Horas de voluntariado' },
-  { campo: 'espacios_recuperados', rotulo: 'Espacios recuperados' }
-]
+const fmt = (n) => Number(n || 0).toLocaleString(localeData(), { maximumFractionDigits: 1 })
+const INDICADORES = ['actividades_realizadas', 'participantes', 'kg_residuos', 'arboles_plantados', 'horas_voluntariado', 'espacios_recuperados']
 
 // ---------- datas ambientais ----------
 const hoje = hojeLocal()
 const proximas = computed(() => proximasEfemerides(FECHAS_AMBIENTALES, hoje, 6))
 const verCalendario = ref(false)
 const anoCalendario = hoje.getFullYear()
-const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+// nome do mês no idioma escolhido, com inicial maiúscula ("Enero" / "Janeiro")
+const nomeMes = (m) => {
+  const nome = new Date(2026, m, 1).toLocaleDateString(localeData(), { month: 'long' })
+  return nome.charAt(0).toUpperCase() + nome.slice(1)
+}
 const calendarioPorMes = computed(() => {
-  const grupos = MESES.map((nome) => ({ nome, datas: [] }))
+  const grupos = Array.from({ length: 12 }, (_, m) => ({ nome: nomeMes(m), datas: [] }))
   efemeridesDoAno(FECHAS_AMBIENTALES, anoCalendario).forEach((e) => grupos[e.data.getMonth()].datas.push(e))
   return grupos
 })
-const quando = (dias) => (dias === 0 ? 'Hoy' : dias === 1 ? 'Mañana' : `En ${dias} días`)
-const diaMes = (data) => ({ dia: data.getDate(), mes: MESES[data.getMonth()].slice(0, 3) })
+const quando = (dias) => (dias === 0 ? t('huella.hoy') : dias === 1 ? t('huella.manana') : t('huella.enDias', { n: dias }))
+const diaMes = (data) => ({ dia: data.getDate(), mes: nomeMes(data.getMonth()).slice(0, 3) })
 
 // ---------- minhas atividades ----------
 const planificadas = computed(() =>
@@ -56,7 +56,7 @@ const realizadas = computed(() =>
   actividades.value.filter((a) => a.estado === 'realizada').sort((a, b) => b.fecha.localeCompare(a.fecha))
 )
 const fechaLarga = (texto) =>
-  dataLocal(texto)?.toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) ?? ''
+  dataLocal(texto)?.toLocaleDateString(localeData(), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) ?? ''
 const atrasada = (a) => a.estado === 'planificada' && diasEntre(hoje, dataLocal(a.fecha)) < 0
 
 // janela do formulário: null = fechada; objeto = valores iniciais
@@ -64,13 +64,13 @@ const formInicial = ref(null)
 const formTitulo = ref('')
 const abrirNova = (inicial = {}) => { formTitulo.value = ''; formInicial.value = { ...inicial } }
 const editar = (a) => { formTitulo.value = ''; formInicial.value = { ...a } }
-const marcarRealizada = (a) => { formTitulo.value = 'Registrar resultados'; formInicial.value = { ...a, estado: 'realizada' } }
+const marcarRealizada = (a) => { formTitulo.value = t('huella.registrarResultados'); formInicial.value = { ...a, estado: 'realizada' } }
 const planificarEfemeride = (e) => abrirNova({
   tipo: e.tipo,
   titulo: `${tipoPorId(e.tipo).nombre} – ${e.nombre}`.slice(0, 120),
   fecha: paraTextoData(e.data)
 })
-const planificarTipo = (t) => abrirNova({ tipo: t.id, titulo: t.nombre })
+const planificarTipo = (tipo) => abrirNova({ tipo: tipo.id, titulo: tipo.nombre })
 
 const aviso = ref('')
 let timerAviso = null
@@ -81,7 +81,7 @@ const mostrarAviso = (texto) => {
 }
 const aoSalvar = (salvo) => {
   formInicial.value = null
-  mostrarAviso(salvo.estado === 'realizada' ? '¡Actividad registrada! Tu impacto fue actualizado.' : 'Actividad planificada.')
+  mostrarAviso(salvo.estado === 'realizada' ? t('huella.avisoRegistrada') : t('huella.avisoPlanificada'))
 }
 
 // apagar com confirmação na própria linha
@@ -92,9 +92,9 @@ async function apagar(a) {
   try {
     await store.apagar(a.id)
     confirmandoApagar.value = null
-    mostrarAviso('Actividad eliminada.')
+    mostrarAviso(t('huella.avisoEliminada'))
   } catch (e) {
-    if (e?.status !== 401) erroAcao.value = 'No se pudo eliminar la actividad. Inténtalo de nuevo.'
+    if (e?.status !== 401) erroAcao.value = t('huella.erroEliminar')
   }
 }
 
@@ -107,16 +107,16 @@ async function copiarInvitacion(a) {
     copiado.value = a.id
     setTimeout(() => { if (copiado.value === a.id) copiado.value = null }, 2500)
   } catch {
-    erroAcao.value = 'No se pudo copiar automáticamente. Copia el texto manualmente: ' + texto
+    erroAcao.value = t('huella.erroCopiar', { texto })
   }
 }
 
 const resultadosDe = (a) => [
-  a.participantes ? `${fmt(a.participantes)} participantes` : '',
-  Number(a.kg_residuos) ? `${fmt(a.kg_residuos)} kg de residuos` : '',
-  a.arboles_plantados ? `${fmt(a.arboles_plantados)} árboles` : '',
-  Number(a.horas_voluntariado) ? `${fmt(a.horas_voluntariado)} h de voluntariado` : '',
-  a.espacio_recuperado ? `Recuperado: ${a.espacio_recuperado}` : ''
+  a.participantes ? t('huella.resParticipantes', { n: fmt(a.participantes) }) : '',
+  Number(a.kg_residuos) ? t('huella.resKg', { n: fmt(a.kg_residuos) }) : '',
+  a.arboles_plantados ? t('huella.resArboles', { n: fmt(a.arboles_plantados) }) : '',
+  Number(a.horas_voluntariado) ? t('huella.resHoras', { n: fmt(a.horas_voluntariado) }) : '',
+  a.espacio_recuperado ? t('huella.resEspacio', { e: a.espacio_recuperado }) : ''
 ].filter(Boolean)
 
 onMounted(() => {
@@ -124,7 +124,7 @@ onMounted(() => {
   store.carregar().catch((e) => {
     if (e?.status === 401) return
     console.error('Erro ao carregar atividades:', e)
-    if (store.dado === undefined) erroCarga.value = 'No fue posible cargar tus actividades. Inténtalo de nuevo.'
+    if (store.dado === undefined) erroCarga.value = 'huella.erroCargar'
   })
 })
 </script>
@@ -132,13 +132,13 @@ onMounted(() => {
 <template>
   <Pagina
     :icone="ICONE_ARVORE"
-    titulo="Empresas que dejan huella positiva"
-    subtitulo="Ir más allá de reducir impactos: acciones concretas por la naturaleza y la comunidad"
+    :titulo="t('huella.titulo')"
+    :subtitulo="t('huella.subtitulo')"
     largura="larga"
   >
     <template #lateral>
       <button type="button" class="btn-primario btn-compacto w-full lg:w-auto" @click="abrirNova()">
-        + Nueva actividad
+        {{ t('huella.nueva') }}
       </button>
     </template>
 
@@ -148,24 +148,24 @@ onMounted(() => {
 
     <!-- 1. Resumo do impacto -->
     <section class="bg-gradient-to-br from-emerald-800 to-emerald-950 text-white rounded-2xl p-5 sm:p-7 shadow-sm" aria-labelledby="titulo-impacto">
-      <h2 id="titulo-impacto" class="text-lg sm:text-xl font-bold">Tu impacto positivo</h2>
-      <p class="text-emerald-100/90 text-sm mt-0.5">Resultados de las actividades realizadas por tu empresa.</p>
+      <h2 id="titulo-impacto" class="text-lg sm:text-xl font-bold">{{ t('huella.impacto') }}</h2>
+      <p class="text-emerald-100/90 text-sm mt-0.5">{{ t('huella.impactoTexto') }}</p>
 
       <div v-if="carregando" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3 mt-5" aria-busy="true">
         <Esqueleto v-for="n in 6" :key="n" class="h-20 bg-white/15!" />
       </div>
       <dl v-else-if="resumen" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3 mt-5">
-        <div v-for="ind in INDICADORES" :key="ind.campo" class="bg-white/10 border border-white/15 rounded-xl p-3 sm:p-4">
-          <dt class="text-xs sm:text-sm text-emerald-100/90 leading-snug">{{ ind.rotulo }}</dt>
-          <dd class="font-display text-2xl sm:text-3xl font-bold mt-1">{{ fmt(resumen[ind.campo]) }}</dd>
+        <div v-for="ind in INDICADORES" :key="ind" class="bg-white/10 border border-white/15 rounded-xl p-3 sm:p-4">
+          <dt class="text-xs sm:text-sm text-emerald-100/90 leading-snug">{{ t(`huella.indicadores.${ind}`) }}</dt>
+          <dd class="font-display text-2xl sm:text-3xl font-bold mt-1">{{ fmt(resumen[ind]) }}</dd>
         </div>
       </dl>
       <p v-if="resumen && resumen.actividades_realizadas === 0" class="text-sm text-emerald-50 mt-4">
-        Aún no registras actividades realizadas. Elige una fecha ambiental o una idea de abajo y planifica la primera con tu equipo.
+        {{ t('huella.sinRealizadas') }}
       </p>
     </section>
 
-    <Alerta v-if="erroCarga">{{ erroCarga }}</Alerta>
+    <Alerta v-if="erroCarga">{{ t(erroCarga) }}</Alerta>
     <Alerta v-if="erroAcao">{{ erroAcao }}</Alerta>
 
     <!-- 2. Próximas datas ambientais -->
@@ -173,8 +173,8 @@ onMounted(() => {
       <div class="flex flex-wrap items-center gap-3 mb-4">
         <span class="selo-icone"><Icone :d="ICONE_CALENDARIO" class="w-5 h-5" /></span>
         <div class="flex-1 min-w-0">
-          <h2 id="titulo-fechas" class="text-lg font-semibold text-slate-800">Próximas fechas ambientales</h2>
-          <p class="text-sm text-slate-500">Aprovecha estas fechas para organizar actividades con tus trabajadores.</p>
+          <h2 id="titulo-fechas" class="text-lg font-semibold text-slate-800">{{ t('huella.proximasFechas') }}</h2>
+          <p class="text-sm text-slate-500">{{ t('huella.proximasFechasTexto') }}</p>
         </div>
       </div>
 
@@ -192,7 +192,7 @@ onMounted(() => {
             <h3 class="font-semibold text-slate-800 leading-snug">{{ e.nombre }}</h3>
             <p class="text-sm text-slate-500">{{ e.sugerencia }}</p>
             <button type="button" class="mt-auto self-start inline-flex items-center gap-1 text-sm font-semibold text-emerald-800 hover:underline cursor-pointer" @click="planificarEfemeride(e)">
-              Planificar actividad
+              {{ t('huella.planificarActividad') }}
               <Icone :d="ICONE_SETA" class="w-4 h-4" />
             </button>
           </div>
@@ -201,10 +201,10 @@ onMounted(() => {
 
       <div class="flex flex-wrap items-center justify-between gap-3 mt-4">
         <button type="button" class="text-sm font-semibold text-emerald-800 hover:underline cursor-pointer" :aria-expanded="verCalendario" @click="verCalendario = !verCalendario">
-          {{ verCalendario ? 'Ocultar calendario' : `Ver calendario completo ${anoCalendario}` }}
+          {{ verCalendario ? t('huella.ocultarCalendario') : t('huella.verCalendario', { ano: anoCalendario }) }}
         </button>
         <a :href="FUENTE_CALENDARIO.url" target="_blank" rel="noopener noreferrer" class="text-xs text-slate-500 hover:text-emerald-800 hover:underline">
-          Fuente: {{ FUENTE_CALENDARIO.nombre }}
+          {{ t('huella.fuente', { nome: FUENTE_CALENDARIO.nombre }) }}
         </a>
       </div>
 
@@ -229,10 +229,10 @@ onMounted(() => {
       <div class="flex flex-wrap items-center gap-3 mb-4">
         <span class="selo-icone"><Icone :d="ICONE_ARVORE" class="w-5 h-5" /></span>
         <div class="flex-1 min-w-0">
-          <h2 id="titulo-mis-actividades" class="text-lg font-semibold text-slate-800">Mis actividades</h2>
-          <p class="text-sm text-slate-500">Organiza actividades con tus trabajadores y registra sus resultados.</p>
+          <h2 id="titulo-mis-actividades" class="text-lg font-semibold text-slate-800">{{ t('huella.misActividades') }}</h2>
+          <p class="text-sm text-slate-500">{{ t('huella.misActividadesTexto') }}</p>
         </div>
-        <button type="button" class="btn-secundario btn-compacto" @click="abrirNova()">+ Nueva actividad</button>
+        <button type="button" class="btn-secundario btn-compacto" @click="abrirNova()">{{ t('huella.nueva') }}</button>
       </div>
 
       <div v-if="carregando" class="space-y-3" aria-busy="true">
@@ -240,11 +240,11 @@ onMounted(() => {
       </div>
 
       <p v-else-if="actividades.length === 0" class="text-sm text-slate-500 bg-slate-50 border border-slate-200/80 rounded-xl p-4">
-        Todavía no hay actividades. Planifica la primera desde una fecha ambiental o desde las ideas de abajo.
+        {{ t('huella.sinActividades') }}
       </p>
 
       <div v-else class="space-y-6">
-        <div v-for="grupo in [{ titulo: 'Próximas', itens: planificadas }, { titulo: 'Realizadas', itens: realizadas }]" :key="grupo.titulo">
+        <div v-for="grupo in [{ titulo: t('huella.grupoProximas'), itens: planificadas }, { titulo: t('huella.grupoRealizadas'), itens: realizadas }]" :key="grupo.titulo">
           <template v-if="grupo.itens.length">
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">{{ grupo.titulo }} ({{ grupo.itens.length }})</h3>
             <ul class="space-y-3">
@@ -256,10 +256,10 @@ onMounted(() => {
                   <div class="flex flex-wrap items-center gap-2">
                     <h4 class="font-semibold text-slate-800">{{ a.titulo }}</h4>
                     <span v-if="a.estado === 'realizada'" class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                      <Icone :d="ICONE_CHECK" class="w-3 h-3" /> Realizada
+                      <Icone :d="ICONE_CHECK" class="w-3 h-3" /> {{ t('huella.realizada') }}
                     </span>
-                    <span v-else-if="atrasada(a)" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">Fecha pasada: ¿se realizó?</span>
-                    <span v-else class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800">Planificada</span>
+                    <span v-else-if="atrasada(a)" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">{{ t('huella.atrasada') }}</span>
+                    <span v-else class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800">{{ t('huella.planificada') }}</span>
                   </div>
                   <p class="text-sm text-slate-500 mt-0.5 first-letter:uppercase">
                     {{ fechaLarga(a.fecha) }}<template v-if="a.lugar"> · {{ a.lugar }}</template>
@@ -271,19 +271,19 @@ onMounted(() => {
 
                   <div class="flex flex-wrap items-center gap-x-4 gap-y-2 mt-3 text-sm">
                     <template v-if="confirmandoApagar === a.id">
-                      <span class="text-slate-700">¿Eliminar esta actividad?</span>
-                      <button type="button" class="font-semibold text-red-700 hover:underline cursor-pointer" @click="apagar(a)">Sí, eliminar</button>
-                      <button type="button" class="font-semibold text-slate-500 hover:underline cursor-pointer" @click="confirmandoApagar = null">Cancelar</button>
+                      <span class="text-slate-700">{{ t('huella.confirmarEliminar') }}</span>
+                      <button type="button" class="font-semibold text-red-700 hover:underline cursor-pointer" @click="apagar(a)">{{ t('huella.siEliminar') }}</button>
+                      <button type="button" class="font-semibold text-slate-500 hover:underline cursor-pointer" @click="confirmandoApagar = null">{{ t('comum.cancelar') }}</button>
                     </template>
                     <template v-else>
                       <button v-if="a.estado === 'planificada'" type="button" class="font-semibold text-emerald-800 hover:underline cursor-pointer" @click="marcarRealizada(a)">
-                        Registrar resultados
+                        {{ t('huella.registrarResultados') }}
                       </button>
                       <button v-if="a.estado === 'planificada'" type="button" class="font-semibold text-emerald-800 hover:underline cursor-pointer" @click="copiarInvitacion(a)">
-                        {{ copiado === a.id ? '✓ Invitación copiada' : 'Copiar invitación' }}
+                        {{ copiado === a.id ? t('huella.copiada') : t('huella.copiar') }}
                       </button>
-                      <button type="button" class="font-semibold text-slate-600 hover:underline cursor-pointer" @click="editar(a)">Editar</button>
-                      <button type="button" class="font-semibold text-slate-500 hover:text-red-700 hover:underline cursor-pointer" @click="confirmandoApagar = a.id">Eliminar</button>
+                      <button type="button" class="font-semibold text-slate-600 hover:underline cursor-pointer" @click="editar(a)">{{ t('comum.editar') }}</button>
+                      <button type="button" class="font-semibold text-slate-500 hover:text-red-700 hover:underline cursor-pointer" @click="confirmandoApagar = a.id">{{ t('huella.eliminar') }}</button>
                     </template>
                   </div>
                 </div>
@@ -299,41 +299,40 @@ onMounted(() => {
       <div class="flex items-center gap-3">
         <span class="selo-icone"><Icone :d="ICONE_LAMPADA" class="w-5 h-5" /></span>
         <div>
-          <h2 id="titulo-ideas" class="text-lg font-semibold text-slate-800">Ideas de actividades</h2>
-          <p class="text-sm text-slate-500">Actividades para hacer con tus trabajadores y, cuando sea posible, sus familias.</p>
+          <h2 id="titulo-ideas" class="text-lg font-semibold text-slate-800">{{ t('huella.ideas') }}</h2>
+          <p class="text-sm text-slate-500">{{ t('huella.ideasTexto') }}</p>
         </div>
       </div>
 
       <ul class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        <li v-for="t in TIPOS_ACTIVIDAD.filter((t) => t.id !== 'otra')" :key="t.id" class="cartao p-5 flex flex-col gap-3">
+        <li v-for="tipo in TIPOS_ACTIVIDAD.filter((x) => x.id !== 'otra')" :key="tipo.id" class="cartao p-5 flex flex-col gap-3">
           <div class="flex items-center gap-3">
             <span class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
-              <Icone :d="t.icone" class="w-5 h-5" />
+              <Icone :d="tipo.icone" class="w-5 h-5" />
             </span>
-            <h3 class="font-semibold text-slate-800 leading-snug">{{ t.nombre }}</h3>
+            <h3 class="font-semibold text-slate-800 leading-snug">{{ tipo.nombre }}</h3>
           </div>
-          <p class="text-sm text-slate-500">{{ t.descripcion }}</p>
+          <p class="text-sm text-slate-500">{{ tipo.descripcion }}</p>
           <ul class="space-y-1.5">
-            <li v-for="c in t.consejos" :key="c" class="flex gap-2 text-sm text-slate-600">
+            <li v-for="c in tipo.consejos" :key="c" class="flex gap-2 text-sm text-slate-600">
               <span class="mt-2 w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
               {{ c }}
             </li>
           </ul>
           <div class="mt-auto pt-1 flex flex-wrap items-center justify-between gap-2">
             <div class="flex flex-wrap gap-1.5">
-              <span v-for="n in t.ods" :key="n" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">ODS {{ n }}</span>
+              <span v-for="n in tipo.ods" :key="n" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">ODS {{ n }}</span>
             </div>
-            <button type="button" class="inline-flex items-center gap-1 text-sm font-semibold text-emerald-800 hover:underline cursor-pointer" @click="planificarTipo(t)">
-              Planificar <Icone :d="ICONE_SETA" class="w-4 h-4" />
+            <button type="button" class="inline-flex items-center gap-1 text-sm font-semibold text-emerald-800 hover:underline cursor-pointer" @click="planificarTipo(tipo)">
+              {{ t('huella.planificar') }} <Icone :d="ICONE_SETA" class="w-4 h-4" />
             </button>
           </div>
         </li>
       </ul>
 
       <p class="flex gap-3 bg-sky-50 border border-sky-100 rounded-2xl p-4 text-sm text-sky-950">
-        <strong class="shrink-0">Importante:</strong>
-        Las actividades en espacios naturales deben realizarse de manera segura, con autorización cuando corresponda y
-        siguiendo las recomendaciones de las autoridades ambientales. En reforestación, usa siempre especies nativas.
+        <strong class="shrink-0">{{ t('huella.importante') }}</strong>
+        {{ t('huella.importanteTexto') }}
       </p>
     </section>
 
