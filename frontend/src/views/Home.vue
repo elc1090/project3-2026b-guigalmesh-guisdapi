@@ -205,7 +205,7 @@ onMounted(() => {
           <BotoesAcao :recomendacao="recomendacaoPrincipal" class="mt-3" />
           <p class="text-xs text-slate-500 mt-3">
             {{ t('inicio.accionesRealizadas', { n: realizadas, total: recomendacoes.length }) }} ·
-            <router-link to="/resultado" class="font-semibold text-emerald-800 hover:underline">{{ t('inicio.verPlan') }}</router-link>
+            <router-link to="/resultado" class="inline-flex items-center min-h-11 sm:min-h-0 font-semibold text-emerald-800 hover:underline">{{ t('inicio.verPlan') }}</router-link>
           </p>
         </div>
       </section>

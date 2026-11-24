@@ -32,7 +32,8 @@ async function mudar(novo) {
   }
 }
 
-const base = 'inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition cursor-pointer disabled:opacity-60 disabled:cursor-wait'
+// min-h-11 (44px): alvo de toque confortável no celular; no desktop volta ao tamanho compacto
+const base = 'inline-flex items-center justify-center gap-1.5 min-h-11 sm:min-h-0 text-sm sm:text-xs font-semibold px-4 sm:px-3 py-2 sm:py-1.5 rounded-full border transition cursor-pointer disabled:opacity-60 disabled:cursor-wait'
 </script>
 
 <template>
@@ -44,7 +45,7 @@ const base = 'inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5
       </span>
       <button
         type="button"
-        class="text-xs font-semibold text-slate-500 hover:text-slate-700 hover:underline cursor-pointer disabled:opacity-60"
+        class="min-h-11 sm:min-h-0 px-2 text-sm sm:text-xs font-semibold text-slate-500 hover:text-slate-700 hover:underline cursor-pointer disabled:opacity-60"
         :disabled="salvando"
         @click="mudar('pendiente')"
       >
