@@ -154,13 +154,14 @@ onMounted(() => {
       <div v-if="carregando" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3 mt-5" aria-busy="true">
         <Esqueleto v-for="n in 6" :key="n" class="h-20 bg-white/15!" />
       </div>
-      <dl v-else-if="resumen" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3 mt-5">
+      <!-- os números só aparecem depois da primeira atividade realizada: seis zeros desanimam -->
+      <dl v-else-if="resumen && resumen.actividades_realizadas > 0" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3 mt-5">
         <div v-for="ind in INDICADORES" :key="ind" class="bg-white/10 border border-white/15 rounded-xl p-3 sm:p-4">
           <dt class="text-xs sm:text-sm text-emerald-100/90 leading-snug">{{ t(`huella.indicadores.${ind}`) }}</dt>
           <dd class="font-display text-2xl sm:text-3xl font-bold mt-1">{{ fmt(resumen[ind]) }}</dd>
         </div>
       </dl>
-      <p v-if="resumen && resumen.actividades_realizadas === 0" class="text-sm text-emerald-50 mt-4">
+      <p v-if="resumen && resumen.actividades_realizadas === 0" class="text-emerald-50 mt-3">
         {{ t('huella.sinRealizadas') }}
       </p>
     </section>
