@@ -30,12 +30,10 @@ onMounted(() => {
     :titulo="t('educacion.titulo')"
     :subtitulo="t('educacion.subtitulo')"
   >
-    <div class="bg-gradient-to-br from-emerald-800 to-emerald-950 text-white rounded-2xl p-6 sm:p-8 shadow-sm">
-      <h2 class="text-xl sm:text-2xl font-bold mb-2">{{ t('educacion.aprende') }}</h2>
-      <p class="text-emerald-50/90 max-w-3xl">
-        {{ t('educacion.aprendeTexto') }}
-      </p>
-    </div>
+    <!-- só explica o selo quando ele aparece em algum tema -->
+    <p v-if="temas().some(recomendado)" class="text-sm text-slate-600 max-w-3xl">
+      {{ t('educacion.dica') }}
+    </p>
 
     <ul class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
       <li v-for="(tema, i) in temas()" :key="tema.slug">

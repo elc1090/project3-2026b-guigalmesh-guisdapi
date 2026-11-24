@@ -417,8 +417,6 @@
   "educacion": {
     "titulo": "Educación sostenible",
     "subtitulo": "Conceptos clave para que tu empresa avance hacia la sostenibilidad",
-    "aprende": "Aprende a tu ritmo",
-    "aprendeTexto": "Elige un tema para conocer qué es, por qué importa para tu negocio y qué puedes hacer en tu empresa. Los temas marcados como recomendados están relacionados con las oportunidades de mejora de tu diagnóstico.",
     "tema": "Tema {n}",
     "recomendado": "Recomendado para tu empresa",
     "leerMas": "Leer más",
@@ -438,7 +436,8 @@
       "filtrar": "Filtrar por dimensión",
       "etiquetas": "Las etiquetas verdes indican las dimensiones del diagnóstico cuyas recomendaciones aportan a cada ODS.",
       "mostrando": "Mostrando {n} de {total}."
-    }
+    },
+    "dica": "Los temas marcados como «Recomendado para tu empresa» están relacionados con las oportunidades de mejora de tu diagnóstico."
   },
   "etapa": {
     "empieza": "Empieza",

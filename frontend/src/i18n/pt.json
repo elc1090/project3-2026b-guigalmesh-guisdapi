@@ -417,8 +417,6 @@
   "educacion": {
     "titulo": "Educação sustentável",
     "subtitulo": "Conceitos-chave para sua empresa avançar rumo à sustentabilidade",
-    "aprende": "Aprenda no seu ritmo",
-    "aprendeTexto": "Escolha um tema para saber o que é, por que importa para o seu negócio e o que você pode fazer na sua empresa. Os temas marcados como recomendados estão relacionados às oportunidades de melhoria do seu diagnóstico.",
     "tema": "Tema {n}",
     "recomendado": "Recomendado para sua empresa",
     "leerMas": "Ler mais",
@@ -438,7 +436,8 @@
       "filtrar": "Filtrar por dimensão",
       "etiquetas": "As etiquetas verdes indicam as dimensões do diagnóstico cujas recomendações contribuem para cada ODS.",
       "mostrando": "Mostrando {n} de {total}."
-    }
+    },
+    "dica": "Os temas marcados como «Recomendado para sua empresa» estão relacionados às oportunidades de melhoria do seu diagnóstico."
   },
   "etapa": {
     "empieza": "Comece",
