@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useEmpresaStore } from '../stores/empresa'
 import { useResultadoStore } from '../stores/resultado'
 import { useActividadesStore } from '../stores/actividades'
@@ -17,6 +18,7 @@ import SecaoEmpresa from '../components/inicio/SecaoEmpresa.vue'
 import SecaoDiagnostico from '../components/inicio/SecaoDiagnostico.vue'
 import BotoesAcao from '../components/BotoesAcao.vue'
 import { formatarData } from '../lib/datas'
+import { nomeDimensao, rotuloNivel, rotuloPrioridade, localeData } from '../i18n/rotulos'
 
 // Início = antigas telas Início + Mi empresa + Diagnóstico, numa página só:
 //  1. cartão com a próxima ação (muda conforme o momento da pessoa);
@@ -25,6 +27,7 @@ import { formatarData } from '../lib/datas'
 // /empresa e /diagnostico redirecionam para cá (#empresa / #diagnostico).
 
 const route = useRoute()
+const { t } = useI18n()
 const empresaStore = useEmpresaStore()
 const resultadoStore = useResultadoStore()
 const actividadesStore = useActividadesStore()
@@ -62,10 +65,10 @@ const carregando = computed(() => {
 
 const emAndamento = computed(() => progresso.respondidas.value > 0)
 const textoFaltantes = computed(() => {
-  const nomes = progresso.faltantes.value.map((d) => d.nome)
-  if (nomes.length === 0) return 'Todas las preguntas respondidas: solo falta finalizar.'
-  if (nomes.length === 1) return `Falta ${nomes[0]}.`
-  return `Faltan ${nomes.slice(0, -1).join(', ')} y ${nomes.at(-1)}.`
+  const nomes = progresso.faltantes.value.map((d) => nomeDimensao(d.nome))
+  if (nomes.length === 0) return t('inicio.todasRespondidas')
+  if (nomes.length === 1) return t('inicio.falta', { nome: nomes[0] })
+  return t('inicio.faltan', { lista: nomes.slice(0, -1).join(', '), ultimo: nomes.at(-1) })
 })
 // próxima ação = a primeira recomendação (mais prioritária) que ainda não foi realizada
 const recomendacoes = computed(() => resultado.value?.recomendacoes ?? [])
@@ -83,8 +86,9 @@ const proximaActividad = computed(() => {
     .sort((a, b) => a.fecha.localeCompare(b.fecha))[0] ?? null
 })
 const proximaFecha = proximasEfemerides(FECHAS_AMBIENTALES, hojeLocal(), 1)[0]
-const fmtNum = (n) => Number(n || 0).toLocaleString('es-CL', { maximumFractionDigits: 1 })
-const fechaCurta = (texto) => dataLocal(texto)?.toLocaleDateString('es-CL', { day: 'numeric', month: 'long' }) ?? ''
+const fmtNum = (n) => Number(n || 0).toLocaleString(localeData(), { maximumFractionDigits: 1 })
+const diaMes = (data) => data?.toLocaleDateString(localeData(), { day: 'numeric', month: 'long' }) ?? ''
+const fechaCurta = (texto) => diaMes(dataLocal(texto))
 
 // rola até uma seção (links /#diagnostico vindos de outras telas, ou depois de cadastrar a empresa)
 const irPara = async (id) => {
@@ -118,37 +122,37 @@ onMounted(() => {
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         <Esqueleto v-for="n in 3" :key="n" class="h-24 sm:h-56 rounded-2xl" />
       </div>
-      <span class="sr-only" role="status">Cargando...</span>
+      <span class="sr-only" role="status">{{ t('comum.cargando') }}</span>
     </div>
 
     <template v-else>
       <!-- 1. próxima ação -->
       <section class="bg-linear-to-br from-emerald-800 to-emerald-950 text-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-lg">
         <p class="text-sm text-emerald-200 truncate">
-          Hola, {{ nomeUsuario }}<template v-if="empresa"> · {{ empresa.nome }}</template>
+          {{ t('inicio.hola', { nome: nomeUsuario }) }}<template v-if="empresa"> · {{ empresa.nome }}</template>
         </p>
 
         <template v-if="estado === 'sem-empresa'">
-          <h1 class="text-2xl sm:text-3xl font-bold mt-2 text-balance">Empieza registrando tu empresa</h1>
+          <h1 class="text-2xl sm:text-3xl font-bold mt-2 text-balance">{{ t('inicio.semEmpresaTitulo') }}</h1>
           <p class="text-emerald-100 mt-2 max-w-xl">
-            Completa los datos de abajo (toma menos de un minuto) y después responde el diagnóstico de sostenibilidad en 3 dimensiones.
+            {{ t('inicio.semEmpresaTexto') }}
           </p>
         </template>
 
         <template v-else-if="estado === 'diagnostico'">
           <h1 class="text-2xl sm:text-3xl font-bold mt-2 text-balance">
-            {{ emAndamento ? 'Continúa tu diagnóstico' : 'Comienza tu diagnóstico' }}
+            {{ emAndamento ? t('inicio.continua') : t('inicio.comienza') }}
           </h1>
           <template v-if="emAndamento">
             <p class="text-emerald-100 mt-2">
-              {{ progresso.respondidas.value }} de {{ progresso.total.value }} preguntas respondidas. {{ textoFaltantes }}
+              {{ t('inicio.respondidas', { n: progresso.respondidas.value, total: progresso.total.value }) }} {{ textoFaltantes }}
             </p>
             <div class="h-2 bg-white/20 rounded-full overflow-hidden mt-4 max-w-md" aria-hidden="true">
               <div class="h-full bg-emerald-300 rounded-full transition-all duration-500" :style="{ width: `${progresso.porcentagem.value}%` }"></div>
             </div>
           </template>
           <p v-else class="text-emerald-100 mt-2 max-w-xl">
-            {{ progresso.total.value || 'Unas' }} preguntas sobre las dimensiones ambiental, social y económica. Tu avance se guarda solo: puedes salir y volver cuando quieras.
+            {{ t('inicio.introPreguntas', { n: progresso.total.value || t('inicio.unas') }) }}
           </p>
 
           <router-link
@@ -156,7 +160,7 @@ onMounted(() => {
             :to="`/diagnostico/${progresso.primeiraIncompleta.value.slug}`"
             class="btn-primario bg-white! text-emerald-900! hover:bg-emerald-50! w-full sm:w-auto mt-6"
           >
-            {{ emAndamento ? `Continuar con ${progresso.primeiraIncompleta.value.nome}` : 'Comenzar diagnóstico' }}
+            {{ emAndamento ? t('inicio.continuarCon', { nome: nomeDimensao(progresso.primeiraIncompleta.value.nome) }) : t('inicio.comenzar') }}
           </router-link>
           <button
             v-else
@@ -164,24 +168,24 @@ onMounted(() => {
             @click="irPara('diagnostico')"
             class="btn-primario bg-white! text-emerald-900! hover:bg-emerald-50! w-full sm:w-auto mt-6"
           >
-            Revisar y finalizar
+            {{ t('inicio.revisarFinalizar') }}
           </button>
         </template>
 
         <template v-else>
-          <h1 class="sr-only">Resumen de tu diagnóstico</h1>
+          <h1 class="sr-only">{{ t('inicio.resumenSr') }}</h1>
           <div class="flex flex-wrap items-end gap-x-4 gap-y-2 mt-3">
             <p class="font-display text-5xl font-bold leading-none">
               {{ resultado.geral.pontuacao }}<span class="text-xl text-emerald-200 font-semibold"> / 100</span>
             </p>
             <span class="px-3 py-1 text-sm rounded-full font-semibold" :class="classeSeloNivel(resultado.geral.nivel)">
-              Nivel {{ resultado.geral.nivel }}
+              {{ t('inicio.nivel', { nivel: rotuloNivel(resultado.geral.nivel) }) }}
             </span>
           </div>
-          <p class="text-emerald-100 mt-3">Puntuación general de sostenibilidad de tu empresa.</p>
-          <p v-if="dataDiagnostico" class="text-emerald-200 text-sm mt-1">Último diagnóstico: {{ dataDiagnostico }}</p>
+          <p class="text-emerald-100 mt-3">{{ t('inicio.puntuacion') }}</p>
+          <p v-if="dataDiagnostico" class="text-emerald-200 text-sm mt-1">{{ t('inicio.ultimo', { data: dataDiagnostico }) }}</p>
           <router-link to="/resultado" class="btn-primario bg-white! text-emerald-900! hover:bg-emerald-50! w-full sm:w-auto mt-6">
-            Ver resultados
+            {{ t('inicio.verResultados') }}
           </router-link>
         </template>
       </section>
@@ -192,16 +196,16 @@ onMounted(() => {
           <Icone :d="ICONE_LAMPADA" class="w-5 h-5" />
         </span>
         <div class="min-w-0">
-          <h2 class="text-xs font-bold uppercase tracking-wider text-emerald-700">Tu próxima acción</h2>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-emerald-700">{{ t('inicio.proximaAccion') }}</h2>
           <p class="font-semibold text-slate-800 mt-1">{{ recomendacaoPrincipal.titulo }}</p>
           <p class="text-sm text-slate-500 mt-1">{{ recomendacaoPrincipal.descricao }}</p>
           <span class="inline-block mt-2 text-[11px] font-semibold px-2 py-0.5 rounded-full border" :class="classePrioridade(recomendacaoPrincipal.prioridade)">
-            {{ recomendacaoPrincipal.categoria }} · Prioridad {{ recomendacaoPrincipal.prioridade }}
+            {{ nomeDimensao(recomendacaoPrincipal.categoria) }} · {{ t('inicio.prioridad', { p: rotuloPrioridade(recomendacaoPrincipal.prioridade) }) }}
           </span>
           <BotoesAcao :recomendacao="recomendacaoPrincipal" class="mt-3" />
           <p class="text-xs text-slate-500 mt-3">
-            {{ realizadas }} de {{ recomendacoes.length }} acciones realizadas ·
-            <router-link to="/resultado" class="font-semibold text-emerald-800 hover:underline">Ver plan completo</router-link>
+            {{ t('inicio.accionesRealizadas', { n: realizadas, total: recomendacoes.length }) }} ·
+            <router-link to="/resultado" class="font-semibold text-emerald-800 hover:underline">{{ t('inicio.verPlan') }}</router-link>
           </p>
         </div>
       </section>
@@ -212,10 +216,10 @@ onMounted(() => {
           <Icone :d="ICONE_LAMPADA" class="w-5 h-5" />
         </span>
         <div class="min-w-0">
-          <h2 class="text-xs font-bold uppercase tracking-wider text-emerald-700">¡Plan de acción completado!</h2>
-          <p class="font-semibold text-slate-800 mt-1">Realizaste las {{ recomendacoes.length }} acciones recomendadas.</p>
-          <p class="text-sm text-slate-500 mt-1">Actualiza tu diagnóstico para medir tu avance y recibir nuevas recomendaciones.</p>
-          <button type="button" class="btn-primario w-full sm:w-auto mt-3" @click="irPara('diagnostico')">Actualizar diagnóstico</button>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-emerald-700">{{ t('inicio.planCompletado') }}</h2>
+          <p class="font-semibold text-slate-800 mt-1">{{ t('inicio.realizaste', { n: recomendacoes.length }) }}</p>
+          <p class="text-sm text-slate-500 mt-1">{{ t('inicio.actualizaTexto') }}</p>
+          <button type="button" class="btn-primario w-full sm:w-auto mt-3" @click="irPara('diagnostico')">{{ t('inicio.actualizar') }}</button>
         </div>
       </section>
 
@@ -225,20 +229,20 @@ onMounted(() => {
           <Icone :d="ICONE_ARVORE" class="w-5 h-5" />
         </span>
         <div class="min-w-0 flex-1">
-          <h2 class="text-xs font-bold uppercase tracking-wider text-emerald-700">Tu huella positiva</h2>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-emerald-700">{{ t('inicio.tuHuella') }}</h2>
           <p v-if="huella?.resumen?.actividades_realizadas" class="font-semibold text-slate-800 mt-1">
-            {{ huella.resumen.actividades_realizadas }} {{ huella.resumen.actividades_realizadas === 1 ? 'actividad realizada' : 'actividades realizadas' }}
-            · {{ fmtNum(huella.resumen.kg_residuos) }} kg de residuos
-            · {{ fmtNum(huella.resumen.arboles_plantados) }} árboles nativos
+            {{ t('inicio.actividadesRealizadas', { n: huella.resumen.actividades_realizadas }, huella.resumen.actividades_realizadas) }}
+            · {{ t('inicio.kgResiduos', { n: fmtNum(huella.resumen.kg_residuos) }) }}
+            · {{ t('inicio.arboles', { n: fmtNum(huella.resumen.arboles_plantados) }) }}
           </p>
-          <p v-else class="font-semibold text-slate-800 mt-1">Organiza actividades por la naturaleza con tu equipo.</p>
+          <p v-else class="font-semibold text-slate-800 mt-1">{{ t('inicio.organiza') }}</p>
           <p class="text-sm text-slate-500 mt-1">
-            <template v-if="proximaActividad">Próxima actividad: <strong class="text-slate-700">{{ proximaActividad.titulo }}</strong>, {{ fechaCurta(proximaActividad.fecha) }}.</template>
-            <template v-else-if="proximaFecha">Próxima fecha ambiental: <strong class="text-slate-700">{{ proximaFecha.nombre }}</strong>, {{ proximaFecha.data.toLocaleDateString('es-CL', { day: 'numeric', month: 'long' }) }}.</template>
+            <template v-if="proximaActividad">{{ t('inicio.proximaActividad') }} <strong class="text-slate-700">{{ proximaActividad.titulo }}</strong>, {{ fechaCurta(proximaActividad.fecha) }}.</template>
+            <template v-else-if="proximaFecha">{{ t('inicio.proximaFecha') }} <strong class="text-slate-700">{{ proximaFecha.nombre }}</strong>, {{ diaMes(proximaFecha.data) }}.</template>
           </p>
         </div>
         <router-link to="/huella-positiva" class="btn-secundario btn-compacto shrink-0">
-          Ver huella positiva
+          {{ t('inicio.verHuella') }}
           <Icone :d="ICONE_SETA" class="w-4 h-4" />
         </router-link>
       </section>

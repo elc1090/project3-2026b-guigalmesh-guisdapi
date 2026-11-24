@@ -2,7 +2,13 @@
   "comum": {
     "cerrarSesion": "Cerrar sesión",
     "navegacionPrincipal": "Navegación principal",
-    "idioma": "Idioma"
+    "idioma": "Idioma",
+    "cargando": "Cargando...",
+    "conexion": "No se pudo conectar con el servidor.",
+    "selecciona": "Selecciona",
+    "cancelar": "Cancelar",
+    "guardando": "Guardando...",
+    "editar": "Editar"
   },
   "auth": {
     "abaLogin": "Iniciar sesión",
@@ -113,5 +119,121 @@
   "senha": {
     "mostrar": "Mostrar contraseña",
     "ocultar": "Ocultar contraseña"
+  },
+  "dimensao": {
+    "ambiental": {
+      "nome": "Ambiental",
+      "resumo": "Emisiones, energía y agua, residuos y Ley REP, materiales y biodiversidad.",
+      "descricao": "Gestión de recursos, impacto ambiental y uso eficiente de los recursos."
+    },
+    "social": {
+      "nome": "Social",
+      "resumo": "Seguridad y derechos laborales, inclusión, comunidad y capacitación.",
+      "descricao": "Bienestar de los trabajadores, relación con la comunidad y responsabilidad social."
+    },
+    "economica": {
+      "nome": "Económica",
+      "resumo": "Rentabilidad, gastos, innovación, valor compartido, transparencia y ética.",
+      "descricao": "Viabilidad financiera, eficiencia, transparencia, ética y gobernanza."
+    }
+  },
+  "nivel": {
+    "inicial": "Inicial",
+    "basico": "Básico",
+    "intermedio": "Intermedio",
+    "avanzado": "Avanzado"
+  },
+  "prioridade": {
+    "alta": "Alta",
+    "media": "Media",
+    "baja": "Baja"
+  },
+  "setor": {
+    "agricultura": "Agricultura",
+    "comercio": "Comercio",
+    "construccion": "Construcción",
+    "manufactura": "Manufactura",
+    "servicios": "Servicios",
+    "tecnologia": "Tecnología",
+    "turismo": "Turismo",
+    "otro": "Otro"
+  },
+  "porte": {
+    "micro": "Microempresa",
+    "pequena": "Pequeña empresa",
+    "mediana": "Mediana empresa"
+  },
+  "inicio": {
+    "hola": "Hola, {nome}",
+    "semEmpresaTitulo": "Empieza registrando tu empresa",
+    "semEmpresaTexto": "Completa los datos de abajo (toma menos de un minuto) y después responde el diagnóstico de sostenibilidad en 3 dimensiones.",
+    "continua": "Continúa tu diagnóstico",
+    "comienza": "Comienza tu diagnóstico",
+    "respondidas": "{n} de {total} preguntas respondidas.",
+    "todasRespondidas": "Todas las preguntas respondidas: solo falta finalizar.",
+    "falta": "Falta {nome}.",
+    "faltan": "Faltan {lista} y {ultimo}.",
+    "introPreguntas": "{n} preguntas sobre las dimensiones ambiental, social y económica. Tu avance se guarda solo: puedes salir y volver cuando quieras.",
+    "unas": "Unas",
+    "continuarCon": "Continuar con {nome}",
+    "comenzar": "Comenzar diagnóstico",
+    "revisarFinalizar": "Revisar y finalizar",
+    "resumenSr": "Resumen de tu diagnóstico",
+    "nivel": "Nivel {nivel}",
+    "puntuacion": "Puntuación general de sostenibilidad de tu empresa.",
+    "ultimo": "Último diagnóstico: {data}",
+    "verResultados": "Ver resultados",
+    "proximaAccion": "Tu próxima acción",
+    "prioridad": "Prioridad {p}",
+    "accionesRealizadas": "{n} de {total} acciones realizadas",
+    "verPlan": "Ver plan completo",
+    "planCompletado": "¡Plan de acción completado!",
+    "realizaste": "Realizaste las {n} acciones recomendadas.",
+    "actualizaTexto": "Actualiza tu diagnóstico para medir tu avance y recibir nuevas recomendaciones.",
+    "actualizar": "Actualizar diagnóstico",
+    "tuHuella": "Tu huella positiva",
+    "actividadesRealizadas": "{n} actividad realizada | {n} actividades realizadas",
+    "kgResiduos": "{n} kg de residuos",
+    "arboles": "{n} árboles nativos",
+    "organiza": "Organiza actividades por la naturaleza con tu equipo.",
+    "proximaActividad": "Próxima actividad:",
+    "proximaFecha": "Próxima fecha ambiental:",
+    "verHuella": "Ver huella positiva"
+  },
+  "secaoDiagnostico": {
+    "tuDiagnostico": "Tu diagnóstico",
+    "titulo": "Diagnóstico de sostenibilidad",
+    "textoConcluido": "Puedes revisar tus respuestas y actualizar los resultados cuando haya cambios en tu empresa.",
+    "texto": "Responde las 3 dimensiones en el orden que prefieras. Tu avance se guarda automáticamente.",
+    "progreso": "Progreso",
+    "progresoAria": "Progreso del diagnóstico",
+    "faltanEn": "Faltan respuestas en:",
+    "calculando": "Calculando...",
+    "actualizar": "Actualizar resultados",
+    "finalizar": "Finalizar diagnóstico",
+    "erroIncompleto": "Responde todas las preguntas antes de finalizar.",
+    "erroFinalizar": "No fue posible finalizar el diagnóstico. Inténtalo de nuevo."
+  },
+  "secaoEmpresa": {
+    "empleados": "{n} empleados",
+    "editarTitulo": "Editar datos de la empresa",
+    "titulo": "Datos de tu empresa",
+    "texto": "Con esta información preparamos el diagnóstico de sostenibilidad.",
+    "nombre": "Nombre de la empresa",
+    "placeholderNombre": "Nombre de tu empresa",
+    "sector": "Sector",
+    "tamano": "Tamaño",
+    "empleadosRotulo": "Empleados",
+    "placeholderEmpleados": "Ej.: 12",
+    "guardarCambios": "Guardar cambios",
+    "registrar": "Registrar empresa",
+    "actualizados": "Datos actualizados.",
+    "erroGuardar": "No fue posible guardar los datos de la empresa. Inténtalo de nuevo.",
+    "erros": {
+      "nombre": "Ingresa el nombre de la empresa (mínimo 2 caracteres).",
+      "sector": "Selecciona un sector.",
+      "tamano": "Selecciona el tamaño de la empresa.",
+      "empleados": "Ingresa un número entero mayor que 0."
+    }
   }
 }

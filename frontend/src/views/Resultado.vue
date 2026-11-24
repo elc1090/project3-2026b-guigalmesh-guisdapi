@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip } from 'chart.js'
 import { useResultadoStore } from '../stores/resultado'
 import { useHistoricoStore } from '../stores/historico'
@@ -87,7 +88,11 @@ const fortalezasPorDimensao = computed(() =>
 const pct = (valor) => Math.min(100, Math.max(0, Number(valor) || 0))
 
 const iconeDe = (nome) => dimensaoPorNome(nome)?.icone ?? ICONE_FOLHA
-const descricaoDe = (nome) => dimensaoPorNome(nome)?.descricao ?? ''
+const { t } = useI18n()
+const descricaoDe = (nome) => {
+  const slug = dimensaoPorNome(nome)?.slug
+  return slug ? t(`dimensao.${slug}.descricao`) : ''
+}
 
 const destruirGraficos = () => {
   try {

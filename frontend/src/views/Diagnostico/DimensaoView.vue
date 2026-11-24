@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import CardPergunta from '../../components/CardPergunta.vue'
 import Esqueleto from '../../components/ui/Esqueleto.vue'
 import Pagina from '../../components/ui/Pagina.vue'
@@ -47,6 +48,7 @@ const pendenteEmOutra = computed(() =>
 )
 const finalizando = ref(false)
 const erroFinalizar = ref('')
+const { t } = useI18n()
 
 const finalizar = async () => {
   erroFinalizar.value = ''
@@ -111,7 +113,7 @@ const finalizar = async () => {
         <div class="flex-1 min-w-0">
           <div class="flex items-center justify-between gap-2 text-xs font-semibold text-slate-600 mb-1.5">
             <span class="whitespace-nowrap">{{ respondidas }} de {{ total }} respondidas</span>
-            <span v-if="erroFinalizar" role="alert" class="font-medium text-red-600 truncate">{{ erroFinalizar }}</span>
+            <span v-if="erroFinalizar" role="alert" class="font-medium text-red-600 truncate">{{ t(erroFinalizar) }}</span>
             <span
               v-else
               aria-live="polite"

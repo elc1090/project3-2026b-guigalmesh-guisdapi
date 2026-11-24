@@ -199,9 +199,10 @@ export function useProgressoDiagnostico() {
 }
 
 // texto de erro para mostrar quando concluirDiagnostico() falha (401 já leva ao login pelo apiFetch)
+// devolve a chave da mensagem no i18n
 export function mensagemErroConclusao(e) {
-  if (e?.status === 422) return 'Responde todas las preguntas antes de finalizar.'
-  if (e?.status) return 'No fue posible finalizar el diagnóstico. Inténtalo de nuevo.'
+  if (e?.status === 422) return 'secaoDiagnostico.erroIncompleto'
+  if (e?.status) return 'secaoDiagnostico.erroFinalizar'
   console.error('Erro de comunicação com o Back-end:', e)
-  return 'No se pudo conectar con el servidor.'
+  return 'comum.conexion'
 }
