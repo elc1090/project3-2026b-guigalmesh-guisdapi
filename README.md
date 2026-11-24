@@ -1,6 +1,6 @@
 # Projeto final
 
-![Substitua a imagem ao lado por um GIF/WEBP animado mostrando seu projeto](./moho_follow_through2.gif "GIF animado do projeto. Imagem temporária de Moho Animation https://moho.lostmarble.com/products/moho-pro-special-halls-head-college")
+![./apresentacao.gif](./apresentacao.gif "GIF animado do projeto.")
 
 <!-- TODO: trocar a imagem acima por um GIF/WEBP do app (Início → diagnóstico → resultados → educación → huella positiva) -->
 
@@ -10,16 +10,16 @@ https://project3-2026b-guigalmesh-guisdapi.vercel.app/
 
 ## Desenvolvedores
 
-Guilherme de Cezaro Martini - Sistemas de Informação  
+Guilherme de Cezaro Martini - Sistemas de Informação
 Guilherme Serafini Dapieve - Sistemas de Informação
 
 ## Proposta
 
 Continuar o desenvolvimento do sistema em colaboração com equipe no Chile, incluindo login federado e IA como serviço; otimização do código existente, acompanhadas de aprimoramentos na interface e experiência do usuário; adicionar língua portugues na interface.
 
-Proposta (incluindo tecnologias):  
-Front-end: Vue.js, Tailwind CSS, Chart.js e vue-i18n (suporte a português/espanhol).  
-Back-end: FastAPI (Python) para regras de negócio e consumo de API externa de IA (OpenAI/Gemini) como serviço.  
+Proposta (incluindo tecnologias):
+Front-end: Vue.js, Tailwind CSS, Chart.js e vue-i18n (suporte a português/espanhol).
+Back-end: FastAPI (Python) para regras de negócio e consumo de API externa de IA (OpenAI/Gemini) como serviço.
 Autenticação e Dados: Supabase para login federado (OAuth) e base de dados PostgreSQL.
 
 ### Continuação do projeto anterior
