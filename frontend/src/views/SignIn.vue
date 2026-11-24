@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { supabase } from '../lib/supabase'
 import { emailValido, forcaSenha, focarPrimeiroErro, SENHA_MINIMO } from '../lib/validacao'
 import Campo from '../components/ui/Campo.vue'
@@ -12,6 +13,7 @@ import Icone from '../components/ui/Icone.vue'
 import { ICONE_EMAIL, ICONE_CHECK } from '../constants/icones'
 
 const router = useRouter()
+const { t } = useI18n()
 
 const nome = ref('')
 const email = ref('')
@@ -23,29 +25,29 @@ const tentou = ref(false)
 const aguardandoConfirmacao = ref(false)
 
 const errosCampos = computed(() => ({
-  username: !nome.value.trim() ? 'Ingresa tu nombre.' : '',
+  username: !nome.value.trim() ? 'auth.erros.nombreVacio' : '',
   email: !email.value.trim()
-    ? 'Ingresa tu correo electrónico.'
-    : !emailValido(email.value) ? 'Revisa el formato del correo (ej.: tu@empresa.com).' : '',
-  password: senha.value.length < SENHA_MINIMO ? `La contraseña debe tener al menos ${SENHA_MINIMO} caracteres.` : ''
+    ? 'auth.erros.correoVacio'
+    : !emailValido(email.value) ? 'auth.erros.correoFormato' : '',
+  password: senha.value.length < SENHA_MINIMO ? 'auth.erros.contrasenaCorta' : ''
 }))
 const erroDe = (campo) => (tentou.value ? errosCampos.value[campo] : '')
 
 // barra de força da senha (só aparece enquanto a pessoa digita)
 const forca = computed(() => forcaSenha(senha.value))
 const FORCAS = {
-  1: { rotulo: 'Débil', cor: 'bg-red-500', texto: 'text-red-600' },
-  2: { rotulo: 'Media', cor: 'bg-amber-500', texto: 'text-amber-700' },
-  3: { rotulo: 'Fuerte', cor: 'bg-emerald-600', texto: 'text-emerald-700' }
+  1: { cor: 'bg-red-500', texto: 'text-red-600' },
+  2: { cor: 'bg-amber-500', texto: 'text-amber-700' },
+  3: { cor: 'bg-emerald-600', texto: 'text-emerald-700' }
 }
 const minimoAtingido = computed(() => senha.value.length >= SENHA_MINIMO)
 
 const traduzirErro = (mensagem) => {
-  if (mensagem.includes('already registered')) return 'Este correo ya está registrado.'
-  if (mensagem.includes('at least')) return `La contraseña debe tener al menos ${SENHA_MINIMO} caracteres.`
-  if (mensagem.toLowerCase().includes('rate limit')) return 'Demasiados intentos. Espera unos minutos e inténtalo de nuevo.'
-  if (mensagem.toLowerCase().includes('invalid') && mensagem.toLowerCase().includes('email')) return 'El correo electrónico no es válido.'
-  return 'No fue posible crear la cuenta. Inténtalo de nuevo.'
+  if (mensagem.includes('already registered')) return 'auth.erros.yaRegistrado'
+  if (mensagem.includes('at least')) return 'auth.erros.contrasenaCorta'
+  if (mensagem.toLowerCase().includes('rate limit')) return 'auth.erros.demasiadosIntentos'
+  if (mensagem.toLowerCase().includes('invalid') && mensagem.toLowerCase().includes('email')) return 'auth.erros.correoInvalido'
+  return 'auth.erros.cadastro'
 }
 
 onMounted(() => {
@@ -82,7 +84,7 @@ const cadastrarUsuario = async () => {
     }
   } catch (e) {
     console.error('Erro ao cadastrar:', e)
-    erro.value = 'No fue posible crear la cuenta. Inténtalo de nuevo.'
+    erro.value = 'auth.erros.cadastro'
   } finally {
     carregando.value = false
   }
@@ -115,11 +117,11 @@ const reenviar = async () => {
       erro.value = traduzirErro(error.message)
       return
     }
-    mensagemReenvio.value = 'Te enviamos un nuevo correo de confirmación.'
+    mensagemReenvio.value = 'auth.cadastro.reenviado'
     iniciarEspera()
   } catch (e) {
     console.error('Erro ao reenviar:', e)
-    erro.value = 'No fue posible reenviar el correo. Inténtalo de nuevo.'
+    erro.value = 'auth.erros.reenviar'
   } finally {
     reenviando.value = false
   }
@@ -140,16 +142,16 @@ const trocarEmail = () => {
       <div class="mx-auto w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-5">
         <Icone :d="ICONE_EMAIL" class="w-8 h-8" />
       </div>
-      <h1 class="text-3xl font-bold text-slate-800">Revisa tu correo</h1>
+      <h1 class="text-3xl font-bold text-slate-800">{{ t('auth.cadastro.revisaCorreo') }}</h1>
       <p class="text-slate-500 mt-2">
-        Enviamos un enlace de confirmación a
+        {{ t('auth.cadastro.enviamosA') }}
         <strong class="block my-1 text-slate-800 [overflow-wrap:anywhere]">{{ email.trim() }}</strong>
-        Ábrelo para activar tu cuenta.
+        {{ t('auth.cadastro.abrelo') }}
       </p>
-      <p class="text-xs text-slate-400 mt-2">¿No lo encuentras? Revisa también la carpeta de spam.</p>
+      <p class="text-xs text-slate-400 mt-2">{{ t('auth.cadastro.spam') }}</p>
 
-      <Alerta v-if="mensagemReenvio" tipo="sucesso" class="mt-5 text-left">{{ mensagemReenvio }}</Alerta>
-      <Alerta v-if="erro" class="mt-5 text-left">{{ erro }}</Alerta>
+      <Alerta v-if="mensagemReenvio" tipo="sucesso" class="mt-5 text-left">{{ t(mensagemReenvio) }}</Alerta>
+      <Alerta v-if="erro" class="mt-5 text-left">{{ t(erro, { n: SENHA_MINIMO }) }}</Alerta>
 
       <button
         type="button"
@@ -157,35 +159,35 @@ const trocarEmail = () => {
         :disabled="espera > 0 || reenviando"
         class="mt-6 w-full bg-white border border-slate-300 text-slate-700 font-semibold py-3 rounded-xl hover:bg-slate-50 disabled:opacity-60 disabled:cursor-not-allowed transition cursor-pointer"
       >
-        {{ reenviando ? 'Reenviando...' : espera > 0 ? `Reenviar correo (${espera}s)` : 'Reenviar correo' }}
+        {{ reenviando ? t('auth.cadastro.reenviando') : espera > 0 ? t('auth.cadastro.reenviarEn', { s: espera }) : t('auth.cadastro.reenviar') }}
       </button>
 
       <p class="text-sm text-slate-600 mt-5">
-        ¿Correo equivocado?
-        <button type="button" @click="trocarEmail" class="font-bold text-emerald-800 hover:underline cursor-pointer">Cambiar correo</button>
+        {{ t('auth.cadastro.correoEquivocado') }}
+        <button type="button" @click="trocarEmail" class="font-bold text-emerald-800 hover:underline cursor-pointer">{{ t('auth.cadastro.cambiarCorreo') }}</button>
       </p>
       <p class="text-sm text-slate-600 mt-2">
-        ¿Ya confirmaste?
-        <router-link to="/login" replace class="font-bold text-emerald-800 hover:underline">Inicia sesión</router-link>
+        {{ t('auth.cadastro.yaConfirmaste') }}
+        <router-link to="/login" replace class="font-bold text-emerald-800 hover:underline">{{ t('auth.cadastro.iniciaSesion') }}</router-link>
       </p>
     </div>
 
     <!-- formulário de cadastro -->
     <div v-else key="formulario">
       <div class="mb-6">
-        <h1 class="text-3xl font-bold text-slate-800">Crea tu cuenta</h1>
-        <p class="text-slate-500 mt-1">Comienza a medir la sostenibilidad de tu empresa.</p>
+        <h1 class="text-3xl font-bold text-slate-800">{{ t('auth.cadastro.titulo') }}</h1>
+        <p class="text-slate-500 mt-1">{{ t('auth.cadastro.subtitulo') }}</p>
       </div>
 
       <form class="space-y-5" novalidate @submit.prevent="cadastrarUsuario">
-        <Campo id="username" rotulo="Nombre completo" :erro="erroDe('username')">
+        <Campo id="username" :rotulo="t('auth.cadastro.nombre')" :erro="erroDe('username') && t(erroDe('username'))">
           <template #default="{ invalido, descricao }">
             <input
               v-model="nome"
               type="text"
               id="username"
               autocomplete="name"
-              placeholder="Tu nombre"
+              :placeholder="t('auth.cadastro.placeholderNombre')"
               class="campo"
               :aria-invalid="invalido"
               :aria-describedby="descricao"
@@ -193,14 +195,14 @@ const trocarEmail = () => {
           </template>
         </Campo>
 
-        <Campo id="email" rotulo="Correo electrónico" :erro="erroDe('email')">
+        <Campo id="email" :rotulo="t('auth.correo')" :erro="erroDe('email') && t(erroDe('email'))">
           <template #default="{ invalido, descricao }">
             <input
               v-model="email"
               type="email"
               id="email"
               autocomplete="email"
-              placeholder="tu@empresa.com"
+              :placeholder="t('auth.placeholderCorreo')"
               class="campo"
               :aria-invalid="invalido"
               :aria-describedby="descricao"
@@ -208,13 +210,13 @@ const trocarEmail = () => {
           </template>
         </Campo>
 
-        <Campo id="password" rotulo="Contraseña" :erro="erroDe('password')">
+        <Campo id="password" :rotulo="t('auth.contrasena')" :erro="erroDe('password') && t(erroDe('password'), { n: SENHA_MINIMO })">
           <template #default="{ invalido, descricao }">
             <CampoSenha
               v-model="senha"
               id="password"
               autocomplete="new-password"
-              :placeholder="`Mínimo ${SENHA_MINIMO} caracteres`"
+              :placeholder="t('auth.cadastro.placeholderContrasena', { n: SENHA_MINIMO })"
               :aria-invalid="invalido"
               :aria-describedby="descricao ?? 'password-ajuda'"
             />
@@ -233,28 +235,28 @@ const trocarEmail = () => {
               <div class="flex items-center justify-between mt-1.5 text-xs">
                 <span class="inline-flex items-center gap-1" :class="minimoAtingido ? 'text-emerald-700' : 'text-slate-500'">
                   <Icone v-if="minimoAtingido" :d="ICONE_CHECK" :stroke-width="3" class="w-3.5 h-3.5" />
-                  Al menos {{ SENHA_MINIMO }} caracteres
+                  {{ t('auth.cadastro.alMenos', { n: SENHA_MINIMO }) }}
                 </span>
                 <span class="font-semibold" :class="FORCAS[forca].texto" aria-live="polite">
-                  Seguridad: {{ FORCAS[forca].rotulo }}
+                  {{ t('auth.cadastro.seguridad', { nivel: t(`auth.cadastro.fuerza.${forca}`) }) }}
                 </span>
               </div>
             </div>
           </template>
         </Campo>
 
-        <Alerta v-if="erro">{{ erro }}</Alerta>
+        <Alerta v-if="erro">{{ t(erro, { n: SENHA_MINIMO }) }}</Alerta>
 
-        <BotaoPrimario :carregando="carregando" texto-carregando="Creando cuenta...">
-          Crear cuenta
+        <BotaoPrimario :carregando="carregando" :texto-carregando="t('auth.cadastro.creando')">
+          {{ t('auth.cadastro.crear') }}
         </BotaoPrimario>
       </form>
 
       <BotaoGoogle />
 
       <p class="text-sm text-slate-600 text-center mt-6">
-        ¿Ya tienes una cuenta?
-        <router-link to="/login" replace class="text-emerald-800 hover:underline font-bold">Inicia sesión</router-link>
+        {{ t('auth.cadastro.yaTienes') }}
+        <router-link to="/login" replace class="text-emerald-800 hover:underline font-bold">{{ t('auth.cadastro.iniciaSesion') }}</router-link>
       </p>
     </div>
   </Transition>

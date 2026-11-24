@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { entrarComGoogle } from '../../lib/auth'
 // ícone oficial baixado das diretrizes de marca do Google (Sign in with Google Branding Guidelines);
 // não editar o arquivo: o Google exige usar a arte aprovada sem alterações
@@ -13,6 +14,7 @@ const props = defineProps({
   redirect: { type: String, default: '' }
 })
 
+const { t } = useI18n()
 const carregando = ref(false)
 const erro = ref('')
 
@@ -24,7 +26,7 @@ async function continuar() {
     await entrarComGoogle(props.redirect)
   } catch (e) {
     console.error('Erro ao iniciar login com Google:', e)
-    erro.value = 'No fue posible conectar con Google. Inténtalo de nuevo.'
+    erro.value = 'auth.erros.googleConectar'
     carregando.value = false
   }
 }
@@ -34,7 +36,7 @@ async function continuar() {
   <div>
     <div class="flex items-center gap-3 my-5" aria-hidden="true">
       <span class="h-px flex-1 bg-slate-200"></span>
-      <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">o</span>
+      <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">{{ t('auth.o') }}</span>
       <span class="h-px flex-1 bg-slate-200"></span>
     </div>
 
@@ -47,9 +49,9 @@ async function continuar() {
     >
       <span v-if="carregando" class="w-4 h-4 rounded-full border-2 border-slate-300 border-t-slate-600 animate-spin" aria-hidden="true"></span>
       <img v-else :src="iconeGoogle" alt="" aria-hidden="true" class="w-7 h-7 -my-1 shrink-0" width="28" height="28">
-      {{ carregando ? 'Conectando con Google...' : 'Continuar con Google' }}
+      {{ carregando ? t('auth.google.conectando') : t('auth.google.continuar') }}
     </button>
 
-    <p v-if="erro" class="mt-2 text-sm text-red-700" role="alert">{{ erro }}</p>
+    <p v-if="erro" class="mt-2 text-sm text-red-700" role="alert">{{ t(erro) }}</p>
   </div>
 </template>

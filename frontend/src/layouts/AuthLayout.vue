@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import BackgroundAurora from '../components/ui/BackgroundAurora.vue'
 import Icone from '../components/ui/Icone.vue'
 import SeletorIdioma from '../components/ui/SeletorIdioma.vue'
@@ -13,17 +14,18 @@ import { ICONE_BROTO, ICONE_CHECKLIST, ICONE_LAMPADA, ICONE_GLOBO } from '../con
 // As duas rotas usam este mesmo componente, então ele não é recriado ao trocar de aba
 // (é isso que deixa o seletor deslizar).
 const route = useRoute()
+const { t } = useI18n()
 
 const ABAS = [
-  { para: '/login', rotulo: 'Iniciar sesión' },
-  { para: '/cadastro', rotulo: 'Crear cuenta' }
+  { para: '/login', rotulo: 'auth.abaLogin' },
+  { para: '/cadastro', rotulo: 'auth.abaCadastro' }
 ]
 const indiceAba = computed(() => Math.max(0, ABAS.findIndex((aba) => aba.para === route.path)))
 
 const BENEFICIOS = [
-  { icone: ICONE_CHECKLIST, titulo: 'Diagnóstico en 3 dimensiones', texto: 'Ambiental, social y económica, en pocos minutos.' },
-  { icone: ICONE_LAMPADA, titulo: 'Recomendaciones prácticas', texto: 'Acciones concretas según tus respuestas, el tamaño y el sector de tu empresa.' },
-  { icone: ICONE_GLOBO, titulo: 'Alineado con los ODS', texto: 'Conecta la gestión de tu empresa con la Agenda 2030.' }
+  { icone: ICONE_CHECKLIST, chave: 'auth.beneficios[0]' },
+  { icone: ICONE_LAMPADA, chave: 'auth.beneficios[1]' },
+  { icone: ICONE_GLOBO, chave: 'auth.beneficios[2]' }
 ]
 </script>
 
@@ -48,13 +50,13 @@ const BENEFICIOS = [
       </div>
 
       <ul class="hidden lg:flex flex-col gap-6 mt-10 max-w-md">
-        <li v-for="beneficio in BENEFICIOS" :key="beneficio.titulo" class="flex gap-4">
+        <li v-for="beneficio in BENEFICIOS" :key="beneficio.chave" class="flex gap-4">
           <span class="w-11 h-11 rounded-xl bg-white/10 border border-white/15 backdrop-blur-md flex items-center justify-center shrink-0">
             <Icone :d="beneficio.icone" class="w-5 h-5" />
           </span>
           <div>
-            <p class="font-semibold">{{ beneficio.titulo }}</p>
-            <p class="text-sm text-emerald-100/80 mt-0.5">{{ beneficio.texto }}</p>
+            <p class="font-semibold">{{ t(`${beneficio.chave}.titulo`) }}</p>
+            <p class="text-sm text-emerald-100/80 mt-0.5">{{ t(`${beneficio.chave}.texto`) }}</p>
           </div>
         </li>
       </ul>
@@ -68,7 +70,7 @@ const BENEFICIOS = [
       >
         <div class="max-w-md mx-auto">
           <!-- seletor login | cadastro, com a pílula branca deslizando -->
-          <nav class="relative grid grid-cols-2 p-1 rounded-full bg-slate-200/70 mb-8" aria-label="Acceso">
+          <nav class="relative grid grid-cols-2 p-1 rounded-full bg-slate-200/70 mb-8" :aria-label="t('auth.acceso')">
             <span
               aria-hidden="true"
               class="absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-full bg-white shadow-sm ring-1 ring-black/5 transition-transform duration-300 ease-[cubic-bezier(0.3,1.35,0.5,1)] motion-reduce:transition-none"
@@ -82,7 +84,7 @@ const BENEFICIOS = [
               class="relative text-center py-2 rounded-full text-sm font-semibold transition-colors"
               :class="indiceAba === i ? 'text-emerald-900' : 'text-slate-500 hover:text-slate-700'"
             >
-              {{ aba.rotulo }}
+              {{ t(aba.rotulo) }}
             </router-link>
           </nav>
 

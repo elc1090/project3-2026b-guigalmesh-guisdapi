@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { supabase } from '../lib/supabase'
 import { servidorLento } from '../lib/api'
 import { emailValido, focarPrimeiroErro } from '../lib/validacao'
@@ -12,6 +13,7 @@ import BotaoGoogle from '../components/ui/BotaoGoogle.vue'
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 
 const email = ref('')
 const senha = ref('')
@@ -30,25 +32,26 @@ const voltandoDoGoogle = ref(typeof route.query.code === 'string')
 const erroGoogle = computed(() => {
   if (!route.query.error) return ''
   return route.query.error === 'access_denied'
-    ? 'Cancelaste el inicio de sesión con Google.'
-    : 'No fue posible iniciar sesión con Google. Inténtalo de nuevo.'
+    ? 'auth.erros.googleCancelado'
+    : 'auth.erros.google'
 })
+// erros guardam a chave da mensagem: trocar o idioma traduz o que já está na tela
 // os erros dos campos só aparecem depois da primeira tentativa de enviar
 const tentou = ref(false)
 
 const errosCampos = computed(() => ({
   email: !email.value.trim()
-    ? 'Ingresa tu correo electrónico.'
-    : !emailValido(email.value) ? 'Revisa el formato del correo (ej.: tu@empresa.com).' : '',
-  password: !senha.value ? 'Ingresa tu contraseña.' : ''
+    ? 'auth.erros.correoVacio'
+    : !emailValido(email.value) ? 'auth.erros.correoFormato' : '',
+  password: !senha.value ? 'auth.erros.contrasenaVacia' : ''
 }))
 const erroDe = (campo) => (tentou.value ? errosCampos.value[campo] : '')
 
 const traduzirErro = (mensagem) => {
-  if (mensagem.includes('Invalid login credentials')) return 'Correo o contraseña incorrectos.'
-  if (mensagem.includes('Email not confirmed')) return 'Confirma tu correo antes de iniciar sesión.'
-  if (mensagem.toLowerCase().includes('rate limit')) return 'Demasiados intentos. Espera unos minutos e inténtalo de nuevo.'
-  return 'No fue posible iniciar sesión. Inténtalo de nuevo.'
+  if (mensagem.includes('Invalid login credentials')) return 'auth.erros.credenciales'
+  if (mensagem.includes('Email not confirmed')) return 'auth.erros.noConfirmado'
+  if (mensagem.toLowerCase().includes('rate limit')) return 'auth.erros.demasiadosIntentos'
+  return 'auth.erros.login'
 }
 
 onMounted(async () => {
@@ -60,7 +63,7 @@ onMounted(async () => {
       return
     }
     voltandoDoGoogle.value = false
-    erro.value = 'No fue posible iniciar sesión con Google. Inténtalo de nuevo.'
+    erro.value = 'auth.erros.google'
     return
   }
   // no desktop já abre com o cursor no e-mail (no celular isso abriria o teclado sem pedir)
@@ -90,7 +93,7 @@ const entrar = async () => {
     await router.push(destino.value)
   } catch (e) {
     console.error('Erro ao entrar:', e)
-    erro.value = 'No fue posible iniciar sesión. Inténtalo de nuevo.'
+    erro.value = 'auth.erros.login'
   } finally {
     carregando.value = false
   }
@@ -100,26 +103,26 @@ const entrar = async () => {
 <template>
   <div>
     <div class="mb-6">
-      <h1 class="text-3xl font-bold text-slate-800">Bienvenido de nuevo</h1>
-      <p class="text-slate-500 mt-1">Accede al diagnóstico de sostenibilidad de tu empresa.</p>
+      <h1 class="text-3xl font-bold text-slate-800">{{ t('auth.login.titulo') }}</h1>
+      <p class="text-slate-500 mt-1">{{ t('auth.login.subtitulo') }}</p>
     </div>
 
     <p v-if="voltandoDoGoogle" class="flex items-center justify-center gap-2 text-sm text-slate-600 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 mb-5" role="status">
       <span class="w-4 h-4 rounded-full border-2 border-slate-300 border-t-emerald-700 animate-spin" aria-hidden="true"></span>
-      Iniciando sesión con Google...
+      {{ t('auth.login.conGoogle') }}
     </p>
-    <Alerta v-if="sessaoExpirou && !erro" tipo="aviso" class="mb-5">Tu sesión expiró. Inicia sesión nuevamente para continuar.</Alerta>
-    <Alerta v-if="erroGoogle && !erro" class="mb-5">{{ erroGoogle }}</Alerta>
+    <Alerta v-if="sessaoExpirou && !erro" tipo="aviso" class="mb-5">{{ t('auth.login.sesionExpiro') }}</Alerta>
+    <Alerta v-if="erroGoogle && !erro" class="mb-5">{{ t(erroGoogle) }}</Alerta>
 
     <form class="space-y-5" novalidate @submit.prevent="entrar">
-      <Campo id="email" rotulo="Correo electrónico" :erro="erroDe('email')">
+      <Campo id="email" :rotulo="t('auth.correo')" :erro="erroDe('email') && t(erroDe('email'))">
         <template #default="{ invalido, descricao }">
           <input
             v-model="email"
             type="email"
             id="email"
             autocomplete="email"
-            placeholder="tu@empresa.com"
+            :placeholder="t('auth.placeholderCorreo')"
             class="campo"
             :aria-invalid="invalido"
             :aria-describedby="descricao"
@@ -127,7 +130,7 @@ const entrar = async () => {
         </template>
       </Campo>
 
-      <Campo id="password" rotulo="Contraseña" :erro="erroDe('password')">
+      <Campo id="password" :rotulo="t('auth.contrasena')" :erro="erroDe('password') && t(erroDe('password'))">
         <template #default="{ invalido, descricao }">
           <CampoSenha
             v-model="senha"
@@ -140,18 +143,18 @@ const entrar = async () => {
         </template>
       </Campo>
 
-      <Alerta v-if="erro">{{ erro }}</Alerta>
+      <Alerta v-if="erro">{{ t(erro) }}</Alerta>
 
-      <BotaoPrimario :carregando="carregando" :texto-carregando="servidorLento ? 'Conectando con el servidor...' : 'Ingresando...'">
-        Iniciar sesión
+      <BotaoPrimario :carregando="carregando" :texto-carregando="servidorLento ? t('auth.login.conectando') : t('auth.login.ingresando')">
+        {{ t('auth.login.entrar') }}
       </BotaoPrimario>
     </form>
 
     <BotaoGoogle :redirect="destino === '/' ? '' : destino" />
 
     <p class="text-sm text-slate-600 text-center mt-6">
-      ¿Aún no tienes cuenta?
-      <router-link to="/cadastro" replace class="text-emerald-800 hover:underline font-bold">Regístrate</router-link>
+      {{ t('auth.login.sinCuenta') }}
+      <router-link to="/cadastro" replace class="text-emerald-800 hover:underline font-bold">{{ t('auth.login.registrate') }}</router-link>
     </p>
   </div>
 </template>

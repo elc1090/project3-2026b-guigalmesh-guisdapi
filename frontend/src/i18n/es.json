@@ -3,5 +3,90 @@
     "cerrarSesion": "Cerrar sesión",
     "navegacionPrincipal": "Navegación principal",
     "idioma": "Idioma"
+  },
+  "auth": {
+    "abaLogin": "Iniciar sesión",
+    "abaCadastro": "Crear cuenta",
+    "acceso": "Acceso",
+    "beneficios": [
+      {
+        "titulo": "Diagnóstico en 3 dimensiones",
+        "texto": "Ambiental, social y económica, en pocos minutos."
+      },
+      {
+        "titulo": "Recomendaciones prácticas",
+        "texto": "Acciones concretas según tus respuestas, el tamaño y el sector de tu empresa."
+      },
+      {
+        "titulo": "Alineado con los ODS",
+        "texto": "Conecta la gestión de tu empresa con la Agenda 2030."
+      }
+    ],
+    "correo": "Correo electrónico",
+    "contrasena": "Contraseña",
+    "placeholderCorreo": "tu{'@'}empresa.com",
+    "o": "o",
+    "erros": {
+      "correoVacio": "Ingresa tu correo electrónico.",
+      "correoFormato": "Revisa el formato del correo (ej.: tu{'@'}empresa.com).",
+      "contrasenaVacia": "Ingresa tu contraseña.",
+      "nombreVacio": "Ingresa tu nombre.",
+      "contrasenaCorta": "La contraseña debe tener al menos {n} caracteres.",
+      "credenciales": "Correo o contraseña incorrectos.",
+      "noConfirmado": "Confirma tu correo antes de iniciar sesión.",
+      "demasiadosIntentos": "Demasiados intentos. Espera unos minutos e inténtalo de nuevo.",
+      "login": "No fue posible iniciar sesión. Inténtalo de nuevo.",
+      "googleCancelado": "Cancelaste el inicio de sesión con Google.",
+      "google": "No fue posible iniciar sesión con Google. Inténtalo de nuevo.",
+      "googleConectar": "No fue posible conectar con Google. Inténtalo de nuevo.",
+      "yaRegistrado": "Este correo ya está registrado.",
+      "correoInvalido": "El correo electrónico no es válido.",
+      "cadastro": "No fue posible crear la cuenta. Inténtalo de nuevo.",
+      "reenviar": "No fue posible reenviar el correo. Inténtalo de nuevo."
+    },
+    "login": {
+      "titulo": "Bienvenido de nuevo",
+      "subtitulo": "Accede al diagnóstico de sostenibilidad de tu empresa.",
+      "conGoogle": "Iniciando sesión con Google...",
+      "sesionExpiro": "Tu sesión expiró. Inicia sesión nuevamente para continuar.",
+      "conectando": "Conectando con el servidor...",
+      "ingresando": "Ingresando...",
+      "entrar": "Iniciar sesión",
+      "sinCuenta": "¿Aún no tienes cuenta?",
+      "registrate": "Regístrate"
+    },
+    "google": {
+      "continuar": "Continuar con Google",
+      "conectando": "Conectando con Google..."
+    },
+    "cadastro": {
+      "titulo": "Crea tu cuenta",
+      "subtitulo": "Comienza a medir la sostenibilidad de tu empresa.",
+      "nombre": "Nombre completo",
+      "placeholderNombre": "Tu nombre",
+      "placeholderContrasena": "Mínimo {n} caracteres",
+      "alMenos": "Al menos {n} caracteres",
+      "seguridad": "Seguridad: {nivel}",
+      "fuerza": {
+        "1": "Débil",
+        "2": "Media",
+        "3": "Fuerte"
+      },
+      "creando": "Creando cuenta...",
+      "crear": "Crear cuenta",
+      "yaTienes": "¿Ya tienes una cuenta?",
+      "iniciaSesion": "Inicia sesión",
+      "revisaCorreo": "Revisa tu correo",
+      "enviamosA": "Enviamos un enlace de confirmación a",
+      "abrelo": "Ábrelo para activar tu cuenta.",
+      "spam": "¿No lo encuentras? Revisa también la carpeta de spam.",
+      "reenviado": "Te enviamos un nuevo correo de confirmación.",
+      "reenviando": "Reenviando...",
+      "reenviarEn": "Reenviar correo ({s}s)",
+      "reenviar": "Reenviar correo",
+      "correoEquivocado": "¿Correo equivocado?",
+      "cambiarCorreo": "Cambiar correo",
+      "yaConfirmaste": "¿Ya confirmaste?"
+    }
   }
 }
