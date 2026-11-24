@@ -6,6 +6,8 @@ import Icone from './ui/Icone.vue'
 import { ICONE_CHECK } from '../constants/icones'
 
 // Botões do plano de ação de uma recomendação: pendiente -> en_progreso -> realizada.
+// "Começar" é a ação principal (cheia); "Marcar como realizada" fica com contorno, para não
+// convidar a concluir algo que ainda não foi feito (em andamento, concluir vira a ação principal).
 // Usado no Resultado e no cartão "Tu próxima acción" do Início.
 const props = defineProps({
   recomendacao: { type: Object, required: true }
@@ -63,7 +65,7 @@ const base = 'inline-flex items-center justify-center gap-1.5 min-h-11 sm:min-h-
       <button
         v-else
         type="button"
-        :class="[base, 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50']"
+        :class="[base, 'bg-emerald-800 border-emerald-800 text-white hover:bg-emerald-900']"
         :disabled="salvando"
         @click="mudar('en_progreso')"
       >
@@ -71,7 +73,7 @@ const base = 'inline-flex items-center justify-center gap-1.5 min-h-11 sm:min-h-
       </button>
       <button
         type="button"
-        :class="[base, 'bg-emerald-800 border-emerald-800 text-white hover:bg-emerald-900']"
+        :class="[base, status === 'en_progreso' ? 'bg-emerald-800 border-emerald-800 text-white hover:bg-emerald-900' : 'bg-white border-emerald-700 text-emerald-800 hover:bg-emerald-50']"
         :disabled="salvando"
         @click="mudar('realizada')"
       >
