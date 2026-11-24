@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import BackgroundAurora from '../components/ui/BackgroundAurora.vue'
 import Icone from '../components/ui/Icone.vue'
+import SeletorIdioma from '../components/ui/SeletorIdioma.vue'
 import { NOME_APP } from '../constants/marca'
 import { ICONE_BROTO, ICONE_CHECKLIST, ICONE_LAMPADA, ICONE_GLOBO } from '../constants/icones'
 
@@ -29,6 +30,10 @@ const BENEFICIOS = [
 <template>
   <div class="relative min-h-dvh bg-emerald-800 overflow-hidden flex flex-col">
     <BackgroundAurora />
+
+    <div class="absolute z-20 top-[calc(1rem+env(safe-area-inset-top))] right-4 lg:top-6 lg:right-6">
+      <SeletorIdioma escuro />
+    </div>
 
     <!-- no desktop as duas colunas ficam juntas no centro (largura máxima), não nas extremidades -->
     <div class="relative z-10 flex-1 flex flex-col lg:flex-row lg:items-center lg:justify-center w-full lg:max-w-6xl lg:mx-auto lg:px-10 lg:py-12 lg:gap-16 xl:gap-20">

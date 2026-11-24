@@ -2,6 +2,7 @@
 import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import Icone from './ui/Icone.vue'
+import SeletorIdioma from './ui/SeletorIdioma.vue'
 import { NAVEGACAO, itemAtivo } from '../constants/navegacao'
 import { ICONE_SAIR, ICONE_FECHAR } from '../constants/icones'
 import { useUsuario } from '../composables/useUsuario'
@@ -121,6 +122,10 @@ const sair = async () => {
             <p class="font-semibold text-slate-800 truncate">{{ nome }}</p>
             <p class="text-sm text-slate-500 truncate">{{ email }}</p>
           </div>
+        </div>
+
+        <div class="mt-5 flex justify-center">
+          <SeletorIdioma />
         </div>
 
         <button

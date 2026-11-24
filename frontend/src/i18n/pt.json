@@ -1,6 +1,7 @@
 {
   "comum": {
     "cerrarSesion": "Sair",
-    "navegacionPrincipal": "Navegação principal"
+    "navegacionPrincipal": "Navegação principal",
+    "idioma": "Idioma"
   }
 }

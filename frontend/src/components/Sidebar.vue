@@ -3,6 +3,7 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import Icone from './ui/Icone.vue'
 import Logo from './ui/Logo.vue'
+import SeletorIdioma from './ui/SeletorIdioma.vue'
 import { NAVEGACAO, itemAtivo } from '../constants/navegacao'
 import { ICONE_SAIR } from '../constants/icones'
 import { useUsuario } from '../composables/useUsuario'
@@ -38,6 +39,9 @@ const CLASSE_ATIVA = 'bg-white/15 backdrop-blur-md !border-white/25 !text-white 
     </div>
 
     <div class="border-t border-white/15 pt-4 space-y-2">
+      <div class="px-3">
+        <SeletorIdioma escuro />
+      </div>
       <div class="flex items-center gap-3 px-3 py-2">
         <div class="w-9 h-9 rounded-full bg-emerald-950/60 border border-white/20 flex items-center justify-center text-white font-bold text-sm shrink-0">
           {{ inicial }}
