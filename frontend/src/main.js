@@ -7,6 +7,7 @@ import './style.css'
 import App from './App.vue'
 import router from './router/index.js'
 import { acordarServidor } from './lib/api'
+import { i18n } from './i18n'
 
 // o back-end (Render) pode estar dormindo: começa a acordá-lo já, em paralelo com o carregamento da tela
 acordarServidor()
@@ -15,4 +16,5 @@ const app = createApp(App)
 // o Pinia precisa vir antes do router: o guard de rotas usa a store da empresa
 app.use(createPinia())
 app.use(router)
+app.use(i18n)
 app.mount('#app')

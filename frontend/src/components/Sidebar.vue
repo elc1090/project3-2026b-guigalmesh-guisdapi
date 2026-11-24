@@ -1,5 +1,6 @@
 <script setup>
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import Icone from './ui/Icone.vue'
 import Logo from './ui/Logo.vue'
 import { NAVEGACAO, itemAtivo } from '../constants/navegacao'
@@ -7,6 +8,7 @@ import { ICONE_SAIR } from '../constants/icones'
 import { useUsuario } from '../composables/useUsuario'
 
 const route = useRoute()
+const { t } = useI18n()
 const { nome, email, inicial, sairDaConta } = useUsuario()
 
 // item ativo com efeito de vidro fosco: fundo translúcido + blur do que está atrás + borda clara
@@ -20,7 +22,7 @@ const CLASSE_ATIVA = 'bg-white/15 backdrop-blur-md !border-white/25 !text-white 
         <Logo />
       </div>
 
-      <nav class="flex flex-col gap-2" aria-label="Navegación principal">
+      <nav class="flex flex-col gap-2" :aria-label="t('comum.navegacionPrincipal')">
         <router-link
           v-for="item in NAVEGACAO"
           :key="item.para"
@@ -50,7 +52,7 @@ const CLASSE_ATIVA = 'bg-white/15 backdrop-blur-md !border-white/25 !text-white 
         class="flex items-center gap-3 px-4 py-2.5 text-emerald-100/80 hover:text-white hover:bg-red-500/20 rounded-xl font-medium transition cursor-pointer w-full text-left text-sm focus-visible:outline-white"
       >
         <Icone :d="ICONE_SAIR" class="w-4 h-4 shrink-0" />
-        Cerrar sesión
+        {{ t('comum.cerrarSesion') }}
       </button>
     </div>
   </aside>
