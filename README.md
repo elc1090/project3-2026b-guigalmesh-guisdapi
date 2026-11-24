@@ -81,6 +81,12 @@ Nas tabelas novas (`acoes` e `actividades`) segui o mesmo padrão de RLS das tab
 
 Guilherme M.:
 
+<!-- RASCUNHO: revisar-->
+Comecei revisando o que já tinha sido feito e procurando pontos para otimizar. O primeiro foi na rota da análise com IA: o perfil da empresa era buscado duas vezes no banco a cada geração, então passei a buscá-lo uma vez só e reaproveitar no cálculo das recomendações e no contexto enviado ao Gemini.
+
+Depois fiquei com o último item da proposta, a interface em português. A decisão principal foi o que traduzir: só os botões e menus deixariam o app misturado, porque as perguntas, as recomendações, o conteúdo educativo e a análise da IA continuariam em espanhol. Por isso traduzi tudo. No front usei o `vue-i18n` com um arquivo de mensagens por idioma; para o conteúdo longo (temas da Educación, ODS, datas ambientais) criei a tradução como uma "camada" por cima do original, para não duplicar ícones, links e ids, com testes que avisam se alguém acrescentar um item só em espanhol. No back-end, o front envia o idioma no cabeçalho `Accept-Language` e a API devolve erros, recomendações e a análise do Gemini nesse idioma. Os códigos salvos no banco (categoria, prioridade, nível) continuam em espanhol, e o front só troca o rótulo. Fui commitando por tela para cada etapa ficar testável.
+
+Por último fiz uma revisão de UI/UX usando as heurísticas de Nielsen, testando principalmente no celular. Os problemas mais importantes eram um cabeçalho que se sobrepunha em telas médias, botões pequenos demais para o toque e a tela de Resultados longa demais, com o plano de ação no fim. Reorganizei os Resultados para mostrar primeiro as notas e o plano de ação, escondi a barra de navegação durante o questionário e removi blocos que repetiam a mesma informação.
 
 ### Login federado e IA como serviço
 
