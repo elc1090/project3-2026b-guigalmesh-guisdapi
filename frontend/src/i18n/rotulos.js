@@ -23,3 +23,5 @@ export const rotuloPorte = (porte) => traduzir('porte', porte)
 export const rotuloEtapa = (etapa) => traduzir('etapa', etapa)
 
 export const localeData = () => (i18n.global.locale.value === 'pt' ? 'pt-BR' : 'es-CL')
+// pontuações com a vírgula decimal do idioma (68,4), no máximo uma casa
+export const fmtNumero = (n) => Number(n || 0).toLocaleString(localeData(), { maximumFractionDigits: 1 })

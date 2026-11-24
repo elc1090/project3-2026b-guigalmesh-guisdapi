@@ -18,7 +18,7 @@ import SecaoEmpresa from '../components/inicio/SecaoEmpresa.vue'
 import SecaoDiagnostico from '../components/inicio/SecaoDiagnostico.vue'
 import BotoesAcao from '../components/BotoesAcao.vue'
 import { formatarData } from '../lib/datas'
-import { nomeDimensao, rotuloNivel, rotuloPrioridade, localeData } from '../i18n/rotulos'
+import { nomeDimensao, rotuloNivel, rotuloPrioridade, localeData, fmtNumero } from '../i18n/rotulos'
 
 // Início = antigas telas Início + Mi empresa + Diagnóstico, numa página só:
 //  1. cartão com a próxima ação (muda conforme o momento da pessoa);
@@ -86,7 +86,7 @@ const proximaActividad = computed(() => {
     .sort((a, b) => a.fecha.localeCompare(b.fecha))[0] ?? null
 })
 const proximaFecha = computed(() => proximasEfemerides(fechasAmbientales(), hojeLocal(), 1)[0])
-const fmtNum = (n) => Number(n || 0).toLocaleString(localeData(), { maximumFractionDigits: 1 })
+const fmtNum = fmtNumero
 const diaMes = (data) => data?.toLocaleDateString(localeData(), { day: 'numeric', month: 'long' }) ?? ''
 const fechaCurta = (texto) => diaMes(dataLocal(texto))
 
@@ -176,7 +176,7 @@ onMounted(() => {
           <h1 class="sr-only">{{ t('inicio.resumenSr') }}</h1>
           <div class="flex flex-wrap items-end gap-x-4 gap-y-2 mt-3">
             <p class="font-display text-5xl font-bold leading-none">
-              {{ resultado.geral.pontuacao }}<span class="text-xl text-emerald-200 font-semibold"> / 100</span>
+              {{ fmtNumero(resultado.geral.pontuacao) }}<span class="text-xl text-emerald-200 font-semibold"> / 100</span>
             </p>
             <span class="px-3 py-1 text-sm rounded-full font-semibold" :class="classeSeloNivel(resultado.geral.nivel)">
               {{ t('inicio.nivel', { nivel: rotuloNivel(resultado.geral.nivel) }) }}

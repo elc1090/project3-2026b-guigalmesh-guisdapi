@@ -14,7 +14,7 @@ import Pagina from '../components/ui/Pagina.vue'
 import Esqueleto from '../components/ui/Esqueleto.vue'
 import Alerta from '../components/ui/Alerta.vue'
 import { DIMENSOES, dimensaoPorNome } from '../constants/dimensoes'
-import { nomeDimensao, rotuloNivel, rotuloPrioridade, rotuloEtapa } from '../i18n/rotulos'
+import { nomeDimensao, rotuloNivel, rotuloPrioridade, rotuloEtapa, fmtNumero } from '../i18n/rotulos'
 import { classeSeloNivel, classeIconeNivel, classePrioridade } from '../constants/niveis'
 import { ICONE_GRAFICO, ICONE_LAMPADA, ICONE_FOLHA, ICONE_CHECK, ICONE_SETA, ICONE_CALENDARIO, ICONE_TENDENCIA } from '../constants/icones'
 
@@ -231,7 +231,7 @@ onBeforeUnmount(() => {
 
       <!-- celular: nota geral no topo (no desktop ela fica no cabeçalho do radar, visível sem rolar) -->
       <p class="xl:hidden flex flex-wrap items-center gap-2 text-sm text-slate-500">
-        {{ t('resultado.general') }} <strong class="text-2xl text-slate-800">{{ resultado.geral.pontuacao }}</strong> / 100
+        {{ t('resultado.general') }} <strong class="text-2xl text-slate-800">{{ fmtNumero(resultado.geral.pontuacao) }}</strong> / 100
         <span class="px-3 py-1 text-xs rounded-full font-semibold" :class="classeSeloNivel(resultado.geral.nivel)">{{ rotuloNivel(resultado.geral.nivel) }}</span>
       </p>
 
@@ -248,7 +248,7 @@ onBeforeUnmount(() => {
 
               <div class="ml-auto flex items-center gap-2">
                 <span class="text-sm text-slate-500">
-                  {{ t('resultado.general') }} <strong class="text-slate-800">{{ resultado.geral?.pontuacao ?? 0 }}</strong> / 100
+                  {{ t('resultado.general') }} <strong class="text-slate-800">{{ fmtNumero(resultado.geral?.pontuacao) }}</strong> / 100
                 </span>
                 <span
                   v-if="resultado.geral?.nivel"
@@ -276,7 +276,7 @@ onBeforeUnmount(() => {
                 </span>
                 <div class="leading-tight">
                   <p class="text-xs font-semibold text-slate-700">{{ nomeDimensao(dimension.nome) }}</p>
-                  <p class="text-sm font-bold text-slate-800">{{ pct(dimension.pontuacao) }}%</p>
+                  <p class="text-sm font-bold text-slate-800">{{ fmtNumero(pct(dimension.pontuacao)) }}%</p>
                 </div>
               </div>
             </div>
@@ -316,7 +316,7 @@ onBeforeUnmount(() => {
                 </span>
                 <div class="min-w-0">
                   <p class="text-sm sm:text-base font-semibold text-slate-800 truncate">{{ nomeDimensao(dimension.nome) }}</p>
-                  <p class="text-2xl sm:text-3xl font-bold text-slate-800 leading-tight">{{ pct(dimension.pontuacao) }}%</p>
+                  <p class="text-2xl sm:text-3xl font-bold text-slate-800 leading-tight">{{ fmtNumero(pct(dimension.pontuacao)) }}%</p>
                 </div>
               </div>
 
