@@ -256,7 +256,8 @@
       "revisar": "Revisar",
       "continuar": "Continuar",
       "responder": "Responder"
-    }
+    },
+    "placeholderTexto": "Escreva sua resposta..."
   },
   "resultado": {
     "titulo": "Resultados do diagnóstico",

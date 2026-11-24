@@ -12,7 +12,12 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue'])
-const { t } = useI18n()
+const { t, locale } = useI18n()
+
+// texto em português quando existe (colunas perguntaPt/opcoesRespostaPt); senão, o original
+const emPt = computed(() => locale.value === 'pt')
+const textoPergunta = computed(() => (emPt.value && props.questao.perguntaPt) || props.questao.pergunta)
+const opcoes = computed(() => (emPt.value && props.questao.opcoesRespostaPt) || props.questao.opcoesResposta)
 
 // liga o input interno com o v-model do pai
 const valorSelecionado = computed({
@@ -35,14 +40,14 @@ const idTitulo = computed(() => `pergunta-${props.questao.id}`)
         {{ total ? t('diagnostico.preguntaDe', { n: numero, total }) : t('diagnostico.pregunta', { n: numero }) }}
       </span>
       <span :id="idTitulo" class="block text-base sm:text-lg font-semibold text-slate-800 mb-4">
-        {{ questao.pergunta }}
+        {{ textoPergunta }}
       </span>
     </legend>
 
     <div v-if="questao.tipoResposta === 'radio'" class="clear-both flex flex-col space-y-2 sm:space-y-3">
       <!-- o <label> engloba o bloco todo: dá para tocar em qualquer lugar da barra -->
       <label
-        v-for="(opcao, index) in questao.opcoesResposta"
+        v-for="(opcao, index) in opcoes"
         :key="index"
         class="flex items-center p-3 sm:p-4 rounded-xl border cursor-pointer transition-all duration-200 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-emerald-600"
         :class="valorSelecionado === opcao.valor
@@ -66,7 +71,7 @@ const idTitulo = computed(() => `pergunta-${props.questao.id}`)
         v-model="valorSelecionado"
         class="campo"
         rows="3"
-        placeholder="Escribe tu respuesta..."
+        :placeholder="t('diagnostico.placeholderTexto')"
         :aria-labelledby="idTitulo"
       ></textarea>
     </div>
