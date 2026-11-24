@@ -46,7 +46,7 @@ Neste projeto, além da otimização do código, implementamos o novo documento 
 - [x] Aprimoramentos na interface e na experiência do usuário
 - [x] Login federado (OAuth com Google, via Supabase Auth)
 - [x] IA como serviço (análise do diagnóstico com Gemini)
-- [ ] Interface em português (vue-i18n)
+- [x] Interface em português (vue-i18n)
 
 ## Desenvolvimento
 
@@ -61,6 +61,7 @@ Neste projeto, além da otimização do código, implementamos o novo documento 
 | Guilherme D. | Login federado com Google: cliente OAuth no Google Auth Platform, provedor Google no Supabase Auth, botão "Continuar con Google" (com o ícone oficial) no login e no cadastro, fluxo PKCE e retorno para a tela pedida | IA como serviço |
 | Guilherme D. | *Análisis con IA* no Resultado: rota `/api/ia/analisis` que envia o diagnóstico (sem dados pessoais) ao Gemini, resposta em JSON validada, tabela `analisis_ia` com RLS, limite de 3 gerações por diagnóstico e modelo reserva quando o principal está sobrecarregado | Interface em português |
 | Guilherme M. | Otimização da rota `/api/ia/analisis`: o perfil da empresa (setor, porte e nº de funcionários) é buscado uma única vez e reaproveitado no cálculo das recomendações e no contexto enviado ao Gemini; `pytest` adicionado ao `requirements.txt` | Interface em português |
+| Guilherme M. | Interface em português com `vue-i18n`: seletor ES/PT (escolha salva no `localStorage`), textos das telas em `src/i18n/es.json` e `pt.json`, conteúdo longo (temas da Educación, ODS, Huella positiva) traduzido como uma camada por cima do original; perguntas com colunas `perguntaPt`/`opcoesRespostaPt`; back-end lê o `Accept-Language` e devolve erros, recomendações e a análise do Gemini no idioma escolhido (tabela `analisis_ia` passa a ter uma análise por idioma) | Revisão das traduções com a equipe |
 
 ### Processo
 
@@ -186,7 +187,7 @@ for modelo in modelos_a_tentar():
 
 ### Linguagens e afins
 
-- **Front-end:** Vue 3 (Composition API, `<script setup>`), Vite, Vue Router, Pinia (cache *stale-while-revalidate* em `localStorage`), Tailwind CSS 4, Chart.js (gráficos radar e de linhas), fontes Plus Jakarta Sans e Bricolage Grotesque (Fontsource)
+- **Front-end:** Vue 3 (Composition API, `<script setup>`), Vite, Vue Router, Pinia (cache *stale-while-revalidate* em `localStorage`), vue-i18n (espanhol e português), Tailwind CSS 4, Chart.js (gráficos radar e de linhas), fontes Plus Jakarta Sans e Bricolage Grotesque (Fontsource)
 - **Back-end:** Python, FastAPI, Pydantic (validação), Uvicorn, PyJWT (validação local do token), supabase-py / PostgREST, google-genai (SDK do Gemini)
 - **Banco e autenticação:** Supabase (PostgreSQL, Supabase Auth com JWT, Row Level Security); login federado com Google (OAuth 2.0 / OpenID Connect, cliente criado no Google Auth Platform)
 - **IA como serviço:** Gemini API (Google AI Studio), com saída estruturada em JSON
